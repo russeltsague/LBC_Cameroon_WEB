@@ -7,8 +7,8 @@ import { FeaturedSection } from '@/components/sections/Featured'
 import { StatsSection } from '@/components/sections/Stats'
 import { NewsSection } from '@/components/sections/News'
 import { CalendarSection } from '@/components/sections/Calendar'
-import { ClassificationSection } from '@/components/sections/Classification'
-import { ScheduleSection } from '@/components/sections/Schedule'
+import Classification from '@/components/sections/Classification'
+import { ScheduleSection } from '@/components/sections/schedule'
 import { TeamsPreviewSection } from '@/components/sections/TeamPreview'
 import { SponsorsSection } from '@/components/sections/Sponsors'
 import { CtaSection } from '@/components/sections/Cta'
@@ -45,7 +45,7 @@ const Home: NextPage = () => {
         <CalendarSection />
 
         {/* 5. Classification Section - Current standings */}
-        <ClassificationSection />
+        <Classification />
 
         {/* 6. Schedule Section - Weekly matches */}
         <ScheduleSection />
