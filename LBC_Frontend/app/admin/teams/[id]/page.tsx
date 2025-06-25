@@ -20,13 +20,14 @@ interface Team {
   coach: string
   about: string
 }
+
 interface PageProps {
   params: {
     id: string;
   };
 }
 
-export default function TeamDetailPage({ params }: { params: { id: string } }) {
+export default function TeamDetailPage({ params }: PageProps) {
   // In a real app, you would fetch this data from your API
   const [team, setTeam] = useState<Team>({
     id: params.id,
