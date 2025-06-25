@@ -13,10 +13,10 @@ import { errorHandler } from './middleware/errorHandler';
 const app = express();
 
 // Middleware
-app.use(cors({
-  origin: 'http://localhost:3000', // Allow frontend requests
-  credentials: true
-}));
+// app.use(cors({
+//   origin: ['http://localhost:3000','https://lbc-cameroon-web.onrender.com'], // Allow frontend requests
+//   credentials: true
+// }));
 app.use(express.json());
 
 // Routes
@@ -28,6 +28,9 @@ app.use('/api/classifications', classificationRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/news', newsRoutes);
 app.use('/api/sponsors', sponsorRoutes);
+app.use('/', (req, res) => {
+  res.send('the backend is running');
+});
 
 // Serve static files
 app.use('/uploads', express.static('public/uploads'));
