@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import connectDB from '../config/db';
 import Team from '../models/Team';
-import { Match } from '../models/Match';
+import Match from '../models/Match';
 import Classification from '../models/Classification';
 import Stats from '../models/Stats';
 

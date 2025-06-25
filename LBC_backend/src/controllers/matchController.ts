@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Match, IMatch } from '../models/Match';
+import Match, { IMatch } from '../models/Match';
 import Team, { ITeam } from '../models/Team';
 import { catchAsync } from '../utils/catchAsync';
 import { AppError } from '../utils/appError';

@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { Match } from '../models/Match';
+import Match from '../models/Match';
 import Team from '../models/Team';
 import Category from '../models/Category';
 import connectDB from '../config/db';

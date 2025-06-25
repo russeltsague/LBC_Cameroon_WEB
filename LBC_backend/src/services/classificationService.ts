@@ -1,5 +1,5 @@
 import Classification from '../models/Classification';
-import { Match } from '../models/Match';
+import Match from '../models/Match';
 import Team from '../models/Team';
 
 // FIBA classification rules:

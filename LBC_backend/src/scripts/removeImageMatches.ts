@@ -1,5 +1,5 @@
 import connectDB from '../config/db';
-import { Match } from '../models/Match';
+import Match from '../models/Match';
 
 const matchDates = [
   '2025-04-13', '2025-04-18', '2025-04-26', '2025-05-10', '2025-05-11', '2025-05-17', '2025-05-18',
