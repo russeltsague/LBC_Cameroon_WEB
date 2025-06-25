@@ -107,4 +107,4 @@ matchSchema.index({ category: 1, date: 1 });
 matchSchema.index({ homeTeam: 1, awayTeam: 1 });
 matchSchema.index({ status: 1 });
 
-export const Match = mongoose.model<IMatch>('Match', matchSchema); 
+export default mongoose.model<IMatch>('Match', matchSchema); 
