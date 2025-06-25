@@ -51,13 +51,13 @@ export const MatchCardAdmin = ({ match, formatDate, onEdit, onDelete }: MatchCar
               onClick={onEdit}
               className="text-gray-400 hover:text-orange-400 p-1"
             >
-              <PencilIcon className="w-5 h-5" />
+              {/* <PencilIcon className="w-5 h-5" /> */}
             </button>
             <button
               onClick={onDelete}
               className="text-gray-400 hover:text-red-400 p-1"
             >
-              <TrashIcon className="w-5 h-5" />
+              {/* <TrashIcon className="w-5 h-5" /> */}
             </button>
           </div>
         </div>

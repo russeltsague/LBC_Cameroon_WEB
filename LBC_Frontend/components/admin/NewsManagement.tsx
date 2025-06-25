@@ -69,7 +69,9 @@ export function NewsManagement() {
     setCreating(true)
   }
 
-  const handleEditChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleEditChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target
     const isTags = name === 'tags'
     setEditForm(prev => ({ ...prev, [name]: isTags ? value.split(',').map(tag => tag.trim()) : value }))
@@ -142,6 +144,10 @@ export function NewsManagement() {
 
   const currentForm = editingNewsId ? editForm : createForm
   const handleChange = editingNewsId ? handleEditChange : handleEditChange
+
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleEditChange(e);
+  };
 
   return (
     <div className="space-y-6">
@@ -398,7 +404,7 @@ export function NewsManagement() {
                     id="isPublished"
                     name="isPublished"
                     checked={currentForm.isPublished}
-                    onChange={(e) => handleChange({ target: { name: 'isPublished', value: e.target.checked } })}
+                    onChange={handleCheckboxChange}
                     className="w-4 h-4 text-orange-500 bg-gray-700 border-gray-600 rounded focus:ring-orange-500"
                   />
                   <label htmlFor="isPublished" className="text-sm text-gray-300">

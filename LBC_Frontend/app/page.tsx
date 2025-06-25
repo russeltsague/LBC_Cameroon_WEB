@@ -9,7 +9,7 @@ import { NewsSection } from '@/components/sections/News'
 import { CalendarSection } from '@/components/sections/Calendar'
 import Classification from '@/components/sections/Classification'
 import { ScheduleSection } from '@/components/sections/schedule'
-import { TeamsPreviewSection } from '@/components/sections/TeamPreview'
+// import { TeamsPreviewSection } from '@/components/sections/TeamPreview'
 import { SponsorsSection } from '@/components/sections/Sponsors'
 import { CtaSection } from '@/components/sections/Cta'
 

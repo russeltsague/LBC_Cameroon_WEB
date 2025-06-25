@@ -110,7 +110,7 @@ export const MatchCard = ({ match, isExpanded, onExpand, formatDate }: MatchCard
                   <p className="text-white">{match.venue}</p>
                   <button className="mt-3 text-orange-400 hover:text-orange-300 text-sm font-medium flex items-center">
                     View venue information
-                    <ChevronDownIcon className="ml-2 w-4 h-4 transform rotate-90" />
+                    {/* <ChevronDownIcon className="ml-2 w-4 h-4 transform rotate-90" /> */}
                   </button>
                 </div>
               </div>
