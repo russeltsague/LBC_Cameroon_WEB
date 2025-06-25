@@ -1,0 +1,58 @@
+{
+    "info": {
+      "name": "LBC Backend API",
+      "_postman_id": "lbc-backend-api-collection",
+      "description": "Functional tests for LBC backend API",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Get All Teams",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": { "raw": "http://localhost:5000/api/teams", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "teams"] }
+        }
+      },
+      {
+        "name": "Get All Matches",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": { "raw": "http://localhost:5000/api/matches", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "matches"] }
+        }
+      },
+      {
+        "name": "Get All Classifications",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": { "raw": "http://localhost:5000/api/classifications", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "classifications"] }
+        }
+      },
+      {
+        "name": "Get All Categories",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": { "raw": "http://localhost:5000/api/categories", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "categories"] }
+        }
+      },
+      {
+        "name": "Get All News",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": { "raw": "http://localhost:5000/api/news", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "news"] }
+        }
+      },
+      {
+        "name": "Get All Sponsors",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": { "raw": "http://localhost:5000/api/sponsors", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "sponsors"] }
+        }
+      }
+    ]
+  }
