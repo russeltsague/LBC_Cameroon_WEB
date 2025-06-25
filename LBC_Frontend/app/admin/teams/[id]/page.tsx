@@ -1,5 +1,4 @@
 // app/admin/teams/[id]/page.tsx
-'use client'
 import { notFound } from 'next/navigation'
 import { FiArrowLeft, FiEdit2, FiSave, FiUpload } from 'react-icons/fi'
 import Link from 'next/link'
