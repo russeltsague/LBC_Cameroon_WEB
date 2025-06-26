@@ -28,9 +28,9 @@ app.use('/api/classifications', classificationRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/news', newsRoutes);
 app.use('/api/sponsors', sponsorRoutes);
-app.use('/', (req, res) => {
-  res.send('the backend is running');
-});
+// app.use('/', (req, res) => {
+//   res.send('the backend is running');
+// });
 
 // Serve static files
 app.use('/uploads', express.static('public/uploads'));
