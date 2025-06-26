@@ -78,7 +78,7 @@ export const ScheduleSection = () => {
     setLoading(true)
     setError(null)
     try {
-      let url = `${process.env.NEXT_PUBLIC_API_URL}/matches?category=${encodeURIComponent(activeCategory)}`
+      let url = `${process.env.NEXT_PUBLIC_API_URL}/api/matches?category=${encodeURIComponent(activeCategory)}`
       
       // Add poule filter if the category has poules
       if (hasPoules) {
