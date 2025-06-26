@@ -26,7 +26,8 @@ export const TeamsSection = () => {
       setLoading(true)
       setError(null)
       try {
-        const res = await fetch('http://localhost:5000/api/teams')
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/teams`)
+
         if (!res.ok) throw new Error('Failed to fetch teams')
         const data = await res.json()
         setTeams(data)

@@ -16,7 +16,7 @@ export const SponsorsSection = () => {
     'Gold',
     'Silver',
     'Bronze',
-    'Partner'
+    'Partner' 
   ]
 
   useEffect(() => {

@@ -72,8 +72,8 @@ export const StatsSection = () => {
         setError(null)
 
         // Build URL with poule filter if applicable
-        let matchesUrl = `http://localhost:5000/api/matches?category=${encodeURIComponent(activeCategory)}`
-        let teamsUrl = `http://localhost:5000/api/teams?category=${encodeURIComponent(activeCategory)}`
+        let matchesUrl = `${process.env.NEXT_PUBLIC_API_URL}/matches?category=${encodeURIComponent(activeCategory)}`
+        let teamsUrl = `${process.env.NEXT_PUBLIC_API_URL}/teams?category=${encodeURIComponent(activeCategory)}`
         
         if (hasPoules) {
           matchesUrl += `&poule=${selectedPoule}`

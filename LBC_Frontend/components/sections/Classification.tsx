@@ -74,7 +74,7 @@ export default function Classification({ category: initialCategory }: Classifica
         setLoading(true)
         setError(null)
         
-        let url = `http://localhost:5000/api/classifications?category=${encodeURIComponent(selectedCategory)}`
+        let url = `${process.env.NEXT_PUBLIC_API_URL}/classifications?category=${encodeURIComponent(selectedCategory)}`
         
         // Add poule filter if the category has poules
         if (hasPoules) {

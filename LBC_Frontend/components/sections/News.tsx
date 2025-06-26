@@ -185,7 +185,7 @@ export const NewsSection = () => {
             </div>
 
             {/* Pagination */}
-            {totalPages > 1 && (
+            {totalPages > 1 && (  
               <div className="flex justify-center mt-8">
                 <div className="flex space-x-2">
                   <button
