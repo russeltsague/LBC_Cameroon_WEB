@@ -13,10 +13,10 @@ import { errorHandler } from './middleware/errorHandler';
 const app = express();
 
 // Middleware
-// app.use(cors({
-//   origin: ['http://localhost:3000','https://lbc-cameroon-web.onrender.com'], // Allow frontend requests
-//   credentials: true
-// }));
+app.use(cors({
+  origin: ['http://localhost:3000','https://lbc-cameroon-web.onrender.com'], // Allow frontend requests
+  credentials: true
+}));
 app.use(express.json());
 
 // Routes

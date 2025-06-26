@@ -83,7 +83,7 @@ export const CalendarSection = () => {
         url += `&poule=${selectedPoule}`
       }
       
-      const res = await fetch(url)
+      const res = await fetch(url)  
       if (!res.ok) {
         throw new Error('Failed to fetch matches')
       }
