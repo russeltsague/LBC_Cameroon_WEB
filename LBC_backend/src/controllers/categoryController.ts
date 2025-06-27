@@ -5,10 +5,15 @@ import Category, { ICategory } from '../models/Category';
 export const getAllCategories = async (req: Request, res: Response): Promise<void> => {
   try {
     const categories = await Category.find().sort({ name: 1 });
-    
+    // Move 'CORPORATES' to the end
+    const sortedCategories = categories.sort((a, b) => {
+      if (a.name === 'CORPORATES') return 1;
+      if (b.name === 'CORPORATES') return -1;
+      return 0;
+    });
     res.json({ 
       success: true,
-      data: categories 
+      data: sortedCategories 
     });
   } catch (error: any) {
     console.error('Error fetching categories:', error);
@@ -23,10 +28,15 @@ export const getAllCategories = async (req: Request, res: Response): Promise<voi
 export const getActiveCategories = async (req: Request, res: Response): Promise<void> => {
   try {
     const categories = await Category.find({ isActive: true }).sort({ name: 1 });
-    
+    // Move 'CORPORATES' to the end
+    const sortedCategories = categories.sort((a, b) => {
+      if (a.name === 'CORPORATES') return 1;
+      if (b.name === 'CORPORATES') return -1;
+      return 0;
+    });
     res.json({ 
       success: true,
-      data: categories 
+      data: sortedCategories 
     });
   } catch (error: any) {
     console.error('Error fetching active categories:', error);

@@ -23,6 +23,24 @@ export const NewsSection = () => {
   ]
 
   useEffect(() => {
+    // Restore last selected category from localStorage if available and valid
+    const savedCategory = typeof window !== 'undefined' ? localStorage.getItem('newsCategory') : null;
+    const validSaved = categories.find(cat => cat === savedCategory);
+    if (savedCategory && validSaved) {
+      setSelectedCategory(savedCategory)
+    } else if (categories.length > 0) {
+      setSelectedCategory(categories[0])
+    }
+  }, [categories])
+
+  useEffect(() => {
+    if (selectedCategory) {
+      localStorage.setItem('newsCategory', selectedCategory)
+      // fetch data here if needed
+    }
+  }, [selectedCategory])
+
+  useEffect(() => {
     fetchNews()
   }, [selectedCategory, currentPage])
 
@@ -61,31 +79,43 @@ export const NewsSection = () => {
   }
 
   return (
-    <section className="py-20 bg-gray-950">
-      <div className="container px-6 mx-auto">
+    <section className="py-10 sm:py-16 md:py-20 bg-gray-950">
+      <div className="container px-4 sm:px-6 md:px-8 mx-auto">
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-16"
+          className="text-center mb-8 md:mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+          <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold text-white mb-2 md:mb-4">
             Latest <span className="text-orange-400">News</span>
           </h2>
-          <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+          <p className="text-base sm:text-xl text-gray-300 max-w-xl md:max-w-2xl mx-auto">
             Stay updated with the latest from Cameroon Basketball League
           </p>
         </motion.div>
 
-        {/* Category Filter */}
-        <div className="flex justify-center mb-8">
-          <div className="inline-flex rounded-lg bg-gray-800 p-1">
+        {/* Category Filter: Dropdown for small/medium, buttons for large+ */}
+        <div className="mb-8">
+          <div className="flex justify-center lg:hidden">
+            <select
+              value={selectedCategory}
+              onChange={e => setSelectedCategory(e.target.value)}
+              className="px-4 py-2 rounded-md bg-gray-800 text-white border border-gray-700 focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
+            >
+              <option value="">All</option>
+              {categories.map(category => (
+                <option key={category} value={category}>{category}</option>
+              ))}
+            </select>
+          </div>
+          <div className="hidden lg:flex flex-wrap justify-center gap-2 mt-4">
             <button
-              onClick={() => setSelectedCategory('')}
-              className={`px-4 py-2 rounded-md transition-colors ${
-                selectedCategory === '' 
-                  ? 'bg-orange-500 text-white' 
+              onClick={() => setSelectedCategory("")}
+              className={`px-4 py-2 rounded-md transition-colors whitespace-nowrap text-sm ${
+                selectedCategory === ""
+                  ? 'bg-orange-500 text-white'
                   : 'text-gray-300 hover:bg-gray-700'
               }`}
             >
@@ -95,9 +125,9 @@ export const NewsSection = () => {
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
-                className={`px-4 py-2 rounded-md transition-colors ${
-                  selectedCategory === category 
-                    ? 'bg-orange-500 text-white' 
+                className={`px-4 py-2 rounded-md transition-colors whitespace-nowrap text-sm ${
+                  selectedCategory === category
+                    ? 'bg-orange-500 text-white'
                     : 'text-gray-300 hover:bg-gray-700'
                 }`}
               >

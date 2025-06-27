@@ -190,12 +190,12 @@ export function CategoryManagement() {
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-white">Category Management</h2>
+    <div className="p-4 sm:p-6 space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-0">
+        <h2 className="text-xl sm:text-2xl font-bold text-white">Category Management</h2>
         <button
           onClick={openCreateModal}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 rounded-lg text-white hover:bg-green-700 transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 rounded-lg text-white hover:bg-green-700 transition-colors w-full sm:w-auto justify-center"
         >
           <FiPlus />
           Create Category

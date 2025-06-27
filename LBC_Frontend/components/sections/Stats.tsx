@@ -43,11 +43,17 @@ export const StatsSection = () => {
     const fetchCategories = async () => {
       try {
         const categoriesData = await getCategories()
-        setCategories(categoriesData)
+        // Move 'CORPORATES' to the end
+        const sortedCategories = [...categoriesData].sort((a, b) => {
+          if (a.name === 'CORPORATES') return 1;
+          if (b.name === 'CORPORATES') return -1;
+          return 0;
+        })
+        setCategories(sortedCategories)
         
         // Set initial category
-        if (categoriesData.length > 0) {
-          setActiveCategory(categoriesData[0].name)
+        if (sortedCategories.length > 0) {
+          setActiveCategory(sortedCategories[0].name)
         }
       } catch (err) {
         console.error('Error fetching categories:', err)
@@ -57,6 +63,24 @@ export const StatsSection = () => {
 
     fetchCategories()
   }, [])
+
+  // Restore last selected category from localStorage if available and valid
+  useEffect(() => {
+    const savedCategory = typeof window !== 'undefined' ? localStorage.getItem('statsCategory') : null;
+    const validSaved = categories.find(cat => cat.name === savedCategory);
+    if (savedCategory && validSaved) {
+      setActiveCategory(savedCategory)
+    } else if (categories.length > 0) {
+      setActiveCategory(categories[0].name)
+    }
+  }, [categories])
+
+  useEffect(() => {
+    if (activeCategory) {
+      localStorage.setItem('statsCategory', activeCategory)
+      // fetch stats or data here if needed
+    }
+  }, [activeCategory])
 
   // Get current category data
   const currentCategory = categories.find(cat => cat.name === activeCategory)
@@ -161,8 +185,8 @@ export const StatsSection = () => {
 
   if (loading) {
     return (
-      <section className="py-20 bg-gradient-to-b from-gray-800 to-gray-900">
-        <div className="container px-6 mx-auto">
+      <section className="py-10 sm:py-16 md:py-20 bg-gradient-to-b from-gray-800 to-gray-900">
+        <div className="container px-4 sm:px-6 md:px-8 mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {[...Array(4)].map((_, index) => (
               <div key={index} className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-xl border border-gray-700/50 animate-pulse">
@@ -183,8 +207,8 @@ export const StatsSection = () => {
 
   if (error) {
     return (
-      <section className="py-20 bg-gradient-to-b from-gray-800 to-gray-900">
-        <div className="container px-6 mx-auto">
+      <section className="py-10 sm:py-16 md:py-20 bg-gradient-to-b from-gray-800 to-gray-900">
+        <div className="container px-4 sm:px-6 md:px-8 mx-auto">
           <div className="text-center text-red-500">
             {error}
           </div>
@@ -194,14 +218,24 @@ export const StatsSection = () => {
   }
 
   return (
-    <section className="py-20 bg-gradient-to-b from-gray-800 to-gray-900">
-      <div className="container px-6 mx-auto">
-        {/* Category Selection */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-bold text-white mb-6 text-center">Category Statistics</h2>
-          <div className="flex flex-wrap justify-center gap-4">
-            {categories.map((category) => (
-              <motion.button
+    <section className="py-10 sm:py-16 md:py-20 bg-gradient-to-b from-gray-800 to-gray-900">
+      <div className="container px-4 sm:px-6 md:px-8 mx-auto">
+        {/* Category Selection: Dropdown for small/medium, buttons for large+ */}
+        <div className="mb-6 md:mb-12">
+          <div className="flex justify-center lg:hidden">
+            <select
+              value={activeCategory}
+              onChange={e => setActiveCategory(e.target.value)}
+              className="px-4 py-2 rounded-md bg-gray-800 text-white border border-gray-700 focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
+            >
+              {categories.map(cat => (
+                <option key={cat.name} value={cat.name}>{cat.name}</option>
+              ))}
+            </select>
+          </div>
+          <div className="hidden lg:flex flex-wrap justify-center gap-2 mt-4">
+            {categories.map(category => (
+              <button
                 key={category.name}
                 onClick={() => setActiveCategory(category.name)}
                 className={`px-6 py-3 rounded-lg font-medium transition-all ${
@@ -209,11 +243,9 @@ export const StatsSection = () => {
                     ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/20'
                     : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                 }`}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
               >
                 {category.name}
-              </motion.button>
+              </button>
             ))}
           </div>
         </div>
@@ -251,35 +283,18 @@ export const StatsSection = () => {
           </h3>
         </div>
 
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-orange-400 mb-8 text-center drop-shadow-lg tracking-wide uppercase">Statistics</h2>
+
         {/* Stats Grid */}
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.8 }}
-          className="grid grid-cols-1 md:grid-cols-4 gap-8"
-        >
+        <div className="grid grid-cols-2 grid-rows-2 lg:grid-cols-4 lg:grid-rows-1 gap-4 max-w-2xl lg:max-w-5xl mx-auto">
           {statItems.map((stat, index) => (
-            <motion.div
-              key={stat.id}
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: index * 0.2 }}
-              className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-xl border border-gray-700/50 hover:border-orange-500/30 transition-colors"
-            >
-              <div className="flex items-center">
-                <div className="p-4 rounded-lg bg-orange-500/10 mr-6">
-                  <stat.icon className="w-8 h-8 text-orange-400" />
-                </div>
-                <div>
-                  <p className="text-4xl font-bold text-white mb-2">{stat.value}</p>
-                  <p className="text-gray-400">{stat.name}</p>
-                </div>
-              </div>
-            </motion.div>
+            <div key={stat.id} className="bg-gray-900 rounded-lg p-4 sm:p-5 border border-gray-800 flex flex-col items-center justify-center shadow-md">
+              <stat.icon className="w-7 h-7 text-orange-400 mb-2" />
+              <div className="text-lg sm:text-xl font-bold text-white mb-1">{stat.value}</div>
+              <div className="text-xs sm:text-sm text-gray-400">{stat.name}</div>
+            </div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   )

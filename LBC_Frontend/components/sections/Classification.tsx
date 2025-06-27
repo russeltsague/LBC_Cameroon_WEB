@@ -44,7 +44,13 @@ export default function Classification({ category: initialCategory }: Classifica
     const fetchCategories = async () => {
       try {
         const categoriesData = await getCategories()
-        setCategories(categoriesData)
+        // Move 'CORPORATES' to the end
+        const sortedCategories = [...categoriesData].sort((a, b) => {
+          if (a.name === 'CORPORATES') return 1;
+          if (b.name === 'CORPORATES') return -1;
+          return 0;
+        })
+        setCategories(sortedCategories)
         
         // Set initial category
         if (initialCategory) {
@@ -60,6 +66,24 @@ export default function Classification({ category: initialCategory }: Classifica
 
     fetchCategories()
   }, [initialCategory])
+
+  // Restore last selected category from localStorage if available and valid
+  useEffect(() => {
+    const savedCategory = typeof window !== 'undefined' ? localStorage.getItem('classificationCategory') : null;
+    const validSaved = categories.find(cat => cat.name === savedCategory);
+    if (savedCategory && validSaved) {
+      setSelectedCategory(savedCategory)
+    } else if (categories.length > 0) {
+      setSelectedCategory(categories[0].name)
+    }
+  }, [categories])
+
+  useEffect(() => {
+    if (selectedCategory) {
+      localStorage.setItem('classificationCategory', selectedCategory)
+      // fetch data here if needed
+    }
+  }, [selectedCategory])
 
   // Get current category data
   const currentCategory = categories.find(cat => cat.name === selectedCategory)
@@ -143,9 +167,20 @@ export default function Classification({ category: initialCategory }: Classifica
             </p>
           </motion.div>
 
-          {/* Category Selection Buttons */}
-          <div className="flex justify-center mb-12">
-            <div className="inline-flex rounded-lg bg-gray-800 p-1 overflow-x-auto">
+          {/* Category Selection: Dropdown for small/medium, buttons for large+ */}
+          <div className="mb-12">
+            <div className="flex justify-center lg:hidden">
+              <select
+                value={selectedCategory}
+                onChange={e => setSelectedCategory(e.target.value)}
+                className="px-4 py-2 rounded-md bg-gray-800 text-white border border-gray-700 focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
+              >
+                {categories.map(cat => (
+                  <option key={cat.name} value={cat.name}>{cat.name}</option>
+                ))}
+              </select>
+            </div>
+            <div className="hidden lg:flex flex-wrap justify-center gap-2 mt-4">
               {categories.map(cat => (
                 <button
                   key={cat.name}
@@ -221,9 +256,20 @@ export default function Classification({ category: initialCategory }: Classifica
             </p>
           </motion.div>
 
-          {/* Category Selection Buttons */}
-          <div className="flex justify-center mb-12">
-            <div className="inline-flex rounded-lg bg-gray-800 p-1 overflow-x-auto">
+          {/* Category Selection: Dropdown for small/medium, buttons for large+ */}
+          <div className="mb-12">
+            <div className="flex justify-center lg:hidden">
+              <select
+                value={selectedCategory}
+                onChange={e => setSelectedCategory(e.target.value)}
+                className="px-4 py-2 rounded-md bg-gray-800 text-white border border-gray-700 focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
+              >
+                {categories.map(cat => (
+                  <option key={cat.name} value={cat.name}>{cat.name}</option>
+                ))}
+              </select>
+            </div>
+            <div className="hidden lg:flex flex-wrap justify-center gap-2 mt-4">
               {categories.map(cat => (
                 <button
                   key={cat.name}
@@ -295,9 +341,20 @@ export default function Classification({ category: initialCategory }: Classifica
           </p>
         </motion.div>
 
-        {/* Category Selection Buttons */}
-        <div className="flex justify-center mb-12">
-          <div className="inline-flex rounded-lg bg-gray-800 p-1 overflow-x-auto">
+        {/* Category Selection: Dropdown for small/medium, buttons for large+ */}
+        <div className="mb-12">
+          <div className="flex justify-center lg:hidden">
+            <select
+              value={selectedCategory}
+              onChange={e => setSelectedCategory(e.target.value)}
+              className="px-4 py-2 rounded-md bg-gray-800 text-white border border-gray-700 focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
+            >
+              {categories.map(cat => (
+                <option key={cat.name} value={cat.name}>{cat.name}</option>
+              ))}
+            </select>
+          </div>
+          <div className="hidden lg:flex flex-wrap justify-center gap-2 mt-4">
             {categories.map(cat => (
               <button
                 key={cat.name}

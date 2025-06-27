@@ -131,33 +131,46 @@ export function TeamManagement() {
   const filteredTeams = teams.filter(t => t.category === selectedCategory)
 
   return (
-    <div className="p-6 space-y-6">
-      <h2 className="text-2xl font-bold text-white">Team Management</h2>
+    <div className="p-4 sm:p-6 space-y-6">
+      <h2 className="text-xl sm:text-2xl font-bold text-white">Team Management</h2>
 
       {/* Create Team Button */}
       <button
         onClick={() => setCreating(true)}
-        className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 rounded-lg text-white hover:bg-green-700"
+        className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 rounded-lg text-white hover:bg-green-700 w-full sm:w-auto justify-center"
       >
         <FiPlus />
         Create Team
       </button>
 
-      {/* Category Buttons */}
-      <div className="flex flex-wrap gap-2">
-        {categories.map(cat => (
-          <button
-            key={cat.name}
-            onClick={() => setSelectedCategory(cat.name)}
-            className={`px-4 py-2 rounded-lg font-semibold text-sm ${
-              selectedCategory === cat.name
-                ? 'bg-orange-500 text-white'
-                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-            }`}
+      {/* Category Selector: Dropdown for small/medium, buttons for large+ */}
+      <div className="mb-4">
+        <div className="lg:hidden flex justify-center">
+          <select
+            value={selectedCategory}
+            onChange={e => setSelectedCategory(e.target.value)}
+            className="px-4 py-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
           >
-            {cat.name}
-          </button>
-        ))}
+            {categories.map(cat => (
+              <option key={cat.name} value={cat.name}>{cat.name}</option>
+            ))}
+          </select>
+        </div>
+        <div className="hidden lg:flex flex-wrap gap-2">
+          {categories.map(cat => (
+            <button
+              key={cat.name}
+              onClick={() => setSelectedCategory(cat.name)}
+              className={`px-4 py-2 rounded-lg font-semibold text-sm ${
+                selectedCategory === cat.name
+                  ? 'bg-orange-500 text-white'
+                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+              }`}
+            >
+              {cat.name}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Poule Selection Buttons */}
@@ -181,7 +194,7 @@ export function TeamManagement() {
 
       {/* Current Selection Display */}
       <div className="text-center">
-        <h3 className="text-xl font-bold text-white">
+        <h3 className="text-lg sm:text-xl font-bold text-white">
           {selectedCategory}
           {hasPoules && (
             <span className="text-blue-400 ml-2">- Poule {selectedPoule}</span>
@@ -190,7 +203,7 @@ export function TeamManagement() {
       </div>
 
       {/* Teams */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {filteredTeams.map(team => (
           <div
             key={team._id}

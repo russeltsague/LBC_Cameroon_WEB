@@ -35,16 +35,6 @@ export default function AdminAccessButton() {
     router.push('/')
   }
 
-  const handleAdminButtonClick = () => {
-    if (!isAuthenticated) {
-      // Navigate to login page
-      router.push('/admin/login')
-    } else {
-      // Toggle panel for authenticated users
-      setShowPanel(!showPanel)
-    }
-  }
-
   return (
     <>
       {/* Admin Button - Always visible */}
@@ -53,13 +43,13 @@ export default function AdminAccessButton() {
         animate={{ opacity: 1, y: 0 }}
         className="fixed bottom-6 left-6 z-50"
       >
-        <button
-          onClick={handleAdminButtonClick}
+        <Link
+          href="/admin"
           className="flex items-center bg-gray-800 hover:bg-gray-700 text-white font-medium py-3 px-4 rounded-full shadow-lg transition-all duration-300 group border border-gray-600"
         >
           <FiSettings className="mr-2 group-hover:rotate-180 transition-transform" />
           Admin
-        </button>
+        </Link>
       </motion.div>
 
       {/* Admin Dashboard Panel - Shows when authenticated */}

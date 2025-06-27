@@ -146,15 +146,15 @@ export function SponsorManagement() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-white">Sponsor Management</h2>
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-0">
+        <h2 className="text-xl sm:text-2xl font-bold text-white">Sponsor Management</h2>
         <button
           onClick={() => {
             setEditingSponsor(null)
             resetForm()
             setIsModalOpen(true)
           }}
-          className="flex items-center space-x-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg transition-colors"
+          className="flex items-center space-x-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg transition-colors w-full sm:w-auto justify-center"
         >
           <FiPlus className="w-4 h-4" />
           <span>Add Sponsor</span>
@@ -162,12 +162,12 @@ export function SponsorManagement() {
       </div>
 
       {loading ? (
-        <div className="text-center py-12">
+        <div className="text-center py-8 sm:py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto"></div>
           <p className="mt-4 text-gray-400">Loading sponsors...</p>
         </div>
       ) : (
-        <div className="grid gap-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {sponsors.map((sponsor) => (
             <motion.div
               key={sponsor._id}

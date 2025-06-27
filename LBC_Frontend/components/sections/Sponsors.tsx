@@ -20,6 +20,24 @@ export const SponsorsSection = () => {
   ]
 
   useEffect(() => {
+    // Restore last selected level from localStorage if available and valid
+    const savedLevel = typeof window !== 'undefined' ? localStorage.getItem('sponsorLevel') : null;
+    const validSaved = sponsorshipLevels.find(level => level === savedLevel);
+    if (savedLevel && validSaved) {
+      setSelectedLevel(savedLevel)
+    } else if (sponsorshipLevels.length > 0) {
+      setSelectedLevel('')
+    }
+  }, [sponsorshipLevels])
+
+  useEffect(() => {
+    if (selectedLevel !== undefined) {
+      localStorage.setItem('sponsorLevel', selectedLevel)
+      // fetch data here if needed
+    }
+  }, [selectedLevel])
+
+  useEffect(() => {
     fetchSponsors()
   }, [selectedLevel])
 
@@ -59,28 +77,44 @@ export const SponsorsSection = () => {
   }
 
   return (
-    <section className="py-16 bg-gray-800">
-      <div className="container px-6 mx-auto">
+    <section className="py-10 sm:py-16 md:py-20 bg-gray-950">
+      <div className="container px-4 sm:px-6 md:px-8 mx-auto">
         <motion.div 
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-12"
+          className="text-center mb-8 md:mb-16"
         >
-          <h3 className="text-2xl text-gray-400 mb-2">Official Partners</h3>
-          <h2 className="text-3xl font-bold text-white">Our Sponsors</h2>
+          <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold text-white mb-2 md:mb-4">
+            Nos <span className="text-orange-400">Sponsors</span>
+          </h2>
+          <p className="text-base sm:text-xl text-gray-300 max-w-xl md:max-w-2xl mx-auto">
+            Merci à nos partenaires pour leur soutien à la ligue
+          </p>
         </motion.div>
 
-        {/* Level Filter */}
-        <div className="flex justify-center mb-8">
-          <div className="inline-flex rounded-lg bg-gray-700 p-1">
+        {/* Level Selector: Dropdown for small/medium, buttons for large+ */}
+        <div className="mb-8">
+          <div className="lg:hidden flex justify-center">
+            <select
+              value={selectedLevel}
+              onChange={e => setSelectedLevel(e.target.value)}
+              className="px-4 py-2 rounded-md bg-gray-700 text-white border border-gray-600 focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
+            >
+              <option value="">All</option>
+              {sponsorshipLevels.map(level => (
+                <option key={level} value={level}>{level}</option>
+              ))}
+            </select>
+          </div>
+          <div className="hidden lg:flex flex-wrap justify-center gap-2 mt-4">
             <button
-              onClick={() => setSelectedLevel('')}
-              className={`px-4 py-2 rounded-md transition-colors ${
-                selectedLevel === '' 
-                  ? 'bg-orange-500 text-white' 
-                  : 'text-gray-300 hover:bg-gray-600'
+              onClick={() => setSelectedLevel("")}
+              className={`px-4 py-2 rounded-md transition-colors whitespace-nowrap text-sm ${
+                selectedLevel === ""
+                  ? 'bg-orange-500 text-white'
+                  : 'text-gray-300 hover:bg-gray-700'
               }`}
             >
               All
@@ -89,10 +123,10 @@ export const SponsorsSection = () => {
               <button
                 key={level}
                 onClick={() => setSelectedLevel(level)}
-                className={`px-4 py-2 rounded-md transition-colors ${
-                  selectedLevel === level 
-                    ? 'bg-orange-500 text-white' 
-                    : 'text-gray-300 hover:bg-gray-600'
+                className={`px-4 py-2 rounded-md transition-colors whitespace-nowrap text-sm ${
+                  selectedLevel === level
+                    ? 'bg-orange-500 text-white'
+                    : 'text-gray-300 hover:bg-gray-700'
                 }`}
               >
                 {level}

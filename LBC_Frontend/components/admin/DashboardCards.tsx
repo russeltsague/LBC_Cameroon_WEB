@@ -160,28 +160,41 @@ export const DashboardCards = () => {
 
   return (
     <div className="space-y-6">
-      {/* Category Selection */}
-      <div className="flex flex-wrap gap-4">
-        {categories.map((category) => (
-          <motion.button
-            key={category.name}
-            onClick={() => setSelectedCategory(category.name)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-              selectedCategory === category.name
-                ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/20'
-                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-            }`}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+      {/* Category Selector: Dropdown for small/medium, buttons for large+ */}
+      <div className="mb-4">
+        <div className="lg:hidden flex justify-center">
+          <select
+            value={selectedCategory}
+            onChange={e => setSelectedCategory(e.target.value)}
+            className="px-4 py-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
           >
-            {category.name}
-          </motion.button>
-        ))}
+            {categories.map(category => (
+              <option key={category.name} value={category.name}>{category.name}</option>
+            ))}
+          </select>
+        </div>
+        <div className="hidden lg:flex flex-wrap gap-2 sm:gap-4">
+          {categories.map((category) => (
+            <motion.button
+              key={category.name}
+              onClick={() => setSelectedCategory(category.name)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                selectedCategory === category.name
+                  ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/20'
+                  : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+              }`}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              {category.name}
+            </motion.button>
+          ))}
+        </div>
       </div>
 
       {/* Poule Selection Buttons */}
       {hasPoules && (
-        <div className="flex flex-wrap gap-4">
+        <div className="flex flex-wrap gap-2 sm:gap-4">
           {poules.map((poule) => (
             <motion.button
               key={poule}
@@ -202,7 +215,7 @@ export const DashboardCards = () => {
 
       {/* Current Selection Display */}
       <div className="text-center">
-        <h3 className="text-lg font-bold text-white">
+        <h3 className="text-base sm:text-lg font-bold text-white">
           {selectedCategory}
           {hasPoules && (
             <span className="text-blue-400 ml-2">- Poule {selectedPoule}</span>
@@ -211,7 +224,7 @@ export const DashboardCards = () => {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {statItems.map((stat, index) => (
           <motion.div
             key={stat.name}

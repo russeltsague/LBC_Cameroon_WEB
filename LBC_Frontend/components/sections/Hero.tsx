@@ -27,7 +27,7 @@ export const HeroSection = () => {
   }
 
   return (
-    <section className="relative h-[110vh] min-h-[800px] flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-[70vh] md:min-h-[90vh] flex items-center justify-center overflow-hidden py-16 md:py-24 lg:py-32">
       <div className="absolute inset-0 bg-gradient-to-br from-blue-900/90 to-orange-900/80 z-0">
         {/* <Image
           src="/images/hero-court.jpg"
@@ -40,29 +40,29 @@ export const HeroSection = () => {
       </div>
 
       <motion.div
-        className="relative z-10 container px-6 mx-auto text-center"
+        className="relative z-10 container px-4 sm:px-6 md:px-8 mx-auto text-center"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
-        <motion.div variants={itemVariants} className="mb-8">
-          <span className="inline-block px-4 py-2 bg-orange-500/20 text-orange-300 rounded-full text-sm font-semibold tracking-wider">
+        <motion.div variants={itemVariants} className="mb-6 md:mb-8">
+          <span className="inline-block px-4 py-2 bg-orange-500/20 text-orange-300 rounded-full text-xs md:text-sm font-semibold tracking-wider">
             SAISON 2024-2025
           </span>
         </motion.div>
 
-        <motion.h1 variants={itemVariants} className="text-5xl md:text-7xl xl:text-8xl font-bold text-white mb-6 leading-tight">
+        <motion.h1 variants={itemVariants} className="text-3xl sm:text-5xl md:text-7xl xl:text-8xl font-bold text-white mb-4 md:mb-6 leading-tight">
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-200">LIGUE DU CENTRE</span><br />
           DE BASKET DU CAMEROUN
         </motion.h1>
 
-        <motion.p variants={itemVariants} className="text-xl md:text-2xl text-white/90 max-w-4xl mx-auto mb-10">
+        <motion.p variants={itemVariants} className="text-base sm:text-lg md:text-2xl text-white/90 max-w-2xl md:max-w-4xl mx-auto mb-6 md:mb-10">
           Le sommet de la compétition de basket-ball avec les meilleures équipes du pays
         </motion.p>
 
         <motion.div variants={itemVariants}>
           <button
-            className="group relative inline-flex items-center justify-center px-8 py-4 overflow-hidden font-bold text-white rounded-full shadow-2xl bg-gradient-to-br from-orange-500 to-amber-600 hover:to-amber-700 transition-all duration-300"
+            className="group relative inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 overflow-hidden font-bold text-white rounded-full shadow-2xl bg-gradient-to-br from-orange-500 to-amber-600 hover:to-amber-700 transition-all duration-300 text-base md:text-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
             onClick={() => {
               const calendarElement = document.getElementById('calendar');
               if (calendarElement) {

@@ -151,11 +151,11 @@ export function NewsManagement() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-white">News Management</h2>
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-0">
+        <h2 className="text-xl sm:text-2xl font-bold text-white">News Management</h2>
         <button
           onClick={openCreateModal}
-          className="flex items-center space-x-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors"
+          className="flex items-center space-x-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors w-full sm:w-auto justify-center"
         >
           <FiPlus className="w-4 h-4" />
           <span>Create News</span>
@@ -163,12 +163,12 @@ export function NewsManagement() {
       </div>
 
       {loading ? (
-        <div className="text-center py-12">
+        <div className="text-center py-8 sm:py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mx-auto"></div>
           <p className="mt-4 text-gray-400">Loading news...</p>
         </div>
       ) : (
-        <div className="grid gap-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {news.map((article) => (
             <motion.div
               key={article._id}
@@ -333,17 +333,35 @@ export function NewsManagement() {
                   
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-1">Category *</label>
-                    <select
-                      name="category"
-                      value={currentForm.category || ''}
-                      onChange={handleChange}
-                      className="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
-                      required
-                    >
+                    <div className="lg:hidden">
+                      <select
+                        name="category"
+                        value={currentForm.category || ''}
+                        onChange={handleChange}
+                        className="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
+                        required
+                      >
+                        {NEWS_CATEGORIES.map(category => (
+                          <option key={category} value={category}>{category}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="hidden lg:flex flex-wrap gap-2 mt-2">
                       {NEWS_CATEGORIES.map(category => (
-                        <option key={category} value={category}>{category}</option>
+                        <button
+                          key={category}
+                          type="button"
+                          onClick={() => setCurrentForm({ ...currentForm, category })}
+                          className={`px-4 py-2 rounded-lg font-semibold text-sm ${
+                            currentForm.category === category
+                              ? 'bg-orange-500 text-white'
+                              : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                          }`}
+                        >
+                          {category}
+                        </button>
                       ))}
-                    </select>
+                    </div>
                   </div>
                 </div>
                 
