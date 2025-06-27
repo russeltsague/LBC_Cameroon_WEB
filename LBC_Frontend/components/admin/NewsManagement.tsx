@@ -351,7 +351,13 @@ export function NewsManagement() {
                         <button
                           key={category}
                           type="button"
-                          onClick={() => setCurrentForm({ ...currentForm, category })}
+                          onClick={() => {
+                            if (editingNewsId) {
+                              setEditForm({ ...editForm, category });
+                            } else {
+                              setCreateForm({ ...createForm, category });
+                            }
+                          }}
                           className={`px-4 py-2 rounded-lg font-semibold text-sm ${
                             currentForm.category === category
                               ? 'bg-orange-500 text-white'
