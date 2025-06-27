@@ -14,11 +14,9 @@ export const FeaturedSection = () => {
   const [isCategoryOpen, setIsCategoryOpen] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [visibleRows, setVisibleRows] = useState(2)
-  const teamsPerRow = 4
-  const teamsToShow = visibleRows * teamsPerRow
-  const visibleTeams = teams.slice(0, teamsToShow)
-  const canShowMore = teamsToShow < teams.length
+  const [visibleTeamsCount, setVisibleTeamsCount] = useState(6)
+  const visibleTeams = teams.slice(0, visibleTeamsCount)
+  const canShowMore = visibleTeamsCount < teams.length
 
   // Fetch categories on component mount
   useEffect(() => {
@@ -212,7 +210,7 @@ export const FeaturedSection = () => {
         ) : error ? (
           <div className="text-center py-8 sm:py-12 text-red-400">{error}</div>
         ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
           {visibleTeams.map((team, index) => (
             <motion.div
               key={team._id}
@@ -248,20 +246,20 @@ export const FeaturedSection = () => {
               whileInView={{ opacity: 1 }}
             >
               <button
-                onClick={() => setVisibleRows(v => v + 2)}
+                onClick={() => setVisibleTeamsCount(v => v + 6)}
                 className="inline-flex items-center px-6 sm:px-8 py-3 sm:py-4 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-full transition-all duration-300 transform hover:scale-105 text-base md:text-lg"
               >
                 Voir Plus d'Équipes
               </button>
             </motion.div>
           )}
-          {visibleRows > 2 && !loading && !error && (
+          {visibleTeamsCount > 6 && !loading && !error && (
             <motion.div
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
             >
               <button
-                onClick={() => setVisibleRows(2)}
+                onClick={() => setVisibleTeamsCount(6)}
                 className="inline-flex items-center px-6 sm:px-8 py-2 sm:py-3 bg-gray-700 hover:bg-gray-800 text-white font-medium rounded-full transition-all duration-300 transform hover:scale-105 text-base md:text-lg mt-2"
               >
                 Masquer les Équipes
