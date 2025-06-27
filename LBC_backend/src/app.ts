@@ -13,10 +13,11 @@ import { errorHandler } from './middleware/errorHandler';
 const app = express();
 
 // Middleware
-app.use(cors({
-  origin: ['http://localhost:3000','https://lbc-cameroon-web-zeck-2glvwr1f4-russeltsagues-projects.vercel.app/'], // Allow frontend requests
-  credentials: true
-}));
+// app.use(cors({
+//   origin: ['http://localhost:3000','https://lbc-cameroon-web-zeck-2glvwr1f4-russeltsagues-projects.vercel.app/'], // Allow frontend requests
+//   credentials: true
+// }));
+app.use(cors());
 app.use(express.json());
 
 // Routes
