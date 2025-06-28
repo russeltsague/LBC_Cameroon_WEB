@@ -16,13 +16,15 @@ import {
   FiCalendar,
   FiFileText,
   FiAward,
-  FiSettings
+  FiSettings,
+  FiBarChart
 } from 'react-icons/fi'
 
 const adminNavigation = [
   { name: 'Dashboard', href: '/admin', icon: FiHome },
   { name: 'Équipes', href: '/admin/teams', icon: FiUsers },
   { name: 'Calendrier', href: '/admin/calendar', icon: FiCalendar },
+  { name: 'Résultats', href: '/admin/matches', icon: FiBarChart },
   { name: 'Actualités', href: '/admin/news', icon: FiFileText },
   { name: 'Sponsors', href: '/admin/sponsors', icon: FiAward },
   { name: 'Catégories', href: '/admin/categories', icon: FiSettings },
