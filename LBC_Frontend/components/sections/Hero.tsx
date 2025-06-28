@@ -52,8 +52,8 @@ export const HeroSection = () => {
         </motion.div>
 
         <motion.h1 variants={itemVariants} className="text-3xl sm:text-5xl md:text-7xl xl:text-8xl font-bold text-white mb-4 md:mb-6 leading-tight">
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-200">LIGUE DU CENTRE</span><br />
-          DE BASKET DU CAMEROUN
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-200">LIGUE DE BASKETBALL </span><br />
+           DU CENTRE
         </motion.h1>
 
         <motion.p variants={itemVariants} className="text-base sm:text-lg md:text-2xl text-white/90 max-w-2xl md:max-w-4xl mx-auto mb-6 md:mb-10">
@@ -61,20 +61,14 @@ export const HeroSection = () => {
         </motion.p>
 
         <motion.div variants={itemVariants}>
-          <button
-            className="group relative inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 overflow-hidden font-bold text-white rounded-full shadow-2xl bg-gradient-to-br from-orange-500 to-amber-600 hover:to-amber-700 transition-all duration-300 text-base md:text-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
-            onClick={() => {
-              const calendarElement = document.getElementById('calendar');
-              if (calendarElement) {
-                const yOffset = -80;
-                const y = calendarElement.getBoundingClientRect().top + window.pageYOffset + yOffset;
-                window.scrollTo({ top: y, behavior: 'smooth' });
-              }
-            }}
-          >
-            <span className="relative z-10">EXPLORER LA LIGUE</span>
-            <ArrowRightIcon className="ml-3 w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform" />
-          </button>
+          <Link href="/featured">
+            <button
+              className="group relative inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 overflow-hidden font-bold text-white rounded-full shadow-2xl bg-gradient-to-br from-orange-500 to-amber-600 hover:to-amber-700 transition-all duration-300 text-base md:text-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
+            >
+              <span className="relative z-10">EXPLORER LA LIGUE</span>
+              <ArrowRightIcon className="ml-3 w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform" />
+            </button>
+          </Link>
         </motion.div>
       </motion.div>
     </section>

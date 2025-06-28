@@ -107,10 +107,10 @@ export async function deleteTeam(id: string): Promise<void> {
 
 // Category API functions
 export async function getCategories(): Promise<Category[]> {
-  const res = await fetch(`${BASE}/api/categories/active`);
-  if (!res.ok) throw new Error(`Failed to fetch categories: ${res.statusText}`);
-  const data = await res.json();
-  return data.data || [];
+  const res = await fetch(`${BASE}/api/categories/active`)
+  if (!res.ok) throw new Error(`Failed to fetch categories: ${res.statusText}`)
+  const data = await res.json()
+  return data.data || []
 }
 
 export async function getAllCategories(): Promise<Category[]> {

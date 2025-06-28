@@ -90,6 +90,17 @@ export default function Classification({ category: initialCategory }: Classifica
   const hasPoules = currentCategory?.hasPoules || false
   const poules = currentCategory?.poules || []
 
+  // Map new category names to old API names
+  const getApiCategoryName = (categoryName: string): string => {
+    const categoryMapping: { [key: string]: string } = {
+      'DAMES': 'L1 DAME',
+      'L1 MESSIEURS': 'L1 MESSIEUR',
+      'L2A MESSIEURS': 'L2A MESSIEUR',
+      'L2B MESSIEURS': 'L2B MESSIEUR'
+    }
+    return categoryMapping[categoryName] || categoryName
+  }
+
   useEffect(() => {
     const fetchStandings = async () => {
       if (!selectedCategory) return
@@ -98,7 +109,8 @@ export default function Classification({ category: initialCategory }: Classifica
         setLoading(true)
         setError(null)
         
-        let url = `${process.env.NEXT_PUBLIC_API_URL}/api/classifications?category=${encodeURIComponent(selectedCategory)}`
+        const apiCategoryName = getApiCategoryName(selectedCategory)
+        let url = `${process.env.NEXT_PUBLIC_API_URL}/api/classifications?category=${encodeURIComponent(apiCategoryName)}`
         
         // Add poule filter if the category has poules
         if (hasPoules) {
