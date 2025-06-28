@@ -3,7 +3,6 @@ import type { NextPage } from 'next'
 import Head from 'next/head'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { HeroSection } from '@/components/sections/Hero'
-import { FeaturedSection } from '@/components/sections/Featured'
 
 const Home: NextPage = () => {
   const { scrollYProgress } = useScroll()
@@ -26,9 +25,6 @@ const Home: NextPage = () => {
       <main className="relative overflow-hidden">
         {/* 1. Hero Section - First impression */}
         <HeroSection />
-
-        {/* 2. Featured Section - Highlights or important announcements */}
-        <FeaturedSection />
       </main>
     </>
   )
