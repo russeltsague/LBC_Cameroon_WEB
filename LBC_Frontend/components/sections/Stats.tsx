@@ -185,7 +185,7 @@ export const StatsSection = () => {
 
   if (loading) {
     return (
-      <section className="py-10 sm:py-16 md:py-20 bg-gradient-to-b from-gray-800 to-gray-900">
+      <section className="py-6 sm:py-16 md:py-20 bg-gradient-to-b from-gray-800 to-gray-900">
         <div className="container px-4 sm:px-6 md:px-8 mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {[...Array(4)].map((_, index) => (
@@ -207,7 +207,7 @@ export const StatsSection = () => {
 
   if (error) {
     return (
-      <section className="py-10 sm:py-16 md:py-20 bg-gradient-to-b from-gray-800 to-gray-900">
+      <section className="py-6 sm:py-16 md:py-20 bg-gradient-to-b from-gray-800 to-gray-900">
         <div className="container px-4 sm:px-6 md:px-8 mx-auto">
           <div className="text-center text-red-500">
             {error}
@@ -218,7 +218,7 @@ export const StatsSection = () => {
   }
 
   return (
-    <section className="py-10 sm:py-16 md:py-20 bg-gradient-to-b from-gray-800 to-gray-900">
+    <section className="py-6 sm:py-16 md:py-20 bg-gradient-to-b from-gray-800 to-gray-900">
       <div className="container px-4 sm:px-6 md:px-8 mx-auto">
         {/* Category Selection: Dropdown for small/medium, buttons for large+ */}
         <div className="mb-6 md:mb-12">

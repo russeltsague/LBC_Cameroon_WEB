@@ -162,14 +162,14 @@ export default function Classification({ category: initialCategory }: Classifica
 
   if (loading) {
     return (
-      <section id="classification" className="py-24 bg-gray-950">
+      <section id="classification" className="py-6 sm:py-16 md:py-24 bg-gray-950">
         <div className="container px-6 mx-auto">
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="text-center mb-16"
+            className="text-center mb-8 md:mb-16"
           >
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
               Classement de la <span className="text-orange-400">Ligue</span>
@@ -251,14 +251,14 @@ export default function Classification({ category: initialCategory }: Classifica
 
   if (error) {
     return (
-      <section id="classification" className="py-24 bg-gray-950">
+      <section id="classification" className="py-6 sm:py-16 md:py-24 bg-gray-950">
         <div className="container px-6 mx-auto">
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="text-center mb-16"
+            className="text-center mb-8 md:mb-16"
           >
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
               Classement de la <span className="text-orange-400">Ligue</span>
@@ -336,14 +336,14 @@ export default function Classification({ category: initialCategory }: Classifica
   }
 
   return (
-    <section id="classification" className="py-24 bg-gray-950">
+    <section id="classification" className="py-6 sm:py-16 md:py-24 bg-gray-950">
       <div className="container px-6 mx-auto">
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-16"
+          className="text-center mb-8 md:mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
             Classement de la <span className="text-orange-400">Ligue</span>

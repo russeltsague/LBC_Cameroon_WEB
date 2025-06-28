@@ -27,7 +27,7 @@ export const HeroSection = () => {
   }
 
   return (
-    <section className="relative min-h-[70vh] md:min-h-[90vh] flex items-center justify-center overflow-hidden py-16 md:py-24 lg:py-32">
+    <section className="relative min-h-[70vh] md:min-h-[90vh] flex items-center justify-center overflow-hidden py-8 md:py-24 lg:py-32">
       <div className="absolute inset-0 bg-gradient-to-br from-blue-900/90 to-orange-900/80 z-0">
         {/* <Image
           src="/images/hero-court.jpg"

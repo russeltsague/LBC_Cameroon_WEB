@@ -140,14 +140,14 @@ export const CalendarSection = () => {
   }
 
   return (
-    <section id="calendar" className="py-12 sm:py-16 md:py-24 bg-gradient-to-b from-gray-900 to-gray-800">
+    <section id="calendar" className="py-6 sm:py-16 md:py-24 bg-gradient-to-b from-gray-900 to-gray-800">
       <div className="container px-4 sm:px-6 md:px-8 mx-auto">
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-8 md:mb-16"
+          className="text-center mb-4 md:mb-16"
         >
           <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold text-white mb-2 md:mb-4">
             Calendrier des <span className="text-orange-400">Matchs</span>

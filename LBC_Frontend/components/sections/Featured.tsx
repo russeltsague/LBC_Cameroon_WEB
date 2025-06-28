@@ -104,7 +104,7 @@ export const FeaturedSection = () => {
   }, [activeCategory])
 
   return (
-    <section className="py-12 sm:py-16 md:py-20 bg-gray-900 relative overflow-hidden">
+    <section className="py-6 sm:py-16 md:py-20 bg-gray-900 relative overflow-hidden">
       <div className="container px-4 sm:px-6 md:px-8 mx-auto">
         <motion.div 
           initial={{ opacity: 0, y: 30 }}

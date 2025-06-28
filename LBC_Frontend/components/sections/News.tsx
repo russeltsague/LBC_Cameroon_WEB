@@ -79,7 +79,7 @@ export const NewsSection = () => {
   }
 
   return (
-    <section className="py-10 sm:py-16 md:py-20 bg-gray-950">
+    <section className="py-6 sm:py-16 md:py-20 bg-gray-950">
       <div className="container px-4 sm:px-6 md:px-8 mx-auto">
         <motion.div 
           initial={{ opacity: 0, y: 30 }}

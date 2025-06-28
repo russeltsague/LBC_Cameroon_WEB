@@ -5,7 +5,7 @@ import { FiMail, FiTwitter, FiFacebook, FiInstagram } from 'react-icons/fi'
 
 export const CtaSection = () => {
   return (
-    <section className="py-10 sm:py-16 md:py-20 bg-gradient-to-b from-gray-950 to-gray-900">
+    <section className="py-6 sm:py-16 md:py-20 bg-gradient-to-b from-gray-950 to-gray-900">
       <div className="container px-4 sm:px-6 md:px-8 mx-auto">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-12 text-center md:text-left">
           <div className="max-w-4xl mx-auto text-center">

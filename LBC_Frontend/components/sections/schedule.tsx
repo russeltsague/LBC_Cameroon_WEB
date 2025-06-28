@@ -169,14 +169,14 @@ export const ScheduleSection = () => {
   const weekDates = getWeekDates(currentWeek)
 
   return (
-    <section className="py-24 bg-gradient-to-b from-gray-900 to-gray-800">
+    <section className="py-6 sm:py-16 md:py-24 bg-gradient-to-b from-gray-900 to-gray-800">
       <div className="container px-6 mx-auto">
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-16"
+          className="text-center mb-8 md:mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
             Programme <span className="text-orange-400">Hebdomadaire</span>
