@@ -463,11 +463,14 @@ export default function Classification({ category: initialCategory }: Classifica
                     <ChevronUpDownIcon className="ml-1 w-4 h-4" />
                   </div>
                 </th>
+                <th className="px-6 py-4 text-center text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  Points
+                </th>
                 <th 
                   className="px-6 py-4 text-center text-xs font-medium text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-800 transition-colors"
                 >
                   <div className="flex items-center justify-center">
-                    Points
+                    PTS
                     <ChevronUpDownIcon className="ml-1 w-4 h-4" />
                   </div>
                 </th>
@@ -483,12 +486,9 @@ export default function Classification({ category: initialCategory }: Classifica
                   className="px-6 py-4 text-center text-xs font-medium text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-800 transition-colors"
                 >
                   <div className="flex items-center justify-center">
-                    PTS
+                    PTS+
                     <ChevronUpDownIcon className="ml-1 w-4 h-4" />
                   </div>
-                </th>
-                <th className="px-6 py-4 text-center text-xs font-medium text-gray-300 uppercase tracking-wider">
-                  Série
                 </th>
               </tr>
             </thead>
@@ -539,6 +539,9 @@ export default function Classification({ category: initialCategory }: Classifica
                       {team.losses}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-300">
+                      {/* Empty cell - values hidden */}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-300">
                       {team.pointsFor}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-300">
@@ -552,9 +555,6 @@ export default function Classification({ category: initialCategory }: Classifica
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-300">
                       {team.points}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-300">
-                      {/* Empty cell - values hidden */}
                     </td>
                   </motion.tr>
                 ))
