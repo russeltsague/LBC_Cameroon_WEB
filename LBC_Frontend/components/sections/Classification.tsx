@@ -470,7 +470,15 @@ export default function Classification({ category: initialCategory }: Classifica
                   className="px-6 py-4 text-center text-xs font-medium text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-800 transition-colors"
                 >
                   <div className="flex items-center justify-center">
-                    PTS
+                    PTS+
+                    <ChevronUpDownIcon className="ml-1 w-4 h-4" />
+                  </div>
+                </th>
+                <th 
+                  className="px-6 py-4 text-center text-xs font-medium text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-800 transition-colors"
+                >
+                  <div className="flex items-center justify-center">
+                    PTS-
                     <ChevronUpDownIcon className="ml-1 w-4 h-4" />
                   </div>
                 </th>
@@ -479,14 +487,6 @@ export default function Classification({ category: initialCategory }: Classifica
                 >
                   <div className="flex items-center justify-center">
                     Diff
-                    <ChevronUpDownIcon className="ml-1 w-4 h-4" />
-                  </div>
-                </th>
-                <th 
-                  className="px-6 py-4 text-center text-xs font-medium text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-800 transition-colors"
-                >
-                  <div className="flex items-center justify-center">
-                    PTS+
                     <ChevronUpDownIcon className="ml-1 w-4 h-4" />
                   </div>
                 </th>
