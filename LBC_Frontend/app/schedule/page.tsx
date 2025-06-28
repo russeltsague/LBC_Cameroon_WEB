@@ -1,10 +1,14 @@
 'use client'
 import { ScheduleSection } from '@/components/sections/schedule'
+import { Navbar } from '@/components/ui/Navbar'
 
 export default function SchedulePage() {
   return (
-    <main className="min-h-screen">
-      <ScheduleSection />
-    </main>
+    <>
+      <Navbar />
+      <main className="min-h-screen pt-16">
+        <ScheduleSection />
+      </main>
+    </>
   )
 } 

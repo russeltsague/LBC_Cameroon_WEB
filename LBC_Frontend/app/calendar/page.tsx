@@ -1,10 +1,14 @@
 'use client'
 import { CalendarSection } from '@/components/sections/Calendar'
+import { Navbar } from '@/components/ui/Navbar'
 
 export default function CalendarPage() {
   return (
-    <main className="min-h-screen">
-      <CalendarSection />
-    </main>
+    <>
+      <Navbar />
+      <main className="min-h-screen pt-16">
+        <CalendarSection />
+      </main>
+    </>
   )
 } 

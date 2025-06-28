@@ -1,10 +1,14 @@
 'use client'
 import { FeaturedSection } from '@/components/sections/Featured'
+import { Navbar } from '@/components/ui/Navbar'
 
 export default function FeaturedPage() {
   return (
-    <main className="min-h-screen">
-      <FeaturedSection />
-    </main>
+    <>
+      <Navbar />
+      <main className="min-h-screen pt-16">
+        <FeaturedSection />
+      </main>
+    </>
   )
 } 
