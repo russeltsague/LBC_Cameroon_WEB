@@ -4,14 +4,6 @@ import Head from 'next/head'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { HeroSection } from '@/components/sections/Hero'
 import { FeaturedSection } from '@/components/sections/Featured'
-import { StatsSection } from '@/components/sections/Stats'
-import { NewsSection } from '@/components/sections/News'
-import { CalendarSection } from '@/components/sections/Calendar'
-import Classification from '@/components/sections/Classification'
-import { ScheduleSection } from '@/components/sections/schedule'
-// import { TeamsPreviewSection } from '@/components/sections/TeamPreview'
-import { SponsorsSection } from '@/components/sections/Sponsors'
-import { CtaSection } from '@/components/sections/Cta'
 
 const Home: NextPage = () => {
   const { scrollYProgress } = useScroll()
@@ -37,28 +29,6 @@ const Home: NextPage = () => {
 
         {/* 2. Featured Section - Highlights or important announcements */}
         <FeaturedSection />
-
-        {/* 3. Stats Section - League statistics at a glance */}
-        <StatsSection />
-
-        {/* 4. Calendar Section - Upcoming matches */}
-        <CalendarSection />
-
-        {/* 5. Classification Section - Current standings */}
-        <Classification />
-
-        {/* 6. Schedule Section - Weekly matches */}
-        <ScheduleSection />
-
-
-        {/* 8. News Section - Latest updates */}
-        <NewsSection />
-
-        {/* 9. Sponsors Section - Partner recognition */}
-        <SponsorsSection />
-
-        {/* 10. Call-to-Action Section - Newsletter signup or social links */}
-        <CtaSection />
       </main>
     </>
   )
