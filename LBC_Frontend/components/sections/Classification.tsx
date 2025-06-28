@@ -539,7 +539,7 @@ export default function Classification({ category: initialCategory }: Classifica
                       {team.losses}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-300">
-                      {/* Empty cell - values hidden */}
+                      {team.points}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-300">
                       {team.pointsFor}
@@ -554,7 +554,7 @@ export default function Classification({ category: initialCategory }: Classifica
                       {team.pointsDifference > 0 ? '+' : ''}{team.pointsDifference}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-300">
-                      {team.points}
+                      {/* Empty cell - values hidden */}
                     </td>
                   </motion.tr>
                 ))
