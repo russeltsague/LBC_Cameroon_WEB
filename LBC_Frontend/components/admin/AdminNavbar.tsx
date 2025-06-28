@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Bars3Icon, 
@@ -34,6 +34,7 @@ export const AdminNavbar = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const pathname = usePathname()
+  const router = useRouter()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -42,6 +43,12 @@ export const AdminNavbar = () => {
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  const handleLogout = () => {
+    localStorage.removeItem('adminToken')
+    localStorage.removeItem('adminUser')
+    router.push('/admin/login')
+  }
 
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -126,7 +133,10 @@ export const AdminNavbar = () => {
 
           {/* Logout Button */}
           <div className="flex items-center space-x-2">
-            <button className="text-gray-400 hover:text-white flex items-center px-3 py-2 rounded-md hover:bg-gray-800 transition-colors">
+            <button 
+              onClick={handleLogout}
+              className="text-gray-400 hover:text-white flex items-center px-3 py-2 rounded-md hover:bg-gray-800 transition-colors"
+            >
               <FiLogOut className="w-4 h-4 mr-2" />
               <span className="hidden sm:block text-sm font-medium">Déconnexion</span>
             </button>
