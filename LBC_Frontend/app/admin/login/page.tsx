@@ -4,20 +4,21 @@ import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { FiLock, FiUser, FiEye, FiEyeOff, FiArrowLeft } from 'react-icons/fi'
 import Link from 'next/link'
-import { toast } from 'react-hot-toast'
 
 export default function AdminLoginPage() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError('')
     
     if (!username || !password) {
-      toast.error('Please fill in all fields')
+      setError('Please fill in all fields')
       return
     }
 
@@ -39,14 +40,13 @@ export default function AdminLoginPage() {
         localStorage.setItem('adminToken', data.data.token)
         localStorage.setItem('adminUser', JSON.stringify(data.data.user))
         
-        toast.success('Login successful!')
         router.push('/admin')
       } else {
-        toast.error(data.message || 'Login failed')
+        setError(data.message || 'Login failed')
       }
     } catch (error) {
       console.error('Login error:', error)
-      toast.error('Network error. Please try again.')
+      setError('Network error. Please try again.')
     } finally {
       setIsLoading(false)
     }
@@ -79,6 +79,13 @@ export default function AdminLoginPage() {
             <h1 className="text-2xl font-bold text-white mb-2">Admin Access</h1>
             <p className="text-gray-400">Sign in to access the admin dashboard</p>
           </div>
+
+          {/* Error Message */}
+          {error && (
+            <div className="mb-6 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
+              <p className="text-red-400 text-sm">{error}</p>
+            </div>
+          )}
 
           {/* Login Form */}
           <form onSubmit={handleSubmit} className="space-y-6">

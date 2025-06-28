@@ -1,8 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { FiLoader } from 'react-icons/fi'
 
 interface AuthGuardProps {
   children: React.ReactNode
@@ -12,6 +11,12 @@ export const AuthGuard = ({ children }: AuthGuardProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
+  const pathname = usePathname()
+
+  // Skip authentication for login page
+  if (pathname === '/admin/login') {
+    return <>{children}</>
+  }
 
   useEffect(() => {
     const checkAuth = async () => {
