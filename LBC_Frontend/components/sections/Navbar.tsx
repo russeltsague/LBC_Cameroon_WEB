@@ -40,7 +40,7 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
-            <div className="w-9 h-9 bg-orange-500 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">LBC</span>
             </div>
             <span className="text-white font-bold text-lg">LBC Cameroon</span>

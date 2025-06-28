@@ -487,6 +487,9 @@ export default function Classification({ category: initialCategory }: Classifica
                     <ChevronUpDownIcon className="ml-1 w-4 h-4" />
                   </div>
                 </th>
+                <th className="px-6 py-4 text-center text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  Série
+                </th>
               </tr>
             </thead>
             
@@ -550,11 +553,14 @@ export default function Classification({ category: initialCategory }: Classifica
                     <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-300">
                       {team.points}
                     </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-300">
+                      {/* Empty cell - values hidden */}
+                    </td>
                   </motion.tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={8} className="px-6 py-8 text-center text-gray-400">
+                  <td colSpan={9} className="px-6 py-8 text-center text-gray-400">
                     {hasPoules 
                       ? `Aucune équipe trouvée pour ${selectedCategory} - Poule ${selectedPoule}`
                       : `Aucune équipe trouvée pour ${selectedCategory}`
