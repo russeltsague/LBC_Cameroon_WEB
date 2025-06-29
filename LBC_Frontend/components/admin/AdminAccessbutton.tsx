@@ -27,12 +27,21 @@ export default function AdminAccessButton() {
   }, [])
 
   const handleLogout = () => {
+    // Clear all authentication data
     localStorage.removeItem('adminToken')
     localStorage.removeItem('adminUser')
+    
+    // Clear any session storage if used
+    sessionStorage.removeItem('adminToken')
+    sessionStorage.removeItem('adminUser')
+    
+    // Reset component state
     setIsAuthenticated(false)
     setAdminUser(null)
     setShowPanel(false)
-    router.push('/')
+    
+    // Force a page reload to clear any cached state
+    window.location.href = '/'
   }
 
   return (

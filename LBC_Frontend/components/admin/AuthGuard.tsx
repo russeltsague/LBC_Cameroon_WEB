@@ -13,11 +13,6 @@ export const AuthGuard = ({ children }: AuthGuardProps) => {
   const router = useRouter()
   const pathname = usePathname()
 
-  // Skip authentication for login page
-  if (pathname === '/admin/login') {
-    return <>{children}</>
-  }
-
   useEffect(() => {
     const checkAuth = async () => {
       const token = localStorage.getItem('adminToken')
@@ -62,6 +57,10 @@ export const AuthGuard = ({ children }: AuthGuardProps) => {
 
     checkAuth()
   }, [router])
+
+  if (pathname === '/admin/login') {
+    return <>{children}</>
+  }
 
   if (isLoading) {
     return (

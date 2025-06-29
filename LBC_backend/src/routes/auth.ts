@@ -10,17 +10,19 @@ interface AuthRequest extends Request {
 }
 
 // Middleware to verify JWT token
-export const authenticateToken = (req: AuthRequest, res: Response, next: NextFunction) => {
+export const authenticateToken = (req: AuthRequest, res: Response, next: NextFunction): void => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
 
   if (!token) {
-    return res.status(401).json({ success: false, message: 'Access token required' });
+    res.status(401).json({ success: false, message: 'Access token required' });
+    return;
   }
 
   jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key', (err: any, user: any) => {
     if (err) {
-      return res.status(403).json({ success: false, message: 'Invalid or expired token' });
+      res.status(403).json({ success: false, message: 'Invalid or expired token' });
+      return;
     }
     req.user = user;
     next();
@@ -28,17 +30,18 @@ export const authenticateToken = (req: AuthRequest, res: Response, next: NextFun
 };
 
 // Register new admin user
-router.post('/register', async (req: Request, res: Response) => {
+router.post('/register', async (req: Request, res: Response): Promise<void> => {
   try {
     const { username, password } = req.body;
 
     // Check if user already exists
     const existingUser = await AdminUser.findOne({ username });
     if (existingUser) {
-      return res.status(400).json({ 
+      res.status(400).json({ 
         success: false, 
         message: 'Username already exists' 
       });
+      return;
     }
 
     // Create new admin user
@@ -73,26 +76,28 @@ router.post('/register', async (req: Request, res: Response) => {
 });
 
 // Login admin user
-router.post('/login', async (req: Request, res: Response) => {
+router.post('/login', async (req: Request, res: Response): Promise<void> => {
   try {
     const { username, password } = req.body;
 
     // Find user by username
     const adminUser = await AdminUser.findOne({ username });
     if (!adminUser) {
-      return res.status(401).json({ 
+      res.status(401).json({ 
         success: false, 
         message: 'Invalid credentials' 
       });
+      return;
     }
 
     // Check password
     const isPasswordValid = await adminUser.comparePassword(password);
     if (!isPasswordValid) {
-      return res.status(401).json({ 
+      res.status(401).json({ 
         success: false, 
         message: 'Invalid credentials' 
       });
+      return;
     }
 
     // Generate JWT token
@@ -123,7 +128,7 @@ router.post('/login', async (req: Request, res: Response) => {
 });
 
 // Verify token
-router.get('/verify', authenticateToken, (req: AuthRequest, res: Response) => {
+router.get('/verify', authenticateToken, (req: AuthRequest, res: Response): void => {
   res.json({
     success: true,
     message: 'Token is valid',

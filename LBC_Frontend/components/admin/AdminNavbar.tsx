@@ -45,9 +45,16 @@ export const AdminNavbar = () => {
   }, [])
 
   const handleLogout = () => {
+    // Clear all authentication data
     localStorage.removeItem('adminToken')
     localStorage.removeItem('adminUser')
-    router.push('/admin/login')
+    
+    // Clear any session storage if used
+    sessionStorage.removeItem('adminToken')
+    sessionStorage.removeItem('adminUser')
+    
+    // Force a page reload to clear any cached state
+    window.location.href = '/admin/login'
   }
 
   return (
