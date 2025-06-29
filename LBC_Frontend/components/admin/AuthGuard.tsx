@@ -21,7 +21,9 @@ export const AuthGuard = ({ children }: AuthGuardProps) => {
       if (!token || !user) {
         setIsAuthenticated(false)
         setIsLoading(false)
-        router.push('/admin/login')
+        if (pathname !== '/admin/login') {
+          router.push('/admin/login')
+        }
         return
       }
 
@@ -41,7 +43,9 @@ export const AuthGuard = ({ children }: AuthGuardProps) => {
           localStorage.removeItem('adminToken')
           localStorage.removeItem('adminUser')
           setIsAuthenticated(false)
-          router.push('/admin/login')
+          if (pathname !== '/admin/login') {
+            router.push('/admin/login')
+          }
         }
       } catch (error) {
         console.error('Auth verification error:', error)
@@ -49,19 +53,26 @@ export const AuthGuard = ({ children }: AuthGuardProps) => {
         localStorage.removeItem('adminToken')
         localStorage.removeItem('adminUser')
         setIsAuthenticated(false)
-        router.push('/admin/login')
+        if (pathname !== '/admin/login') {
+          router.push('/admin/login')
+        }
       } finally {
         setIsLoading(false)
       }
     }
 
-    checkAuth()
-  }, [router])
+    // Add a small delay to allow localStorage to be updated after login
+    const timer = setTimeout(checkAuth, 100)
+    
+    return () => clearTimeout(timer)
+  }, [router, pathname])
 
+  // Skip authentication for login page
   if (pathname === '/admin/login') {
     return <>{children}</>
   }
 
+  // Show loading state while checking authentication
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-950 flex items-center justify-center">
@@ -77,9 +88,22 @@ export const AuthGuard = ({ children }: AuthGuardProps) => {
     )
   }
 
+  // If not authenticated, show loading while redirecting
   if (!isAuthenticated) {
-    return null // Will redirect to login
+    return (
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-center"
+        >
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+          <p className="text-gray-400">Redirecting to login...</p>
+        </motion.div>
+      </div>
+    )
   }
 
+  // If authenticated, render children
   return <>{children}</>
 } 

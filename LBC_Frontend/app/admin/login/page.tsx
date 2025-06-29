@@ -40,7 +40,10 @@ export default function AdminLoginPage() {
         localStorage.setItem('adminToken', data.data.token)
         localStorage.setItem('adminUser', JSON.stringify(data.data.user))
         
-        router.push('/admin')
+        // Add a small delay to ensure localStorage is updated before redirect
+        setTimeout(() => {
+          router.push('/admin')
+        }, 100)
       } else {
         setError(data.message || 'Login failed')
       }
