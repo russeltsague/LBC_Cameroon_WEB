@@ -69,8 +69,8 @@ export const DashboardCards = () => {
       setError(null)
 
       // Build URLs with poule filter if applicable
-      let matchesUrl = `http://localhost:5000/api/matches?category=${encodeURIComponent(selectedCategory)}`
-      let teamsUrl = `http://localhost:5000/api/teams?category=${encodeURIComponent(selectedCategory)}`
+      let matchesUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/matches?category=${encodeURIComponent(selectedCategory)}`
+      let teamsUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/teams?category=${encodeURIComponent(selectedCategory)}`
       
       if (hasPoules) {
         matchesUrl += `&poule=${selectedPoule}`

@@ -54,7 +54,7 @@ export interface Sponsor {
   updatedAt: string;
 }
 
-const BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const BASE = process.env.NEXT_PUBLIC_API_URL ;
 
 // Helper function to get auth headers
 function getAuthHeaders(): HeadersInit {
