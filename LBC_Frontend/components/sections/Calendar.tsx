@@ -26,6 +26,8 @@ type Match = {
   category: string
   venue: string
   status: 'completed' | 'upcoming' | 'live'
+  journee?: number
+  exemptTeam?: string
 }
 
 export const CalendarSection = () => {
@@ -37,6 +39,7 @@ export const CalendarSection = () => {
   const [matches, setMatches] = useState<Match[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [selectedJournee, setSelectedJournee] = useState<number | null>(null);
 
   // Show more/hide logic for matches
   const [visibleRows, setVisibleRows] = useState(2)
@@ -46,6 +49,11 @@ export const CalendarSection = () => {
   const matchesToShow = visibleRows * matchesPerRow
   const visibleMatches = sortedMatches.slice(0, matchesToShow)
   const canShowMore = matchesToShow < sortedMatches.length
+
+  // Compute available journees from matches
+  const journees = Array.from(new Set(matches.map(m => m.journee).filter(j => j != null))).sort((a, b) => Number(a) - Number(b));
+  // Filter matches by selected journee
+  const filteredMatches = selectedJournee ? matches.filter(m => m.journee === selectedJournee) : matches;
 
   // Fetch categories on component mount
   useEffect(() => {
@@ -228,12 +236,39 @@ export const CalendarSection = () => {
           </div>
         )}
 
+        {/* Journee Selector Buttons */}
+        {journees.length > 0 && (
+          <div className="flex flex-wrap justify-center gap-2 mb-8">
+            {journees.map(j => (
+              <button
+                key={j}
+                onClick={() => setSelectedJournee(j)}
+                className={`px-4 py-2 rounded-lg font-semibold border transition-colors duration-150
+                  ${selectedJournee === j ? 'bg-orange-500 text-white border-orange-500 shadow-lg' : 'bg-gray-800 text-gray-300 border-gray-700 hover:bg-orange-400 hover:text-white'}`}
+              >
+                {j}{j === 1 ? 'ère' : 'ème'} journée
+              </button>
+            ))}
+            {selectedJournee && (
+              <button
+                onClick={() => setSelectedJournee(null)}
+                className="px-4 py-2 rounded-lg font-semibold border border-gray-700 bg-gray-700 text-white ml-2"
+              >
+                Afficher tout
+              </button>
+            )}
+          </div>
+        )}
+
         {/* Current Selection Display */}
         <div className="text-center mb-8">
           <h3 className="text-2xl font-bold text-white">
             {activeCategory}
             {hasPoules && (
               <span className="text-blue-400 ml-2">- Poule {selectedPoule}</span>
+            )}
+            {selectedJournee && (
+              <span className="text-orange-400 ml-2">- {selectedJournee}{selectedJournee === 1 ? 'ère' : 'ème'} journée</span>
             )}
           </h3>
         </div>
@@ -246,55 +281,73 @@ export const CalendarSection = () => {
           </div>
         ) : error ? (
           <div className="text-center py-12 text-red-400">{error}</div>
-        ) : matches.length > 0 ? (
-          <>
-            <motion.div 
-              layout
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 max-w-4xl mx-auto"
-            >
-              {visibleMatches.map(match => (
-                <MatchCard 
-                  key={match._id}
-                  match={{
-                    id: match._id,
-                    date: match.date,
-                    time: match.time,
-                    homeTeam: getTeamName(match.homeTeam),
-                    awayTeam: getTeamName(match.awayTeam),
-                    homeScore: match.homeScore,
-                    awayScore: match.awayScore,
-                    venue: match.venue,
-                    status: match.status
-                  }}
-                  isExpanded={expandedMatch === match._id}
-                  onExpand={() => setExpandedMatch(expandedMatch === match._id ? null : match._id)}
-                  formatDate={formatDate}
-                />
+        ) : filteredMatches.length > 0 ? (
+          <div className="space-y-12 max-w-4xl mx-auto">
+            {Object.entries(
+              filteredMatches.reduce((acc, match) => {
+                const journee = match.journee || 1;
+                if (!acc[journee]) acc[journee] = [];
+                acc[journee].push(match);
+                return acc;
+              }, {} as Record<number, typeof matches>)
+            )
+              .sort((a, b) => Number(a[0]) - Number(b[0]))
+              .map(([journee, journeeMatches]) => (
+                <div key={journee} className="bg-gray-900 rounded-2xl border border-gray-800 shadow-lg overflow-hidden">
+                  <div className="bg-gray-800/90 px-4 py-3 text-xl font-bold text-orange-400 border-b border-gray-700 rounded-t-2xl sticky top-0 z-10">
+                    {journee}{journee === '1' ? 'ère' : 'ème'} journée
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-700">
+                      <thead className="bg-gray-800/80 sticky top-0 z-10">
+                        <tr>
+                          <th className="px-4 py-3 text-xs font-bold text-gray-300 uppercase tracking-wider text-center rounded-tl-2xl">N°</th>
+                          <th className="px-4 py-3 text-xs font-bold text-gray-300 uppercase tracking-wider text-center">Rencontres</th>
+                          <th className="px-4 py-3 text-xs font-bold text-gray-300 uppercase tracking-wider text-center rounded-tr-2xl">Scores</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {journeeMatches
+                          .sort((a, b) => a._id.localeCompare(b._id))
+                          .map((match, idx) => (
+                          <tr key={match._id} className={
+                            `transition-colors ${idx % 2 === 0 ? 'bg-gray-900' : 'bg-gray-800/60'} hover:bg-orange-100/10`
+                          }>
+                            <td className="px-4 py-3 text-gray-200 text-center font-semibold text-base">{idx + 1}</td>
+                            <td className="px-4 py-3 text-center">
+                              <span className="font-bold text-white bg-gray-700/40 px-2 py-1 rounded-lg shadow-sm">
+                                {getTeamName(match.homeTeam)}
+                              </span>
+                              <span className="mx-2 text-orange-400 font-extrabold text-lg align-middle">vs</span>
+                              <span className="font-bold text-white bg-gray-700/40 px-2 py-1 rounded-lg shadow-sm">
+                                {getTeamName(match.awayTeam)}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3 text-center">
+                              {match.status === 'completed' ? (
+                                <span className="font-bold text-orange-400 text-lg bg-gray-800/60 px-3 py-1 rounded-lg shadow">
+                                  {match.homeScore} <span className="text-gray-400">#</span> {match.awayScore}
+                                </span>
+                              ) : (
+                                <span className="text-gray-500 text-base">-</span>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                        {/* Optional: EXEMPT row if you have that info, e.g. journeeMatches[0].exemptTeam */}
+                        {journeeMatches[0] && journeeMatches[0].exemptTeam && (
+                          <tr>
+                            <td colSpan={3} className="px-4 py-3 text-center bg-gray-800 text-orange-300 font-semibold rounded-b-2xl">
+                              EXEMPT : {journeeMatches[0].exemptTeam}
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
               ))}
-            </motion.div>
-            <div className="text-center mt-10 md:mt-16 flex flex-col items-center gap-4">
-              {canShowMore && (
-                <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}>
-                  <button
-                    onClick={() => setVisibleRows(v => v + 2)}
-                    className="inline-flex items-center px-6 sm:px-8 py-3 sm:py-4 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-full transition-all duration-300 transform hover:scale-105 text-base md:text-lg"
-                  >
-                    Voir Plus de Matchs
-                  </button>
-                </motion.div>
-              )}
-              {visibleRows > 2 && (
-                <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}>
-                  <button
-                    onClick={() => setVisibleRows(2)}
-                    className="inline-flex items-center px-6 sm:px-8 py-2 sm:py-3 bg-gray-700 hover:bg-gray-800 text-white font-medium rounded-full transition-all duration-300 transform hover:scale-105 text-base md:text-lg mt-2"
-                  >
-                    Masquer les Matchs
-                  </button>
-                </motion.div>
-              )}
-            </div>
-          </>
+          </div>
         ) : (
           <motion.div
             initial={{ opacity: 0 }}
