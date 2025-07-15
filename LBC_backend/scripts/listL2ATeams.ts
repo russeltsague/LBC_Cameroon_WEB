@@ -5,7 +5,7 @@ dotenv.config();
 
 async function listTeams() {
   await mongoose.connect(process.env.MONGO_URI!);
-  const teams = await Team.find({ category: 'L2A MESSIEUR' });
+  const teams = await Team.find({ category: 'U18 GARCONS', poule: 'A' });
   teams.forEach(team => {
     console.log(`Name: "${team.name}", Poule: "${team.poule || ''}"`);
   });
