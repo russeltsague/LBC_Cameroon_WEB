@@ -276,7 +276,7 @@ export const ScheduleSection = () => {
             <ChevronLeftIcon className="w-5 h-5 text-white" />
           </button>
           
-          <h3 className="text-xl font-bold text-white">
+          <h3 className="text-base md:text-lg font-bold text-white text-center w-full">
             Semaine du {formatDate(weekDates.startOfWeek.toISOString())} au {formatDate(weekDates.endOfWeek.toISOString())}
           </h3>
           

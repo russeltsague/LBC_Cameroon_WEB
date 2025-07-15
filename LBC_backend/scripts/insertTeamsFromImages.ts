@@ -57,6 +57,7 @@ const teams = [
   { name: 'JOAKIM BB', category: 'U18 GARCONS', poule: 'A' },
   { name: 'EAST BASKET', category: 'U18 GARCONS', poule: 'A' },
   { name: 'FALCONS', category: 'U18 GARCONS', poule: 'A' },
+  { name: 'ETOUDI', category: 'U18 GARCONS', poule: 'A' },
 
   // U18 GARCONS - POULE B
   { name: 'ALPH1', category: 'U18 GARCONS', poule: 'B' },

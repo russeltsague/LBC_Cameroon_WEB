@@ -3,7 +3,7 @@ import type { NextPage } from 'next'
 import Head from 'next/head'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { HeroSection } from '@/components/sections/Hero'
-import { Navbar } from '@/components/ui/Navbar'
+// import { Navbar } from '@/components/ui/Navbar'
 
 const Home: NextPage = () => {
   const { scrollYProgress } = useScroll()
@@ -17,7 +17,7 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Navbar />
+      {/* <Navbar /> */}
 
       {/* Transparent overlay that fades on scroll */}
       <motion.div 

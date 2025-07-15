@@ -286,13 +286,13 @@ export const StatsSection = () => {
         <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-orange-400 mb-8 text-center drop-shadow-lg tracking-wide uppercase">Statistics</h2>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 gap-4 max-w-md mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
           {statItems.map((stat, index) => (
-            <div key={stat.id} className="bg-gray-900 rounded-lg p-6 border border-gray-800 flex items-center shadow-md">
-              <stat.icon className="w-8 h-8 text-orange-400 mr-4" />
-              <div className="flex-1">
-                <div className="text-2xl font-bold text-white mb-1">{stat.value}</div>
-                <div className="text-sm text-gray-400">{stat.name}</div>
+            <div key={stat.id} className="bg-gray-900 rounded-2xl p-10 border border-gray-800 flex flex-col items-center justify-center shadow-lg w-full h-full min-h-[180px]">
+              <stat.icon className="w-14 h-14 text-orange-400 mb-4" />
+              <div className="flex-1 flex flex-col items-center justify-center">
+                <div className="text-4xl font-extrabold text-white mb-2">{stat.value}</div>
+                <div className="text-lg text-gray-400 font-semibold text-center">{stat.name}</div>
               </div>
             </div>
           ))}

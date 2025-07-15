@@ -29,10 +29,7 @@ export const MatchCard = ({ match, isExpanded, onExpand, formatDate }: MatchCard
       transition={{ duration: 0.4 }}
       className="bg-gray-800/50 backdrop-blur-sm rounded-xl overflow-hidden border border-gray-700/50 hover:border-orange-500/30 transition-colors"
     >
-      <button
-        onClick={onExpand}
-        className="w-full p-3 text-left flex items-center justify-between"
-      >
+      <div className="w-full p-3 text-left flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <div className={`p-3 rounded-lg ${match.status === 'completed' ? 'bg-green-500/10 text-green-400' : match.status === 'live' ? 'bg-red-500/10 text-red-400' : 'bg-gray-700 text-gray-400'}`}>
             <CalendarIcon className="w-4 h-4" />
@@ -73,54 +70,7 @@ export const MatchCard = ({ match, isExpanded, onExpand, formatDate }: MatchCard
             Upcoming
           </div>
         )}
-      </button>
-
-      <AnimatePresence>
-        {isExpanded && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
-            className="px-6 pb-6"
-          >
-            <div className="pt-4 border-t border-gray-700/50">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <h4 className="text-sm font-semibold text-gray-400 mb-2 flex items-center">
-                    <UsersIcon className="w-4 h-4 mr-2" />
-                    TEAM STATS
-                  </h4>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-gray-700/50 p-3 rounded-lg">
-                      <p className="text-xs text-gray-400">Field Goals</p>
-                      <p className="text-white font-medium">45% - 38%</p>
-                    </div>
-                    <div className="bg-gray-700/50 p-3 rounded-lg">
-                      <p className="text-xs text-gray-400">3-Pointers</p>
-                      <p className="text-white font-medium">32% - 28%</p>
-                    </div>
-                  </div>
-                </div>
-                <div>
-                  <h4 className="text-sm font-semibold text-gray-400 mb-2 flex items-center">
-                    <MapPinIcon className="w-4 h-4 mr-2" />
-                    VENUE DETAILS
-                  </h4>
-                  <p className="text-white">{match.venue}</p>
-                  <button className="mt-3 text-orange-400 hover:text-orange-300 text-sm font-medium flex items-center">
-                    View venue information
-                    {/* <ChevronDownIcon className="ml-2 w-4 h-4 transform rotate-90" /> */}
-                  </button>
-                </div>
-              </div>
-              <button className="mt-6 w-full bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded-lg transition-colors">
-                View full match details
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      </div>
     </motion.div>
   )
 }

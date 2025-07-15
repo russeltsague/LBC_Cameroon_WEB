@@ -106,6 +106,13 @@ export const CalendarSection = () => {
     setSelectedPoule('A')
   }, [activeCategory])
 
+  // Set selectedJournee to first available when matches change
+  useEffect(() => {
+    if (journees.length > 0) {
+      setSelectedJournee(journees[0]);
+    }
+  }, [JSON.stringify(journees)]);
+
   const fetchMatches = async () => {
     setLoading(true)
     setError(null)
@@ -149,7 +156,7 @@ export const CalendarSection = () => {
 
   return (
     <section id="calendar" className="py-6 sm:py-16 md:py-24 bg-gradient-to-b from-gray-900 to-gray-800">
-      <div className="container px-4 sm:px-6 md:px-8 mx-auto">
+      <div className="container px-2 sm:px-4 md:px-8 mx-auto">
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -236,27 +243,32 @@ export const CalendarSection = () => {
           </div>
         )}
 
-        {/* Journee Selector Buttons */}
-        {journees.length > 0 && (
-          <div className="flex flex-wrap justify-center gap-2 mb-8">
-            {journees.map(j => (
-              <button
-                key={j}
-                onClick={() => setSelectedJournee(j)}
-                className={`px-4 py-2 rounded-lg font-semibold border transition-colors duration-150
-                  ${selectedJournee === j ? 'bg-orange-500 text-white border-orange-500 shadow-lg' : 'bg-gray-800 text-gray-300 border-gray-700 hover:bg-orange-400 hover:text-white'}`}
-              >
-                {j}{j === 1 ? 'ère' : 'ème'} journée
-              </button>
-            ))}
-            {selectedJournee && (
-              <button
-                onClick={() => setSelectedJournee(null)}
-                className="px-4 py-2 rounded-lg font-semibold border border-gray-700 bg-gray-700 text-white ml-2"
-              >
-                Afficher tout
-              </button>
-            )}
+        {/* Journee Selector Navigation */}
+        {journees.length > 0 && selectedJournee !== null && (
+          <div className="flex justify-center items-center gap-4 mb-8">
+            <button
+              onClick={() => {
+                const idx = journees.indexOf(selectedJournee);
+                if (idx > 0) setSelectedJournee(journees[idx - 1]);
+              }}
+              disabled={journees.length <= 1 || journees.indexOf(selectedJournee) === 0}
+              className={`px-4 py-2 rounded-lg font-semibold border transition-colors duration-150 bg-gray-800 text-gray-300 border-gray-700 hover:bg-orange-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed`}
+            >
+              Précédent
+            </button>
+            <span className="text-lg font-bold text-orange-400 min-w-[120px] text-center">
+              {selectedJournee}{selectedJournee === 1 ? 'ère' : 'ème'} journée
+            </span>
+            <button
+              onClick={() => {
+                const idx = journees.indexOf(selectedJournee);
+                if (idx < journees.length - 1) setSelectedJournee(journees[idx + 1]);
+              }}
+              disabled={journees.length <= 1 || journees.indexOf(selectedJournee) === journees.length - 1}
+              className={`px-4 py-2 rounded-lg font-semibold border transition-colors duration-150 bg-gray-800 text-gray-300 border-gray-700 hover:bg-orange-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed`}
+            >
+              Suivant
+            </button>
           </div>
         )}
 
@@ -282,7 +294,7 @@ export const CalendarSection = () => {
         ) : error ? (
           <div className="text-center py-12 text-red-400">{error}</div>
         ) : filteredMatches.length > 0 ? (
-          <div className="space-y-12 max-w-4xl mx-auto">
+          <div className="space-y-12 w-full">
             {Object.entries(
               filteredMatches.reduce((acc, match) => {
                 const journee = match.journee || 1;
@@ -293,17 +305,17 @@ export const CalendarSection = () => {
             )
               .sort((a, b) => Number(a[0]) - Number(b[0]))
               .map(([journee, journeeMatches]) => (
-                <div key={journee} className="bg-gray-900 rounded-2xl border border-gray-800 shadow-lg overflow-hidden">
-                  <div className="bg-gray-800/90 px-4 py-3 text-xl font-bold text-orange-400 border-b border-gray-700 rounded-t-2xl sticky top-0 z-10">
+                <div key={journee} className="bg-gray-900 rounded-2xl border border-gray-800 shadow-lg w-full overflow-x-auto relative">
+                  <div className="bg-gray-800/90 px-2 sm:px-4 py-3 text-base sm:text-xl font-bold text-orange-400 border-b border-gray-700 rounded-t-2xl sticky top-0 z-10">
                     {journee}{journee === '1' ? 'ère' : 'ème'} journée
                   </div>
-                  <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-700">
+                  <div className="overflow-x-auto w-full">
+                    <table className="w-full min-w-[420px] sm:min-w-full divide-y divide-gray-700 text-xs sm:text-sm md:text-base">
                       <thead className="bg-gray-800/80 sticky top-0 z-10">
                         <tr>
-                          <th className="px-4 py-3 text-xs font-bold text-gray-300 uppercase tracking-wider text-center rounded-tl-2xl">N°</th>
-                          <th className="px-4 py-3 text-xs font-bold text-gray-300 uppercase tracking-wider text-center">Rencontres</th>
-                          <th className="px-4 py-3 text-xs font-bold text-gray-300 uppercase tracking-wider text-center rounded-tr-2xl">Scores</th>
+                          <th className="px-2 sm:px-4 py-2 sm:py-3 text-xs font-bold text-gray-300 uppercase tracking-wider text-center rounded-tl-2xl">N°</th>
+                          <th className="px-2 sm:px-4 py-2 sm:py-3 text-xs font-bold text-gray-300 uppercase tracking-wider text-center">Rencontres</th>
+                          <th className="px-2 sm:px-4 py-2 sm:py-3 text-xs font-bold text-gray-300 uppercase tracking-wider text-center rounded-tr-2xl">Scores</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -313,23 +325,23 @@ export const CalendarSection = () => {
                           <tr key={match._id} className={
                             `transition-colors ${idx % 2 === 0 ? 'bg-gray-900' : 'bg-gray-800/60'} hover:bg-orange-100/10`
                           }>
-                            <td className="px-4 py-3 text-gray-200 text-center font-semibold text-base">{idx + 1}</td>
-                            <td className="px-4 py-3 text-center">
-                              <span className="font-bold text-white bg-gray-700/40 px-2 py-1 rounded-lg shadow-sm">
+                            <td className="px-2 sm:px-4 py-2 sm:py-3 text-gray-200 text-center font-semibold text-xs sm:text-base">{idx + 1}</td>
+                            <td className="px-2 sm:px-4 py-2 sm:py-3 text-center">
+                              <span className="font-bold text-white bg-gray-700/40 px-1 sm:px-2 py-1 rounded-lg shadow-sm text-xs sm:text-base">
                                 {getTeamName(match.homeTeam)}
                               </span>
-                              <span className="mx-2 text-orange-400 font-extrabold text-lg align-middle">vs</span>
-                              <span className="font-bold text-white bg-gray-700/40 px-2 py-1 rounded-lg shadow-sm">
+                              <span className="mx-1 sm:mx-2 text-orange-400 font-extrabold text-sm sm:text-lg align-middle">vs</span>
+                              <span className="font-bold text-white bg-gray-700/40 px-1 sm:px-2 py-1 rounded-lg shadow-sm text-xs sm:text-base">
                                 {getTeamName(match.awayTeam)}
                               </span>
                             </td>
-                            <td className="px-4 py-3 text-center">
+                            <td className="px-2 sm:px-4 py-2 sm:py-3 text-center">
                               {match.status === 'completed' ? (
-                                <span className="font-bold text-orange-400 text-lg bg-gray-800/60 px-3 py-1 rounded-lg shadow">
+                                <span className="font-bold text-orange-400 text-sm sm:text-lg bg-gray-800/60 px-2 sm:px-3 py-1 rounded-lg shadow">
                                   {match.homeScore} <span className="text-gray-400">#</span> {match.awayScore}
                                 </span>
                               ) : (
-                                <span className="text-gray-500 text-base">-</span>
+                                <span className="text-gray-500 text-xs sm:text-base">-</span>
                               )}
                             </td>
                           </tr>
@@ -337,13 +349,15 @@ export const CalendarSection = () => {
                         {/* Optional: EXEMPT row if you have that info, e.g. journeeMatches[0].exemptTeam */}
                         {journeeMatches[0] && journeeMatches[0].exemptTeam && (
                           <tr>
-                            <td colSpan={3} className="px-4 py-3 text-center bg-gray-800 text-orange-300 font-semibold rounded-b-2xl">
+                            <td colSpan={3} className="px-2 sm:px-4 py-2 sm:py-3 text-center bg-gray-800 text-orange-300 font-semibold rounded-b-2xl text-xs sm:text-base">
                               EXEMPT : {journeeMatches[0].exemptTeam}
                             </td>
                           </tr>
                         )}
                       </tbody>
                     </table>
+                    {/* Fade for scroll cue */}
+                    <div className="pointer-events-none absolute top-0 right-0 h-full w-8 bg-gradient-to-l from-gray-900/90 to-transparent hidden sm:block" />
                   </div>
                 </div>
               ))}

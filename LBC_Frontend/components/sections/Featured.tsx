@@ -104,8 +104,8 @@ export const FeaturedSection = () => {
   }, [activeCategory])
 
   return (
-    <section className="py-6 sm:py-16 md:py-20 bg-gray-900 relative overflow-hidden">
-      <div className="container px-4 sm:px-6 md:px-8 mx-auto">
+    <section className="py-4 sm:py-10 md:py-20 bg-gray-900 relative overflow-hidden">
+      <div className="container px-2 sm:px-4 md:px-8 mx-auto">
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -210,17 +210,9 @@ export const FeaturedSection = () => {
         ) : error ? (
           <div className="text-center py-8 sm:py-12 text-red-400">{error}</div>
         ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
-          {visibleTeams.map((team, index) => (
-            <motion.div
-              key={team._id}
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-            >
-                <TeamCard {...team} id={team._id} />
-            </motion.div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-6 md:gap-8 mt-6">
+          {visibleTeams.map((team) => (
+            <TeamCard key={team._id} team={team} />
           ))}
         </div>
         )}

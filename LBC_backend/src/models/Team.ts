@@ -37,7 +37,8 @@ const TeamSchema: Schema = new Schema({
         'U18 GARCONS',
         'U18 FILLES',
         'VETERANS',
-        'CORPORATES'
+        'CORPORATES',
+        'DAMES'
       ],
       message: '{VALUE} is not a valid category',
     },

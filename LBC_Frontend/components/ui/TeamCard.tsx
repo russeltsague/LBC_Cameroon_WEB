@@ -29,9 +29,9 @@ export function TeamCard({ id, name, city, logo, category }: TeamCardProps) {
 
       {/* Team details */}
       <div className="p-3 sm:p-4">
-        <div className="flex justify-between items-start mb-2">
-          <h3 className="text-sm sm:text-xl font-bold text-white truncate flex-1 mr-2">{name}</h3>
-          <span className="text-xs bg-blue-500 text-white px-2 py-1 rounded flex-shrink-0">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-2 gap-1 sm:gap-0">
+          <h3 className="text-base sm:text-xl font-bold text-white truncate flex-1 mr-0 sm:mr-2 mb-1 sm:mb-0">{name}</h3>
+          <span className="text-xs bg-blue-500 text-white px-2 py-1 rounded self-start sm:self-auto">
             {category}
           </span>
         </div>
@@ -40,7 +40,7 @@ export function TeamCard({ id, name, city, logo, category }: TeamCardProps) {
           href={`/teams/${id}`}
           className="inline-block w-full text-center bg-orange-500 hover:bg-orange-600 text-white py-2 px-3 sm:px-4 rounded transition-colors text-xs sm:text-sm"
         >
-          View Team
+          Voir l'équipe
         </Link>
       </div>
     </div>

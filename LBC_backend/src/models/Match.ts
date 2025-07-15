@@ -12,6 +12,7 @@ export interface IMatch extends Document {
   venue: string;
   status: 'completed' | 'upcoming' | 'live';
   forfeit?: 'home' | 'away' | null;
+  journee: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -55,7 +56,8 @@ const matchSchema = new Schema<IMatch>({
         'U18 GARCONS',
         'U18 FILLES',
         'VETERANT',
-        'CORPO'
+        'CORPO',
+        'DAMES'
       ],
       message: '{VALUE} is not a valid category',
     },
@@ -97,6 +99,11 @@ const matchSchema = new Schema<IMatch>({
       message: '{VALUE} is not a valid forfeit value',
     },
     default: null,
+  },
+  journee: {
+    type: Number,
+    required: [true, 'Journée (matchday) is required'],
+    min: [1, 'Journée must be at least 1']
   },
 }, {
   timestamps: true,

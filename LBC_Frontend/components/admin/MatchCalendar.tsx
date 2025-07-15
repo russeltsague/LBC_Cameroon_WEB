@@ -25,6 +25,7 @@ type Match = {
   status: 'completed' | 'upcoming' | 'live'
   forfeit?: 'home' | 'away' | null
   poule?: string
+  journee?: number
 }
 
 const initialMatchState: Partial<Match> = {
@@ -179,6 +180,27 @@ export const MatchCalendarAdmin = () => {
     return acc
   }, {} as Record<string, Match[]>)
 
+  // Group matches by journee
+  const matchesByJournee = matches.reduce((acc, match) => {
+    const journee = match.journee || 1;
+    if (!acc[journee]) acc[journee] = [];
+    acc[journee].push(match);
+    return acc;
+  }, {} as Record<number, Match[]>);
+
+  // List of available journees
+  const journees = Object.keys(matchesByJournee).map(Number).sort((a, b) => a - b);
+  const [selectedJournee, setSelectedJournee] = useState<number | null>(null);
+
+  // Set selectedJournee to first available when matches change
+  useEffect(() => {
+    if (journees.length > 0) {
+      setSelectedJournee(journees[0]);
+    }
+  }, [JSON.stringify(journees)]);
+
+  const visibleJourneeMatches = selectedJournee !== null ? matchesByJournee[selectedJournee] || [] : [];
+
   const getTeamName = (team: Team | string) => {
     if (!team) return 'Unknown Team';
     if (typeof team === 'string') {
@@ -229,6 +251,10 @@ export const MatchCalendarAdmin = () => {
 
       if (!currentMatch.venue) {
         throw new Error('Please enter a venue')
+      }
+
+      if (!currentMatch.journee) {
+        throw new Error('Please select a journee')
       }
 
       // If we're updating an existing match and only changing the status to completed
@@ -444,6 +470,35 @@ export const MatchCalendarAdmin = () => {
         </h3>
       </div>
 
+      {/* Journee Selector Navigation */}
+      {journees.length > 0 && selectedJournee !== null && (
+        <div className="flex justify-center items-center gap-4 mb-8">
+          <button
+            onClick={() => {
+              const idx = journees.indexOf(selectedJournee);
+              if (idx > 0) setSelectedJournee(journees[idx - 1]);
+            }}
+            disabled={journees.length <= 1 || journees.indexOf(selectedJournee) === 0}
+            className={`px-4 py-2 rounded-lg font-semibold border transition-colors duration-150 bg-gray-800 text-gray-300 border-gray-700 hover:bg-orange-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed`}
+          >
+            Précédent
+          </button>
+          <span className="text-lg font-bold text-orange-400 min-w-[120px] text-center">
+            {selectedJournee}{selectedJournee === 1 ? 'ère' : 'ème'} Journée
+          </span>
+          <button
+            onClick={() => {
+              const idx = journees.indexOf(selectedJournee);
+              if (idx < journees.length - 1) setSelectedJournee(journees[idx + 1]);
+            }}
+            disabled={journees.length <= 1 || journees.indexOf(selectedJournee) === journees.length - 1}
+            className={`px-4 py-2 rounded-lg font-semibold border transition-colors duration-150 bg-gray-800 text-gray-300 border-gray-700 hover:bg-orange-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed`}
+          >
+            Suivant
+          </button>
+        </div>
+      )}
+
       {/* Matches List */}
       {loading ? (
         <div className="text-center py-12">
@@ -454,19 +509,21 @@ export const MatchCalendarAdmin = () => {
         <div className="text-center py-12 text-red-400">{error}</div>
       ) : (
         <div className="space-y-8">
-          {Object.entries(matchesByCategory).map(([category, categoryMatches]) => (
-            <div key={category} className="bg-gray-900 rounded-lg border border-gray-800 overflow-hidden">
+          {selectedJournee !== null ? (
+            <div key={selectedJournee} className="bg-gray-900 rounded-lg border border-gray-800 overflow-hidden">
+              <div className="bg-gray-800/50 p-4 text-lg font-bold text-orange-400">
+                {selectedJournee}{selectedJournee === 1 ? 'ère' : 'ème'} Journée
+              </div>
               <div className="grid grid-cols-12 bg-gray-800/50 p-4 text-sm font-medium text-gray-400">
                 <div className="col-span-3">Match</div>
-                <div className="col-span-2">Date & Time</div>
-                <div className="col-span-2">Venue</div>
+                <div className="col-span-2">Date & Heure</div>
+                <div className="col-span-2">Lieu</div>
                 <div className="col-span-2">Score</div>
-                <div className="col-span-1">Status</div>
+                <div className="col-span-1">Statut</div>
                 <div className="col-span-2">Actions</div>
               </div>
-              
-              {categoryMatches.length > 0 ? (
-                categoryMatches.map((match, index) => (
+              {visibleJourneeMatches.length > 0 ? (
+                visibleJourneeMatches.map((match, index) => (
                   <motion.div
                     key={match._id}
                     initial={{ opacity: 0, y: 10 }}
@@ -477,16 +534,13 @@ export const MatchCalendarAdmin = () => {
                     <div className="col-span-3 font-medium text-white">
                       {getTeamName(match.homeTeam)} vs {getTeamName(match.awayTeam)}
                     </div>
-                    
                     <div className="col-span-2 text-gray-400">
                       <div>{formatDate(match.date)}</div>
                       <div className="text-sm">{formatTime(match.time)}</div>
                     </div>
-                    
                     <div className="col-span-2 text-gray-400">
                       {match.venue}
                     </div>
-                    
                     <div className="col-span-2">
                       {match.status === 'completed' ? (
                         <div className="bg-orange-500/10 border border-orange-500/20 rounded-lg px-3 py-2 text-center">
@@ -500,7 +554,6 @@ export const MatchCalendarAdmin = () => {
                         </div>
                       )}
                     </div>
-                    
                     <div className="col-span-1">
                       {match.status === 'completed' ? (
                         <div className="bg-green-500/10 px-3 py-1 rounded-full text-sm text-green-400 flex items-center justify-center">
@@ -524,7 +577,6 @@ export const MatchCalendarAdmin = () => {
                         </div>
                       )}
                     </div>
-                    
                     <div className="col-span-2 flex space-x-2">
                       <button
                         onClick={() => openEditModal(match)}
@@ -545,11 +597,11 @@ export const MatchCalendarAdmin = () => {
                 ))
               ) : (
                 <div className="text-center py-8 text-gray-400">
-                  Aucun match programmé pour cette catégorie
+                  Aucun match programmé pour cette journée
                 </div>
               )}
             </div>
-          ))}
+          ) : null}
         </div>
       )}
 
@@ -617,6 +669,17 @@ export const MatchCalendarAdmin = () => {
               })()}
 
               <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">Journée</label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={currentMatch.journee || ''}
+                    onChange={(e) => setCurrentMatch({ ...currentMatch, journee: parseInt(e.target.value) || 1 })}
+                    className="w-full p-2 rounded bg-gray-700 text-white border border-gray-600 focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
+                    required
+                  />
+                </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-1">Date</label>
                   <input

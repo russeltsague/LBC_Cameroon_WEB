@@ -8,13 +8,15 @@ import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 
 const navigation = [
   { name: 'Accueil', href: '/' },
-  { name: 'Feature Team', href: '/featured' },
+  { name: 'Équipes', href: '/featured' },
   { name: 'Statistiques', href: '/stats' },
   { name: 'Calendrier', href: '/calendar' },
-  { name: 'Classification', href: '/classification' },
+  { name: 'Classement', href: '/classification' },
   { name: 'Programme', href: '/schedule' },
   { name: 'Actualités', href: '/news' },
   { name: 'Sponsors', href: '/sponsors' },
+  // Admin button at the end
+  { name: 'Admin', href: '/admin' },
 ]
 
 export const Navbar = () => {
@@ -50,18 +52,20 @@ export const Navbar = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center space-x-1">
+          <div className="hidden lg:flex items-center space-x-1 overflow-x-auto max-w-full scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900">
             {navigation.map((item) => {
-              const isActive = pathname === item.href
+              // Highlight Admin for any /admin route
+              const isActive = item.href === '/admin' ? pathname.startsWith('/admin') : pathname === item.href
               return (
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`px-4 py-3 rounded-lg text-sm font-semibold tracking-wide transition-all duration-300 relative overflow-hidden group ${
+                  className={`px-4 py-3 rounded-lg text-sm font-semibold tracking-wide transition-all duration-300 relative overflow-hidden group min-w-[90px] text-center ${
                     isActive
                       ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg shadow-orange-500/25'
                       : 'text-gray-300 hover:text-white hover:bg-gray-800/80'
                   }`}
+                  style={{ touchAction: 'manipulation' }}
                 >
                   <span className="relative z-10">{item.name}</span>
                   {!isActive && (
@@ -79,40 +83,38 @@ export const Navbar = () => {
           </div>
 
           {/* Medium Screen Navigation */}
-          <div className="hidden md:flex lg:hidden items-center space-x-1">
-            {navigation.slice(0, 4).map((item) => {
-              const isActive = pathname === item.href
+          <div className="hidden md:flex lg:hidden items-center space-x-1 overflow-x-auto max-w-full scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900">
+            {navigation.map((item) => {
+              const isActive = item.href === '/admin' ? pathname.startsWith('/admin') : pathname === item.href
               return (
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`px-3 py-2 rounded-md text-xs font-semibold tracking-wide transition-all duration-200 ${
+                  className={`px-3 py-2 rounded-md text-xs font-semibold tracking-wide transition-all duration-200 min-w-[80px] text-center ${
                     isActive
                       ? 'bg-orange-500 text-white shadow-md'
                       : 'text-gray-300 hover:text-white hover:bg-gray-800'
                   }`}
+                  style={{ touchAction: 'manipulation' }}
                 >
                   {item.name}
                 </Link>
               )
             })}
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="px-3 py-2 rounded-md text-xs font-semibold tracking-wide text-gray-300 hover:text-white hover:bg-gray-800 transition-colors"
-            >
-              Plus
-            </button>
+            {/* Remove Plus button, show all items */}
           </div>
 
           {/* Mobile menu button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden p-2 rounded-lg text-gray-300 hover:text-white hover:bg-gray-800/80 transition-colors"
+            className="md:hidden p-3 rounded-lg text-gray-300 hover:text-white hover:bg-gray-800/80 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500"
+            aria-label="Ouvrir le menu"
+            style={{ minWidth: 48, minHeight: 48 }}
           >
             {isOpen ? (
-              <XMarkIcon className="w-6 h-6" />
+              <XMarkIcon className="w-7 h-7" />
             ) : (
-              <Bars3Icon className="w-6 h-6" />
+              <Bars3Icon className="w-7 h-7" />
             )}
           </button>
         </div>
@@ -125,21 +127,22 @@ export const Navbar = () => {
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.2 }}
-              className="md:hidden bg-gray-900/95 backdrop-blur-md rounded-lg mt-2 overflow-hidden border border-gray-800/50"
+              className="md:hidden bg-gray-900/95 backdrop-blur-md rounded-lg mt-2 overflow-x-auto border border-gray-800/50 max-w-full"
             >
-              <div className="px-2 py-2 space-y-1">
+              <div className="flex flex-col px-2 py-2 space-y-1 min-w-[220px]">
                 {navigation.map((item) => {
-                  const isActive = pathname === item.href
+                  const isActive = item.href === '/admin' ? pathname.startsWith('/admin') : pathname === item.href
                   return (
                     <Link
                       key={item.name}
                       href={item.href}
                       onClick={() => setIsOpen(false)}
-                      className={`block px-4 py-3 rounded-md text-sm font-semibold tracking-wide transition-all duration-200 ${
+                      className={`block px-4 py-4 rounded-md text-base font-semibold tracking-wide transition-all duration-200 min-w-[120px] text-center ${
                         isActive
                           ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md'
                           : 'text-gray-300 hover:text-white hover:bg-gray-800'
                       }`}
+                      style={{ touchAction: 'manipulation' }}
                     >
                       {item.name}
                     </Link>
@@ -185,4 +188,12 @@ export const Navbar = () => {
       </div>
     </nav>
   )
-} 
+}
+
+export const Footer = () => (
+  <footer className="w-full bg-gray-900 border-t border-gray-800 py-6 mt-12 text-center text-gray-400 text-sm">
+    <div className="container mx-auto px-4">
+      © {new Date().getFullYear()} Ligue Basketball Centre Cameroon. Tous droits réservés.
+    </div>
+  </footer>
+) 

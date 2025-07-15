@@ -54,7 +54,7 @@ export function TeamManagement() {
 
   const fetchTeams = async () => {
     try {
-      let url = `http://localhost:5000/api/teams?category=${encodeURIComponent(selectedCategory)}`
+      let url = `${process.env.NEXT_PUBLIC_API_URL}/api/teams?category=${encodeURIComponent(selectedCategory)}`
       
       // Add poule filter if the category has poules
       if (hasPoules) {

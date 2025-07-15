@@ -82,7 +82,12 @@ export const createMatch = catchAsync(async (req: Request, res: Response) => {
     status,
     homeScore,
     awayScore,
+    journee,
   } = req.body;
+
+  if (journee === undefined || journee === null) {
+    throw new AppError('Journee (matchday) is required', 400);
+  }
 
   try {
     // Validate teams exist
@@ -117,6 +122,7 @@ export const createMatch = catchAsync(async (req: Request, res: Response) => {
       status,
       homeScore,
       awayScore,
+      journee,
     };
 
     console.log('Creating match with processed data:', matchData);
@@ -161,7 +167,12 @@ export const updateMatch = catchAsync(async (req: Request, res: Response) => {
     status,
     homeScore,
     awayScore,
+    journee,
   } = req.body;
+
+  if (journee === undefined || journee === null) {
+    throw new AppError('Journee (matchday) is required', 400);
+  }
 
   try {
     // Validate teams exist if they're being updated
@@ -201,7 +212,8 @@ export const updateMatch = catchAsync(async (req: Request, res: Response) => {
         venue,
         status,
         homeScore,
-        awayScore
+        awayScore,
+        journee,
       }).filter(([_, value]) => value !== undefined)
     );
 
