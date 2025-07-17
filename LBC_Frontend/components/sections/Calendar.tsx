@@ -245,7 +245,7 @@ export const CalendarSection = () => {
 
         {/* Journee Selector Navigation */}
         {journees.length > 0 && selectedJournee !== null && (
-          <div className="flex justify-center items-center gap-4 mb-8">
+          <div className="hidden sm:flex justify-center items-center gap-4 mb-8">
             <button
               onClick={() => {
                 const idx = journees.indexOf(selectedJournee);
@@ -279,9 +279,12 @@ export const CalendarSection = () => {
             {hasPoules && (
               <span className="text-blue-400 ml-2">- Poule {selectedPoule}</span>
             )}
-            {selectedJournee && (
-              <span className="text-orange-400 ml-2">- {selectedJournee}{selectedJournee === 1 ? 'ère' : 'ème'} journée</span>
-            )}
+            {/* Only show journee in title on sm+ screens */}
+            <span className="hidden sm:inline">
+              {selectedJournee && (
+                <span className="text-orange-400 ml-2">- {selectedJournee}{selectedJournee === 1 ? 'ère' : 'ème'} journée</span>
+              )}
+            </span>
           </h3>
         </div>
 
@@ -293,88 +296,158 @@ export const CalendarSection = () => {
           </div>
         ) : error ? (
           <div className="text-center py-12 text-red-400">{error}</div>
-        ) : filteredMatches.length > 0 ? (
-          <div className="space-y-12 w-full">
-            {Object.entries(
-              filteredMatches.reduce((acc, match) => {
-                const journee = match.journee || 1;
-                if (!acc[journee]) acc[journee] = [];
-                acc[journee].push(match);
-                return acc;
-              }, {} as Record<number, typeof matches>)
-            )
-              .sort((a, b) => Number(a[0]) - Number(b[0]))
-              .map(([journee, journeeMatches]) => (
-                <div key={journee} className="bg-gray-900 rounded-2xl border border-gray-800 shadow-lg w-full overflow-x-auto relative">
-                  <div className="bg-gray-800/90 px-2 sm:px-4 py-3 text-base sm:text-xl font-bold text-orange-400 border-b border-gray-700 rounded-t-2xl sticky top-0 z-10">
-                    {journee}{journee === '1' ? 'ère' : 'ème'} journée
-                  </div>
-                  <div className="overflow-x-auto w-full">
-                    <table className="w-full min-w-[420px] sm:min-w-full divide-y divide-gray-700 text-xs sm:text-sm md:text-base">
-                      <thead className="bg-gray-800/80 sticky top-0 z-10">
-                        <tr>
-                          <th className="px-2 sm:px-4 py-2 sm:py-3 text-xs font-bold text-gray-300 uppercase tracking-wider text-center rounded-tl-2xl">N°</th>
-                          <th className="px-2 sm:px-4 py-2 sm:py-3 text-xs font-bold text-gray-300 uppercase tracking-wider text-center">Rencontres</th>
-                          <th className="px-2 sm:px-4 py-2 sm:py-3 text-xs font-bold text-gray-300 uppercase tracking-wider text-center rounded-tr-2xl">Scores</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {journeeMatches
-                          .sort((a, b) => a._id.localeCompare(b._id))
-                          .map((match, idx) => (
-                          <tr key={match._id} className={
-                            `transition-colors ${idx % 2 === 0 ? 'bg-gray-900' : 'bg-gray-800/60'} hover:bg-orange-100/10`
-                          }>
-                            <td className="px-2 sm:px-4 py-2 sm:py-3 text-gray-200 text-center font-semibold text-xs sm:text-base">{idx + 1}</td>
-                            <td className="px-2 sm:px-4 py-2 sm:py-3 text-center">
-                              <span className="font-bold text-white bg-gray-700/40 px-1 sm:px-2 py-1 rounded-lg shadow-sm text-xs sm:text-base">
-                                {getTeamName(match.homeTeam)}
-                              </span>
-                              <span className="mx-1 sm:mx-2 text-orange-400 font-extrabold text-sm sm:text-lg align-middle">vs</span>
-                              <span className="font-bold text-white bg-gray-700/40 px-1 sm:px-2 py-1 rounded-lg shadow-sm text-xs sm:text-base">
-                                {getTeamName(match.awayTeam)}
-                              </span>
-                            </td>
-                            <td className="px-2 sm:px-4 py-2 sm:py-3 text-center">
-                              {match.status === 'completed' ? (
-                                <span className="font-bold text-orange-400 text-sm sm:text-lg bg-gray-800/60 px-2 sm:px-3 py-1 rounded-lg shadow">
-                                  {match.homeScore} <span className="text-gray-400">#</span> {match.awayScore}
-                                </span>
-                              ) : (
-                                <span className="text-gray-500 text-xs sm:text-base">-</span>
-                              )}
-                            </td>
-                          </tr>
-                        ))}
-                        {/* Optional: EXEMPT row if you have that info, e.g. journeeMatches[0].exemptTeam */}
-                        {journeeMatches[0] && journeeMatches[0].exemptTeam && (
-                          <tr>
-                            <td colSpan={3} className="px-2 sm:px-4 py-2 sm:py-3 text-center bg-gray-800 text-orange-300 font-semibold rounded-b-2xl text-xs sm:text-base">
-                              EXEMPT : {journeeMatches[0].exemptTeam}
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                    {/* Fade for scroll cue */}
-                    <div className="pointer-events-none absolute top-0 right-0 h-full w-8 bg-gradient-to-l from-gray-900/90 to-transparent hidden sm:block" />
-                  </div>
-                </div>
-              ))}
-          </div>
         ) : (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center py-12 text-gray-400"
-          >
-            {hasPoules 
-              ? `Aucun match programmé pour ${activeCategory} - Poule ${selectedPoule}`
-              : `Aucun match programmé pour ${activeCategory}`
-            }
-          </motion.div>
+          <div className="space-y-12 w-full">
+            {/* On mobile, show all journees; on sm+ filter by selectedJournee */}
+            <div className="block sm:hidden">
+              {Object.entries(
+                matches.reduce((acc, match) => {
+                  const journee = match.journee || 1;
+                  if (!acc[journee]) acc[journee] = [];
+                  acc[journee].push(match);
+                  return acc;
+                }, {} as Record<number, typeof matches>)
+              )
+                .sort((a, b) => Number(a[0]) - Number(b[0]))
+                .map(([journee, journeeMatches]) => (
+                  <div key={journee} className="bg-gray-900 rounded-2xl border border-gray-800 shadow-lg w-full overflow-x-auto relative mb-8">
+                    <div className="bg-gray-800/90 px-2 sm:px-4 py-3 text-base sm:text-xl font-bold text-orange-400 border-b border-gray-700 rounded-t-2xl sticky top-0 z-10">
+                      {journee}{journee === '1' ? 'ère' : 'ème'} journée
+                    </div>
+                    <div className="overflow-x-auto w-full">
+                      <table className="w-full min-w-[420px] sm:min-w-full divide-y divide-gray-700 text-xs sm:text-sm md:text-base">
+                        <thead className="bg-gray-800/80 sticky top-0 z-10">
+                          <tr>
+                            <th className="px-2 sm:px-4 py-2 sm:py-3 text-xs font-bold text-gray-300 uppercase tracking-wider text-center rounded-tl-2xl">N°</th>
+                            <th className="px-2 sm:px-4 py-2 sm:py-3 text-xs font-bold text-gray-300 uppercase tracking-wider text-center">Rencontres</th>
+                            <th className="px-2 sm:px-4 py-2 sm:py-3 text-xs font-bold text-gray-300 uppercase tracking-wider text-center rounded-tr-2xl">Scores</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {journeeMatches
+                            .sort((a, b) => a._id.localeCompare(b._id))
+                            .map((match, idx) => (
+                            <tr key={match._id} className={
+                              `transition-colors ${idx % 2 === 0 ? 'bg-gray-900' : 'bg-gray-800/60'} hover:bg-orange-100/10`
+                            }>
+                              <td className="px-2 sm:px-4 py-2 sm:py-3 text-gray-200 text-center font-semibold text-xs sm:text-base">{idx + 1}</td>
+                              <td className="px-2 sm:px-4 py-2 sm:py-3 text-center">
+                                <span className="font-bold text-white bg-gray-700/40 px-1 sm:px-2 py-1 rounded-lg shadow-sm text-xs sm:text-base">
+                                  {getTeamName(match.homeTeam)}
+                                </span>
+                                <span className="mx-1 sm:mx-2 text-orange-400 font-extrabold text-sm sm:text-lg align-middle">vs</span>
+                                <span className="font-bold text-white bg-gray-700/40 px-1 sm:px-2 py-1 rounded-lg shadow-sm text-xs sm:text-base">
+                                  {getTeamName(match.awayTeam)}
+                                </span>
+                              </td>
+                              <td className="px-2 sm:px-4 py-2 sm:py-3 text-center">
+                                {match.status === 'completed' ? (
+                                  <span className="font-bold text-orange-400 text-sm sm:text-lg bg-gray-800/60 px-2 sm:px-3 py-1 rounded-lg shadow">
+                                    {match.homeScore} <span className="text-gray-400">#</span> {match.awayScore}
+                                  </span>
+                                ) : (
+                                  <span className="text-gray-500 text-xs sm:text-base">-</span>
+                                )}
+                              </td>
+                            </tr>
+                          ))}
+                          {journeeMatches[0] && journeeMatches[0].exemptTeam && (
+                            <tr>
+                              <td colSpan={3} className="px-2 sm:px-4 py-2 sm:py-3 text-center bg-gray-800 text-orange-300 font-semibold rounded-b-2xl text-xs sm:text-base">
+                                EXEMPT : {journeeMatches[0].exemptTeam}
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                      <div className="pointer-events-none absolute top-0 right-0 h-full w-8 bg-gradient-to-l from-gray-900/90 to-transparent hidden sm:block" />
+                    </div>
+                  </div>
+                ))}
+            </div>
+            {/* On sm+ screens, show only selectedJournee */}
+            <div className="hidden sm:block">
+              {filteredMatches.length > 0 ? (
+                Object.entries(
+                  filteredMatches.reduce((acc, match) => {
+                    const journee = match.journee || 1;
+                    if (!acc[journee]) acc[journee] = [];
+                    acc[journee].push(match);
+                    return acc;
+                  }, {} as Record<number, typeof matches>)
+                )
+                  .sort((a, b) => Number(a[0]) - Number(b[0]))
+                  .map(([journee, journeeMatches]) => (
+                    <div key={journee} className="bg-gray-900 rounded-2xl border border-gray-800 shadow-lg w-full overflow-x-auto relative">
+                      <div className="bg-gray-800/90 px-2 sm:px-4 py-3 text-base sm:text-xl font-bold text-orange-400 border-b border-gray-700 rounded-t-2xl sticky top-0 z-10">
+                        {journee}{journee === '1' ? 'ère' : 'ème'} journée
+                      </div>
+                      <div className="overflow-x-auto w-full">
+                        <table className="w-full min-w-[420px] sm:min-w-full divide-y divide-gray-700 text-xs sm:text-sm md:text-base">
+                          <thead className="bg-gray-800/80 sticky top-0 z-10">
+                            <tr>
+                              <th className="px-2 sm:px-4 py-2 sm:py-3 text-xs font-bold text-gray-300 uppercase tracking-wider text-center rounded-tl-2xl">N°</th>
+                              <th className="px-2 sm:px-4 py-2 sm:py-3 text-xs font-bold text-gray-300 uppercase tracking-wider text-center">Rencontres</th>
+                              <th className="px-2 sm:px-4 py-2 sm:py-3 text-xs font-bold text-gray-300 uppercase tracking-wider text-center rounded-tr-2xl">Scores</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {journeeMatches
+                              .sort((a, b) => a._id.localeCompare(b._id))
+                              .map((match, idx) => (
+                              <tr key={match._id} className={
+                                `transition-colors ${idx % 2 === 0 ? 'bg-gray-900' : 'bg-gray-800/60'} hover:bg-orange-100/10`
+                              }>
+                                <td className="px-2 sm:px-4 py-2 sm:py-3 text-gray-200 text-center font-semibold text-xs sm:text-base">{idx + 1}</td>
+                                <td className="px-2 sm:px-4 py-2 sm:py-3 text-center">
+                                  <span className="font-bold text-white bg-gray-700/40 px-1 sm:px-2 py-1 rounded-lg shadow-sm text-xs sm:text-base">
+                                    {getTeamName(match.homeTeam)}
+                                  </span>
+                                  <span className="mx-1 sm:mx-2 text-orange-400 font-extrabold text-sm sm:text-lg align-middle">vs</span>
+                                  <span className="font-bold text-white bg-gray-700/40 px-1 sm:px-2 py-1 rounded-lg shadow-sm text-xs sm:text-base">
+                                    {getTeamName(match.awayTeam)}
+                                  </span>
+                                </td>
+                                <td className="px-2 sm:px-4 py-2 sm:py-3 text-center">
+                                  {match.status === 'completed' ? (
+                                    <span className="font-bold text-orange-400 text-sm sm:text-lg bg-gray-800/60 px-2 sm:px-3 py-1 rounded-lg shadow">
+                                      {match.homeScore} <span className="text-gray-400">#</span> {match.awayScore}
+                                    </span>
+                                  ) : (
+                                    <span className="text-gray-500 text-xs sm:text-base">-</span>
+                                  )}
+                                </td>
+                              </tr>
+                            ))}
+                            {journeeMatches[0] && journeeMatches[0].exemptTeam && (
+                              <tr>
+                                <td colSpan={3} className="px-2 sm:px-4 py-2 sm:py-3 text-center bg-gray-800 text-orange-300 font-semibold rounded-b-2xl text-xs sm:text-base">
+                                  EXEMPT : {journeeMatches[0].exemptTeam}
+                                </td>
+                              </tr>
+                            )}
+                          </tbody>
+                        </table>
+                        <div className="pointer-events-none absolute top-0 right-0 h-full w-8 bg-gradient-to-l from-gray-900/90 to-transparent hidden sm:block" />
+                      </div>
+                    </div>
+                  ))}
+              ) : (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-center py-12 text-gray-400"
+                >
+                  {hasPoules 
+                    ? `Aucun match programmé pour ${activeCategory} - Poule ${selectedPoule}`
+                    : `Aucun match programmé pour ${activeCategory}`
+                  }
+                </motion.div>
+              )}
+            </div>
+          </div>
         )}
       </div>
     </section>
-  )
+  );
 }
