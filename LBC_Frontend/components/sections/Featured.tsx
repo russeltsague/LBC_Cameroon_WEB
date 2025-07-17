@@ -212,7 +212,7 @@ export const FeaturedSection = () => {
         ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-6 md:gap-8 mt-6">
           {visibleTeams.map((team) => (
-            <TeamCard key={team._id} team={team} />
+            <TeamCard key={team._id} {...team} id={team._id} />
           ))}
         </div>
         )}
