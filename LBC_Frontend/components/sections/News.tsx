@@ -88,7 +88,7 @@ export const NewsSection = () => {
           transition={{ duration: 0.8 }}
           className="text-center mb-8 md:mb-16"
         >
-          <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold text-white mb-2 md:mb-4">
+          <h2 className="text-xl sm:text-3xl md:text-5xl font-bold text-white mb-2 md:mb-4">
             Latest <span className="text-orange-400">News</span>
           </h2>
           <p className="text-base sm:text-xl text-gray-300 max-w-xl md:max-w-2xl mx-auto">

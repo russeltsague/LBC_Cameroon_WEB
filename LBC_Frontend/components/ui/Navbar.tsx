@@ -107,7 +107,7 @@ export const Navbar = () => {
           {/* Mobile menu button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden p-3 rounded-lg text-gray-300 hover:text-white hover:bg-gray-800/80 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="lg:hidden p-3 rounded-lg text-gray-300 hover:text-white hover:bg-gray-800/80 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500"
             aria-label="Ouvrir le menu"
             style={{ minWidth: 48, minHeight: 48 }}
           >
@@ -127,7 +127,7 @@ export const Navbar = () => {
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.2 }}
-              className="md:hidden bg-gray-900/95 backdrop-blur-md rounded-lg mt-2 overflow-x-auto border border-gray-800/50 max-w-full"
+              className="lg:hidden bg-gray-900/95 backdrop-blur-md rounded-lg mt-2 overflow-x-auto border border-gray-800/50 max-w-full"
             >
               <div className="flex flex-col px-2 py-2 space-y-1 min-w-[220px]">
                 {navigation.map((item) => {

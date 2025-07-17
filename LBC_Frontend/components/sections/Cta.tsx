@@ -14,7 +14,7 @@ export const CtaSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}   
               transition={{ duration: 0.8 }}
-              className="text-4xl font-bold text-white mb-6"
+              className="text-2xl font-bold text-white mb-6"
             >
               Restez Informé Sur La Ligue
             </motion.h2>

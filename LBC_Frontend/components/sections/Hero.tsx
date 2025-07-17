@@ -51,7 +51,7 @@ export const HeroSection = () => {
           </span>
         </motion.div>
 
-        <motion.h1 variants={itemVariants} className="text-3xl sm:text-5xl md:text-7xl xl:text-8xl font-bold text-white mb-4 md:mb-6 leading-tight">
+        <motion.h1 variants={itemVariants} className="text-2xl sm:text-4xl md:text-6xl xl:text-7xl font-bold text-white mb-4 md:mb-6 leading-tight">
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-200">LIGUE DE BASKETBALL </span><br />
            DU CENTRE
         </motion.h1>

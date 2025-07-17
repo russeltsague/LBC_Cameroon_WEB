@@ -171,7 +171,7 @@ export default function Classification({ category: initialCategory }: Classifica
             transition={{ duration: 0.8 }}
             className="text-center mb-8 md:mb-16"
           >
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            <h2 className="text-2xl md:text-5xl font-bold text-white mb-4">
               Classement de la <span className="text-orange-400">Ligue</span>
             </h2>
             <p className="text-xl text-gray-300 max-w-2xl mx-auto">
@@ -260,7 +260,7 @@ export default function Classification({ category: initialCategory }: Classifica
             transition={{ duration: 0.8 }}
             className="text-center mb-8 md:mb-16"
           >
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            <h2 className="text-2xl md:text-5xl font-bold text-white mb-4">
               Classement de la <span className="text-orange-400">Ligue</span>
             </h2>
             <p className="text-xl text-gray-300 max-w-2xl mx-auto">
@@ -345,7 +345,7 @@ export default function Classification({ category: initialCategory }: Classifica
           transition={{ duration: 0.8 }}
           className="text-center mb-8 md:mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+          <h2 className="text-2xl md:text-5xl font-bold text-white mb-4">
             Classement de la <span className="text-orange-400">Ligue</span>
           </h2>
           <p className="text-xl text-gray-300 max-w-2xl mx-auto">
