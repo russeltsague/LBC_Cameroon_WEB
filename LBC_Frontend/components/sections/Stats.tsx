@@ -288,11 +288,11 @@ export const StatsSection = () => {
         {/* Stats Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
           {statItems.map((stat, index) => (
-            <div key={stat.id} className="bg-gray-900 rounded-2xl p-10 border border-gray-800 flex flex-col items-center justify-center shadow-lg w-full h-full min-h-[180px]">
-              <stat.icon className="w-14 h-14 text-orange-400 mb-4" />
+            <div key={stat.id} className="bg-gray-900 rounded-2xl p-4 sm:p-6 md:p-8 lg:p-10 border border-gray-800 flex flex-col items-center justify-center shadow-lg w-full h-full min-h-[120px] sm:min-h-[150px] md:min-h-[180px]">
+              <stat.icon className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 text-orange-400 mb-2 sm:mb-4" />
               <div className="flex-1 flex flex-col items-center justify-center">
-                <div className="text-4xl font-extrabold text-white mb-2">{stat.value}</div>
-                <div className="text-lg text-gray-400 font-semibold text-center">{stat.name}</div>
+                <div className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white mb-1 sm:mb-2">{stat.value}</div>
+                <div className="text-base sm:text-lg text-gray-400 font-semibold text-center">{stat.name}</div>
               </div>
             </div>
           ))}
