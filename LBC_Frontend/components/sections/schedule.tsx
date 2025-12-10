@@ -1,25 +1,23 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { CalendarIcon, ClockIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline'
+import { CalendarIcon, ClockIcon, ChevronLeftIcon, ChevronRightIcon, ChevronDownIcon } from '@heroicons/react/24/outline'
 import { toast } from 'react-hot-toast'
-import { getCategories, Category } from '@/app/lib/api'
+import { getCategories, getMatches, Category } from '@/app/lib/api'
 import { MatchCard } from '../ui/MatchCard'
+
+type Team = {
+  _id: string
+  name: string
+  logo?: string
+}
 
 type Match = {
   _id: string
   date: string
   time: string
-  homeTeam: {
-    _id: string
-    name: string
-    category: string
-  } | string
-  awayTeam: {
-    _id: string
-    name: string
-    category: string
-  } | string
+  homeTeam: Team | string
+  awayTeam: Team | string
   homeScore?: number
   awayScore?: number
   category: string
@@ -28,25 +26,50 @@ type Match = {
 }
 
 export const ScheduleSection = () => {
+  const [matches, setMatches] = useState<Match[]>([])
+  const [loading, setLoading] = useState(true)
   const [categories, setCategories] = useState<Category[]>([])
   const [activeCategory, setActiveCategory] = useState<string>('')
   const [selectedPoule, setSelectedPoule] = useState<string>('A')
-  const [expandedMatch, setExpandedMatch] = useState<string | null>(null)
   const [isCategoryOpen, setIsCategoryOpen] = useState(false)
-  const [matches, setMatches] = useState<Match[]>([])
-  const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [currentWeek, setCurrentWeek] = useState(0)
-  // Show more/hide logic for matches
+  const [expandedDay, setExpandedDay] = useState<string | null>(null)
+  const [expandedMatch, setExpandedMatch] = useState<string | null>(null)
   const [visibleRows, setVisibleRows] = useState(2)
-  const matchesPerRow = 2
-  const matchesToShow = visibleRows * matchesPerRow
-  const visibleMatches = matches.slice(0, matchesToShow)
-  const canShowMore = matchesToShow < matches.length
 
-  // Fetch categories on component mount
+  // Get start and end of current week
+  const getWeekDates = (weekOffset = 0) => {
+    const now = new Date()
+    const currentDay = now.getDay()
+    const startOfWeek = new Date(now)
+    startOfWeek.setDate(now.getDate() - currentDay + (weekOffset * 7))
+    startOfWeek.setHours(0, 0, 0, 0)
+    
+    const endOfWeek = new Date(startOfWeek)
+    endOfWeek.setDate(startOfWeek.getDate() + 6)
+    endOfWeek.setHours(23, 59, 59, 999)
+    
+    return { start: startOfWeek, end: endOfWeek }
+  }
+
+  // Format date to YYYY-MM-DD
+  const formatDate = (date: Date) => {
+    return date.toISOString().split('T')[0]
+  }
+
+  // Format date to display (e.g., "Lundi 12 Mars")
+  const formatDisplayDate = (date: Date) => {
+    return new Intl.DateTimeFormat('fr-FR', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long'
+    }).format(date).replace(/\b\w/g, l => l.toUpperCase())
+  }
+
+  // Fetch matches for the current week
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchMatches = async () => {
       try {
         const categoriesData = await getCategories()
         // Move 'CORPORATES' to the end
@@ -67,7 +90,7 @@ export const ScheduleSection = () => {
       }
     }
 
-    fetchCategories()
+    fetchMatches()
   }, [])
 
   // Get current category data
@@ -130,7 +153,7 @@ export const ScheduleSection = () => {
     }
   }
 
-  const formatDate = (dateString: string) => {
+  const formatDateDisplay = (dateString: string) => {
     const date = new Date(dateString)
     return date.toLocaleDateString('fr-FR', { 
       weekday: 'short', 
@@ -145,20 +168,9 @@ export const ScheduleSection = () => {
     return team.name;
   }
 
-  const getWeekDates = (weekOffset: number) => {
-    const now = new Date()
-    const startOfWeek = new Date(now)
-    // Adjust to start from Monday (1) instead of Sunday (0)
-    const day = now.getDay()
-    const diff = now.getDate() - day + (day === 0 ? -6 : 1) // Adjust for Monday
-    startOfWeek.setDate(diff + (weekOffset * 7))
-    const endOfWeek = new Date(startOfWeek)
-    endOfWeek.setDate(startOfWeek.getDate() + 6)
-    return { startOfWeek, endOfWeek }
-  }
-
+  
   const getMatchesForWeek = (weekOffset: number) => {
-    const { startOfWeek, endOfWeek } = getWeekDates(weekOffset)
+    const { start: startOfWeek, end: endOfWeek } = getWeekDates(weekOffset)
     return matches.filter(match => {
       const matchDate = new Date(match.date)
       return matchDate >= startOfWeek && matchDate <= endOfWeek
@@ -167,6 +179,7 @@ export const ScheduleSection = () => {
 
   const currentWeekMatches = getMatchesForWeek(currentWeek)
   const weekDates = getWeekDates(currentWeek)
+  const canShowMore = currentWeekMatches.length > visibleRows
 
   return (
     <section className="py-6 sm:py-16 md:py-24 bg-gradient-to-b from-gray-900 to-gray-800">
@@ -277,7 +290,7 @@ export const ScheduleSection = () => {
           </button>
           
           <h3 className="text-base md:text-lg font-bold text-white text-center w-full">
-            Semaine du {formatDate(weekDates.startOfWeek.toISOString())} au {formatDate(weekDates.endOfWeek.toISOString())}
+            Semaine du {formatDate(weekDates.start)} au {formatDate(weekDates.end)}
           </h3>
           
           <button
@@ -302,7 +315,7 @@ export const ScheduleSection = () => {
               layout
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 max-w-4xl mx-auto"
             >
-              {visibleMatches.map(match => (
+              {currentWeekMatches.slice(0, visibleRows).map(match => (
                 <MatchCard 
                   key={match._id}
                   match={{
@@ -318,7 +331,7 @@ export const ScheduleSection = () => {
                   }}
                   isExpanded={expandedMatch === match._id}
                   onExpand={() => setExpandedMatch(expandedMatch === match._id ? null : match._id)}
-                  formatDate={formatDate}
+                  formatDate={formatDateDisplay}
                 />
               ))}
             </motion.div>

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { TeamCard } from '../ui/TeamCard'
+import { TeamCard } from '../card/TeamCard'
 import { FiSearch } from 'react-icons/fi'
 
 interface Team {
