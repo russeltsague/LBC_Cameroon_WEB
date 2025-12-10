@@ -5,7 +5,7 @@ import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useRef } from 'react';
-import { ReportSection } from '@/components/sections/ReportSection';
+import { ReportSection } from './ReportSection';
 
 const HeroSection = () => {
   const containerVariants = {
