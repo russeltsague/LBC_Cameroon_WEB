@@ -7,7 +7,7 @@ import { FaTrophy } from 'react-icons/fa';
 import axios from 'axios';
 import useSWR from 'swr';
 import { getCategories, Category, getTeams, Team, getClassificationFromCalendar } from '@/app/lib/api';
-import { useAppStore } from '@/lib/store';
+import { useAppStore } from '@/lib';
 
 const fetcher = (url: string) => axios.get(url).then(res => res.data);
 
