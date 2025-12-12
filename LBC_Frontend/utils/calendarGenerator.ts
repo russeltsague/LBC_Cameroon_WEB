@@ -1,7 +1,8 @@
 export interface Match {
   homeTeam: string
   awayTeam: string
-  score?: string
+  homeScore?: number
+  awayScore?: number
   date?: string
   time?: string
   venue?: string
@@ -67,8 +68,7 @@ export function generateRoundRobin(teams: string[]): Journee[] {
       if (homeTeam !== 'BYE' && awayTeam !== 'BYE') {
         matches.push({
           homeTeam,
-          awayTeam,
-          score: '' // Will be filled later
+          awayTeam
         })
       } else {
         // One of the teams is BYE, so the other team is exempt
@@ -130,8 +130,7 @@ export function generateCalendarStructure(categoryName: string, teamsByPoule: Re
           for (let i = 0; i < matchesPerRound; i++) {
             matches.push({
               homeTeam: '',
-              awayTeam: '',
-              score: ''
+              awayTeam: ''
             })
           }
 
@@ -175,8 +174,7 @@ export function generateCalendarStructure(categoryName: string, teamsByPoule: Re
         for (let i = 0; i < matchesPerRound; i++) {
           matches.push({
             homeTeam: '',
-            awayTeam: '',
-            score: ''
+            awayTeam: ''
           })
         }
 
@@ -271,10 +269,10 @@ export function generatePlayoffs(poules: Poule[]): PlayoffRound[] {
     
     if (topTeamsA.length >= 4 && topTeamsB.length >= 4) {
       quarterFinals.push(
-        { homeTeam: topTeamsA[0], awayTeam: topTeamsB[3], score: '' },
-        { homeTeam: topTeamsA[1], awayTeam: topTeamsB[2], score: '' },
-        { homeTeam: topTeamsB[0], awayTeam: topTeamsA[3], score: '' },
-        { homeTeam: topTeamsB[1], awayTeam: topTeamsA[2], score: '' }
+        { homeTeam: topTeamsA[0], awayTeam: topTeamsB[3] },
+        { homeTeam: topTeamsA[1], awayTeam: topTeamsB[2] },
+        { homeTeam: topTeamsB[0], awayTeam: topTeamsA[3] },
+        { homeTeam: topTeamsB[1], awayTeam: topTeamsA[2] }
       )
     }
   }
@@ -286,8 +284,8 @@ export function generatePlayoffs(poules: Poule[]): PlayoffRound[] {
     playoffs.push({
       name: '½ Finale',
       matches: [
-        { homeTeam: 'Winner QF1', awayTeam: 'Winner QF2', score: '' },
-        { homeTeam: 'Winner QF3', awayTeam: 'Winner QF4', score: '' }
+        { homeTeam: 'Winner QF1', awayTeam: 'Winner QF2' },
+        { homeTeam: 'Winner QF3', awayTeam: 'Winner QF4' }
       ]
     })
     
@@ -295,7 +293,7 @@ export function generatePlayoffs(poules: Poule[]): PlayoffRound[] {
     playoffs.push({
       name: 'Finale',
       matches: [
-        { homeTeam: 'Winner SF1', awayTeam: 'Winner SF2', score: '' }
+        { homeTeam: 'Winner SF1', awayTeam: 'Winner SF2' }
       ]
     })
   }

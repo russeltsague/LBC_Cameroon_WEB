@@ -5,7 +5,7 @@ export default function StatsPage() {
   return (
     <>
       {/* <Navbar /> */}
-      <main className="min-h-screen pt-16">
+      <main className="min-h-screen">
         <StatsSection />
       </main>
     </>

@@ -2,8 +2,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { CalendarIcon, ClockIcon, ChevronDownIcon } from '@heroicons/react/24/outline'
-import { MatchCard } from '../ui/MatchCard'
+import { CalendarIcon, ClockIcon, ChevronDownIcon, MapPinIcon } from '@heroicons/react/24/outline'
 import { toast } from 'react-hot-toast'
 import { getCategories, Category } from '@/app/lib/api'
 
@@ -15,11 +14,13 @@ type Match = {
     _id: string
     name: string
     category: string
+    logo?: string
   } | string
   awayTeam: {
     _id: string
     name: string
     category: string
+    logo?: string
   } | string
   homeScore?: number
   awayScore?: number
@@ -34,21 +35,11 @@ export const CalendarSection = () => {
   const [categories, setCategories] = useState<Category[]>([])
   const [activeCategory, setActiveCategory] = useState<string>('')
   const [selectedPoule, setSelectedPoule] = useState<string>('A')
-  const [expandedMatch, setExpandedMatch] = useState<string | null>(null)
   const [isCategoryOpen, setIsCategoryOpen] = useState(false)
   const [matches, setMatches] = useState<Match[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [selectedJournee, setSelectedJournee] = useState<number | null>(null);
-
-  // Show more/hide logic for matches
-  const [visibleRows, setVisibleRows] = useState(2)
-  const matchesPerRow = 2
-  // Sort matches by date descending (latest first)
-  const sortedMatches = [...matches].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-  const matchesToShow = visibleRows * matchesPerRow
-  const visibleMatches = sortedMatches.slice(0, matchesToShow)
-  const canShowMore = matchesToShow < sortedMatches.length
 
   // Compute available journees from matches
   const journees = Array.from(new Set(matches.map(m => m.journee).filter(j => j != null))).sort((a, b) => Number(a) - Number(b));
@@ -60,7 +51,6 @@ export const CalendarSection = () => {
     const fetchCategories = async () => {
       try {
         const categoriesData = await getCategories()
-        // Move 'CORPORATES' to the end
         const sortedCategories = [...categoriesData].sort((a, b) => {
           if (a.name === 'CORPORATES') return 1;
           if (b.name === 'CORPORATES') return -1;
@@ -68,7 +58,6 @@ export const CalendarSection = () => {
         })
         setCategories(sortedCategories)
 
-        // Restore last selected category from localStorage if available and valid
         const savedCategory = typeof window !== 'undefined' ? localStorage.getItem('calendarCategory') : null;
         const validSaved = sortedCategories.find(cat => cat.name === savedCategory);
         if (savedCategory && validSaved) {
@@ -85,14 +74,12 @@ export const CalendarSection = () => {
     fetchCategories()
   }, [])
 
-  // Persist activeCategory to localStorage
   useEffect(() => {
     if (activeCategory) {
       localStorage.setItem('calendarCategory', activeCategory)
     }
   }, [activeCategory])
 
-  // Get current category data
   const currentCategory = categories.find(cat => cat.name === activeCategory)
   const hasPoules = currentCategory?.hasPoules || false
   const poules = currentCategory?.poules || []
@@ -101,12 +88,10 @@ export const CalendarSection = () => {
     if (activeCategory) fetchMatches()
   }, [activeCategory, selectedPoule])
 
-  // Reset poule selection when category changes
   useEffect(() => {
     setSelectedPoule('A')
   }, [activeCategory])
 
-  // Set selectedJournee to first available when matches change
   useEffect(() => {
     if (journees.length > 0) {
       setSelectedJournee(journees[0]);
@@ -118,13 +103,12 @@ export const CalendarSection = () => {
     setError(null)
     try {
       let url = `${process.env.NEXT_PUBLIC_API_URL}/api/matches?category=${encodeURIComponent(activeCategory)}`
-      
-      // Add poule filter if the category has poules
+
       if (hasPoules) {
         url += `&poule=${selectedPoule}`
       }
-      
-      const res = await fetch(url)  
+
+      const res = await fetch(url)
       if (!res.ok) {
         throw new Error('Failed to fetch matches')
       }
@@ -139,57 +123,52 @@ export const CalendarSection = () => {
     }
   }
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString('fr-FR', { 
-      weekday: 'short', 
-      month: 'short', 
-      day: 'numeric' 
-    })
-  }
-
   const getTeamName = (team: Match['homeTeam']) => {
     if (!team) return 'Unknown Team';
-    if (typeof team === 'string') return 'Unknown Team';
+    if (typeof team === 'string') return team;
     return team.name;
   }
 
+  const getTeamLogo = (team: Match['homeTeam']) => {
+    if (!team || typeof team === 'string') return null;
+    return team.logo;
+  }
+
   return (
-    <section id="calendar" className="py-6 sm:py-16 md:py-24 bg-gradient-to-b from-gray-900 to-gray-800">
-      <div className="container px-2 sm:px-4 md:px-8 mx-auto">
-        <motion.div 
+    <section id="calendar" className="py-12 sm:py-20 min-h-screen bg-[var(--color-background)]">
+      <div className="container px-4 mx-auto">
+        <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-4 md:mb-16"
+          className="text-center mb-12"
         >
-          <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold text-white mb-2 md:mb-4">
-            Calendrier des <span className="text-orange-400">Matchs</span>
+          <h2 className="text-4xl md:text-6xl font-display font-bold text-white mb-4">
+            Calendrier des <span className="text-[var(--color-primary)]">Matchs</span>
           </h2>
-          <p className="text-base sm:text-xl text-gray-300 max-w-xl md:max-w-2xl mx-auto">
+          <p className="text-lg text-gray-400 max-w-2xl mx-auto">
             Suivez tous les matchs et résultats de la saison en cours
           </p>
         </motion.div>
 
-        {/* Category Selector: Dropdown for small/medium, buttons for large+ */}
+        {/* Category Selector */}
         <div className="mb-8">
-          <div className="md:hidden relative">
+          <div className="md:hidden relative z-30">
             <button
               onClick={() => setIsCategoryOpen(!isCategoryOpen)}
-              className="flex items-center justify-between w-full px-6 py-3 bg-gray-800 rounded-lg text-white"
+              className="flex items-center justify-between w-full px-6 py-3 glass rounded-xl text-white border border-white/10"
             >
-              <span>{activeCategory}</span>
+              <span className="font-medium">{activeCategory}</span>
               <ChevronDownIcon className={`w-5 h-5 transition-transform ${isCategoryOpen ? 'rotate-180' : ''}`} />
             </button>
             <AnimatePresence>
               {isCategoryOpen && (
                 <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="absolute z-10 w-full mt-2 bg-gray-800 rounded-lg overflow-hidden shadow-xl"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="absolute w-full mt-2 glass rounded-xl overflow-hidden shadow-xl border border-white/10"
                 >
                   {categories.map(category => (
                     <button
@@ -198,7 +177,10 @@ export const CalendarSection = () => {
                         setActiveCategory(category.name)
                         setIsCategoryOpen(false)
                       }}
-                      className={`w-full px-6 py-3 text-left ${activeCategory === category.name ? 'bg-orange-500 text-white' : 'text-gray-300 hover:bg-gray-700'}`}
+                      className={`w-full px-6 py-3 text-left transition-colors ${activeCategory === category.name
+                          ? 'bg-[var(--color-primary)] text-white'
+                          : 'text-gray-300 hover:bg-white/10'
+                        }`}
                     >
                       {category.name}
                     </button>
@@ -207,94 +189,99 @@ export const CalendarSection = () => {
               )}
             </AnimatePresence>
           </div>
-          <div className="hidden md:flex justify-center mb-12">
-            <div className="inline-flex rounded-lg bg-gray-800 p-1">
-              {categories.map(category => (
-                <button
-                  key={category.name}
-                  onClick={() => setActiveCategory(category.name)}
-                  className={`px-6 py-2 rounded-md transition-colors ${activeCategory === category.name ? 'bg-orange-500 text-white' : 'text-gray-300 hover:bg-gray-700'}`}
-                >
-                  {category.name}
-                </button>
-              ))}
-            </div>
+
+          <div className="hidden md:flex flex-wrap justify-center gap-3 mb-12">
+            {categories.map(category => (
+              <motion.button
+                key={category.name}
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setActiveCategory(category.name)}
+                className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${activeCategory === category.name
+                    ? 'bg-[var(--color-primary)] text-white shadow-lg shadow-[var(--color-primary)]/25'
+                    : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 border border-white/5 hover:border-white/10'
+                  }`}
+              >
+                {category.name}
+              </motion.button>
+            ))}
           </div>
         </div>
 
-        {/* Poule Selection Buttons */}
-        {hasPoules && (
-          <div className="flex justify-center mb-8">
-            <div className="inline-flex rounded-lg bg-gray-700 p-1">
-              {poules.map(poule => (
-                <button
-                  key={poule}
-                  onClick={() => setSelectedPoule(poule)}
-                  className={`px-6 py-2 rounded-md transition-colors ${
-                    selectedPoule === poule
-                      ? 'bg-blue-500 text-white'
-                      : 'text-gray-300 hover:bg-gray-600'
-                  }`}
-                >
-                  Poule {poule}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
+        {/* Poule Selection */}
+        <AnimatePresence>
+          {hasPoules && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="flex justify-center mb-12"
+            >
+              <div className="inline-flex bg-black/20 p-1.5 rounded-xl border border-white/5 backdrop-blur-sm">
+                {poules.map(poule => (
+                  <button
+                    key={poule}
+                    onClick={() => setSelectedPoule(poule)}
+                    className={`px-6 py-2 rounded-lg text-sm font-bold transition-all duration-300 ${selectedPoule === poule
+                        ? 'bg-white/10 text-white shadow-sm border border-white/10'
+                        : 'text-gray-500 hover:text-gray-300'
+                      }`}
+                  >
+                    Poule {poule}
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        {/* Journee Selector Navigation */}
+        {/* Journee Selector */}
         {journees.length > 0 && selectedJournee !== null && (
-          <div className="flex justify-center items-center gap-4 mb-8">
+          <div className="flex justify-center items-center gap-6 mb-12">
             <button
               onClick={() => {
                 const idx = journees.indexOf(selectedJournee);
                 if (idx > 0) setSelectedJournee(journees[idx - 1]);
               }}
               disabled={journees.length <= 1 || journees.indexOf(selectedJournee) === 0}
-              className={`px-4 py-2 rounded-lg font-semibold border transition-colors duration-150 bg-gray-800 text-gray-300 border-gray-700 hover:bg-orange-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed`}
+              className="p-3 rounded-full glass text-white hover:bg-[var(--color-primary)] hover:border-[var(--color-primary)] transition-all disabled:opacity-30 disabled:cursor-not-allowed"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+              <ChevronDownIcon className="w-6 h-6 rotate-90" />
             </button>
-            <span className="text-lg font-bold text-orange-400 min-w-[120px] text-center">
-              {selectedJournee}{selectedJournee === 1 ? 'ère' : 'ème'} journée
-            </span>
+
+            <div className="text-center">
+              <span className="block text-xs text-gray-500 uppercase tracking-widest font-bold mb-1">Journée</span>
+              <span className="text-3xl font-display font-bold text-[var(--color-primary)]">
+                {selectedJournee}<span className="text-lg align-top">{selectedJournee === 1 ? 'ère' : 'ème'}</span>
+              </span>
+            </div>
+
             <button
               onClick={() => {
                 const idx = journees.indexOf(selectedJournee);
                 if (idx < journees.length - 1) setSelectedJournee(journees[idx + 1]);
               }}
               disabled={journees.length <= 1 || journees.indexOf(selectedJournee) === journees.length - 1}
-              className={`px-4 py-2 rounded-lg font-semibold border transition-colors duration-150 bg-gray-800 text-gray-300 border-gray-700 hover:bg-orange-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed`}
+              className="p-3 rounded-full glass text-white hover:bg-[var(--color-primary)] hover:border-[var(--color-primary)] transition-all disabled:opacity-30 disabled:cursor-not-allowed"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+              <ChevronDownIcon className="w-6 h-6 -rotate-90" />
             </button>
           </div>
         )}
 
-        {/* Current Selection Display */}
-        <div className="text-center mb-8">
-          <h3 className="text-2xl font-bold text-white">
-            {activeCategory}
-            {hasPoules && (
-              <span className="text-blue-400 ml-2">- Poule {selectedPoule}</span>
-            )}
-            {selectedJournee && (
-              <span className="text-orange-400 ml-2">- {selectedJournee}{selectedJournee === 1 ? 'ère' : 'ème'} journée</span>
-            )}
-          </h3>
-        </div>
-
         {/* Matches List */}
         {loading ? (
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto"></div>
-            <p className="mt-4 text-gray-400">Loading matches...</p>
+          <div className="flex justify-center py-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--color-primary)]"></div>
           </div>
         ) : error ? (
-          <div className="text-center py-12 text-red-400">{error}</div>
+          <div className="text-center py-12">
+            <div className="inline-block p-4 rounded-xl bg-red-500/10 text-red-400 border border-red-500/20">
+              {error}
+            </div>
+          </div>
         ) : filteredMatches.length > 0 ? (
-          <div className="space-y-12 w-full">
+          <div className="space-y-12 max-w-5xl mx-auto">
             {Object.entries(
               filteredMatches.reduce((acc, match) => {
                 const journee = match.journee || 1;
@@ -305,74 +292,123 @@ export const CalendarSection = () => {
             )
               .sort((a, b) => Number(a[0]) - Number(b[0]))
               .map(([journee, journeeMatches]) => (
-                <div key={journee} className="bg-gray-900 rounded-2xl border border-gray-800 shadow-lg w-full relative">
-                  <div className="bg-gray-800/90 px-2 sm:px-4 py-3 text-base sm:text-xl font-bold text-orange-400 border-b border-gray-700 rounded-t-2xl sticky top-0 z-10">
-                    {journee}{journee === '1' ? 'ère' : 'ème'} journée
+                <motion.div
+                  key={journee}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="glass rounded-3xl overflow-hidden border border-white/10 shadow-2xl"
+                >
+                  <div className="bg-gradient-to-r from-[var(--color-primary)]/20 to-transparent px-6 py-4 border-b border-white/10 flex items-center">
+                    <CalendarIcon className="w-5 h-5 text-[var(--color-primary)] mr-3" />
+                    <span className="text-lg font-bold text-white">
+                      {journee}{journee === '1' ? 'ère' : 'ème'} Journée
+                    </span>
                   </div>
-                  <div className="w-full">
-                    <table className="w-full divide-y divide-gray-700 text-xs sm:text-sm md:text-base">
-                      <thead className="bg-gray-800/80 sticky top-0 z-10">
-                        <tr>
-                          <th className="px-2 sm:px-4 py-2 sm:py-3 text-xs font-bold text-gray-300 uppercase tracking-wider text-center rounded-tl-2xl">N°</th>
-                          <th className="px-2 sm:px-4 py-2 sm:py-3 text-xs font-bold text-gray-300 uppercase tracking-wider text-center">Rencontres</th>
-                          <th className="px-2 sm:px-4 py-2 sm:py-3 text-xs font-bold text-gray-300 uppercase tracking-wider text-center rounded-tr-2xl">Scores</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {journeeMatches
-                          .sort((a, b) => a._id.localeCompare(b._id))
-                          .map((match, idx) => (
-                          <tr key={match._id} className={
-                            `transition-colors ${idx % 2 === 0 ? 'bg-gray-900' : 'bg-gray-800/60'} hover:bg-orange-100/10`
-                          }>
-                            <td className="px-2 sm:px-4 py-2 sm:py-3 text-gray-200 text-center font-semibold text-xs sm:text-base">{idx + 1}</td>
-                            <td className="px-2 sm:px-4 py-2 sm:py-3 text-center">
-                              <span className="font-bold text-white bg-gray-700/40 px-1 sm:px-2 py-1 rounded-lg shadow-sm text-xs sm:text-base">
+
+                  <div className="divide-y divide-white/5">
+                    {journeeMatches
+                      .sort((a, b) => a._id.localeCompare(b._id))
+                      .map((match) => (
+                        <div key={match._id} className="p-6 hover:bg-white/5 transition-colors group">
+                          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+
+                            {/* Home Team */}
+                            <div className="flex-1 flex items-center justify-end w-full md:w-auto">
+                              <span className="text-lg md:text-xl font-bold text-white text-right mr-4 group-hover:text-[var(--color-primary)] transition-colors">
                                 {getTeamName(match.homeTeam)}
                               </span>
-                              <span className="mx-1 sm:mx-2 text-orange-400 font-extrabold text-sm sm:text-lg align-middle">vs</span>
-                              <span className="font-bold text-white bg-gray-700/40 px-1 sm:px-2 py-1 rounded-lg shadow-sm text-xs sm:text-base">
+                              {getTeamLogo(match.homeTeam) ? (
+                                <div className="h-12 w-12 relative flex-shrink-0 bg-white/5 rounded-full p-1 border border-white/10">
+                                  <img src={`/teams/${getTeamLogo(match.homeTeam)}`} alt={getTeamName(match.homeTeam)} className="object-contain w-full h-full" />
+                                </div>
+                              ) : (
+                                <div className="h-12 w-12 rounded-full bg-gray-700 flex items-center justify-center text-xs font-bold text-gray-400">
+                                  LBC
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Score / VS */}
+                            <div className="flex flex-col items-center justify-center min-w-[120px]">
+                              {match.status === 'completed' ? (
+                                <div className="flex items-center justify-center bg-black/40 rounded-xl px-6 py-3 border border-white/10 shadow-inner">
+                                  <span className="text-2xl md:text-3xl font-display font-bold text-[var(--color-primary)]">
+                                    {match.homeScore}
+                                  </span>
+                                  <span className="mx-3 text-gray-500 text-xl">-</span>
+                                  <span className="text-2xl md:text-3xl font-display font-bold text-[var(--color-primary)]">
+                                    {match.awayScore}
+                                  </span>
+                                </div>
+                              ) : (
+                                <div className="flex flex-col items-center">
+                                  <span className="text-2xl font-display font-bold text-gray-600 mb-1">VS</span>
+                                  <div className="flex items-center text-xs font-medium text-gray-400 bg-white/5 px-3 py-1 rounded-full">
+                                    <ClockIcon className="w-3 h-3 mr-1" />
+                                    {match.time}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Away Team */}
+                            <div className="flex-1 flex items-center justify-start w-full md:w-auto">
+                              {getTeamLogo(match.awayTeam) ? (
+                                <div className="h-12 w-12 relative flex-shrink-0 bg-white/5 rounded-full p-1 border border-white/10">
+                                  <img src={`/teams/${getTeamLogo(match.awayTeam)}`} alt={getTeamName(match.awayTeam)} className="object-contain w-full h-full" />
+                                </div>
+                              ) : (
+                                <div className="h-12 w-12 rounded-full bg-gray-700 flex items-center justify-center text-xs font-bold text-gray-400">
+                                  LBC
+                                </div>
+                              )}
+                              <span className="text-lg md:text-xl font-bold text-white text-left ml-4 group-hover:text-[var(--color-primary)] transition-colors">
                                 {getTeamName(match.awayTeam)}
                               </span>
-                            </td>
-                            <td className="px-2 sm:px-4 py-2 sm:py-3 text-center">
-                              {match.status === 'completed' ? (
-                                <span className="font-bold text-orange-400 text-sm sm:text-lg bg-gray-800/60 px-2 sm:px-3 py-1 rounded-lg shadow">
-                                  {match.homeScore} <span className="text-gray-400">#</span> {match.awayScore}
-                                </span>
-                              ) : (
-                                <span className="text-gray-500 text-xs sm:text-base">-</span>
-                              )}
-                            </td>
-                          </tr>
-                        ))}
-                        {/* Optional: EXEMPT row if you have that info, e.g. journeeMatches[0].exemptTeam */}
-                        {journeeMatches[0] && journeeMatches[0].exemptTeam && (
-                          <tr>
-                            <td colSpan={3} className="px-2 sm:px-4 py-2 sm:py-3 text-center bg-gray-800 text-orange-300 font-semibold rounded-b-2xl text-xs sm:text-base">
-                              EXEMPT : {journeeMatches[0].exemptTeam}
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
+                            </div>
+                          </div>
+
+                          {/* Venue & Date */}
+                          <div className="mt-4 pt-4 border-t border-white/5 flex justify-center text-sm text-gray-500">
+                            <span className="flex items-center mr-6">
+                              <CalendarIcon className="w-4 h-4 mr-2 text-gray-600" />
+                              {new Date(match.date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}
+                            </span>
+                            <span className="flex items-center">
+                              <MapPinIcon className="w-4 h-4 mr-2 text-gray-600" />
+                              {match.venue}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+
+                    {/* Exempt Team */}
+                    {journeeMatches[0] && journeeMatches[0].exemptTeam && (
+                      <div className="px-6 py-3 bg-white/5 text-center text-sm font-medium text-gray-400">
+                        <span className="text-[var(--color-primary)] font-bold">EXEMPT :</span> {journeeMatches[0].exemptTeam}
+                      </div>
+                    )}
                   </div>
-                </div>
+                </motion.div>
               ))}
           </div>
         ) : (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center py-12 text-gray-400"
-          >
-            {hasPoules 
-              ? `Aucun match programmé pour ${activeCategory} - Poule ${selectedPoule}`
-              : `Aucun match programmé pour ${activeCategory}`
-            }
-          </motion.div>
+          <div className="text-center py-20">
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-white/5 mb-6">
+              <CalendarIcon className="h-10 w-10 text-gray-600" />
+            </div>
+            <h3 className="text-xl font-bold text-white mb-2">Aucun match programmé</h3>
+            <p className="text-gray-400">
+              {hasPoules
+                ? `Aucun match trouvé pour ${activeCategory} - Poule ${selectedPoule}`
+                : `Aucun match trouvé pour ${activeCategory}`
+              }
+            </p>
+          </div>
         )}
       </div>
     </section>
   )
 }
+
+export default CalendarSection;

@@ -7,73 +7,68 @@ interface AuthGuardProps {
   children: React.ReactNode
 }
 
+// TESTING MODE: Set to true to bypass authentication
+// WARNING: Set to false in production!
+const TESTING_MODE = true
+
 export const AuthGuard = ({ children }: AuthGuardProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
   const pathname = usePathname()
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const token = localStorage.getItem('adminToken')
-      const user = localStorage.getItem('adminUser')
-
-      if (!token || !user) {
-        setIsAuthenticated(false)
-        setIsLoading(false)
-        if (pathname !== '/admin/login') {
-          router.push('/admin/login')
+    const checkAuth = () => {
+      // TESTING MODE: Always authenticate
+      if (TESTING_MODE) {
+        setIsAuthenticated(true)
+        // Auto-create a test token if it doesn't exist
+        if (!localStorage.getItem('adminToken')) {
+          localStorage.setItem('adminToken', 'test-token-' + Date.now())
+          localStorage.setItem('adminUser', JSON.stringify({
+            username: 'test-admin',
+            role: 'admin'
+          }))
+        }
+        // Redirect from login page to dashboard
+        if (pathname === '/admin/login') {
+          router.push('/admin')
         }
         return
       }
 
-      try {
-        // Verify token with backend
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/verify`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        })
+      // PRODUCTION MODE: Normal authentication
+      const token = localStorage.getItem('adminToken')
+      const isLoginPage = pathname === '/admin/login'
 
-        if (response.ok) {
-          setIsAuthenticated(true)
-        } else {
-          // Token is invalid, clear storage and redirect
-          localStorage.removeItem('adminToken')
-          localStorage.removeItem('adminUser')
-          setIsAuthenticated(false)
-          if (pathname !== '/admin/login') {
-            router.push('/admin/login')
-          }
+      if (token) {
+        setIsAuthenticated(true)
+        if (isLoginPage) {
+          router.push('/admin')
         }
-      } catch (error) {
-        console.error('Auth verification error:', error)
-        // Network error, assume token is invalid
-        localStorage.removeItem('adminToken')
-        localStorage.removeItem('adminUser')
+      } else {
         setIsAuthenticated(false)
-        if (pathname !== '/admin/login') {
+        if (!isLoginPage) {
           router.push('/admin/login')
         }
-      } finally {
-        setIsLoading(false)
       }
     }
 
-    // Add a small delay to allow localStorage to be updated after login
-    const timer = setTimeout(checkAuth, 100)
-    
-    return () => clearTimeout(timer)
+    // Check auth immediately
+    checkAuth()
+
+    // Add event listener for storage changes (in case of logout in another tab)
+    window.addEventListener('storage', checkAuth)
+
+    return () => window.removeEventListener('storage', checkAuth)
   }, [router, pathname])
 
-  // Skip authentication for login page
-  if (pathname === '/admin/login') {
+  // TESTING MODE: Skip loading state
+  if (TESTING_MODE) {
     return <>{children}</>
   }
 
   // Show loading state while checking authentication
-  if (isLoading) {
+  if (isAuthenticated === null) {
     return (
       <div className="min-h-screen bg-gray-950 flex items-center justify-center">
         <motion.div
@@ -82,28 +77,22 @@ export const AuthGuard = ({ children }: AuthGuardProps) => {
           className="text-center"
         >
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
-          <p className="text-gray-400">Verifying authentication...</p>
+          <p className="text-gray-400 font-outfit">Vérification de l'accès...</p>
         </motion.div>
       </div>
     )
   }
 
-  // If not authenticated, show loading while redirecting
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-center"
-        >
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
-          <p className="text-gray-400">Redirecting to login...</p>
-        </motion.div>
-      </div>
-    )
+  // If on login page and not authenticated, render children (login form)
+  if (pathname === '/admin/login' && !isAuthenticated) {
+    return <>{children}</>
   }
 
-  // If authenticated, render children
-  return <>{children}</>
+  // If on protected route and authenticated, render children (dashboard)
+  if (pathname !== '/admin/login' && isAuthenticated) {
+    return <>{children}</>
+  }
+
+  // Otherwise (e.g. redirecting), show loading or nothing
+  return null
 } 

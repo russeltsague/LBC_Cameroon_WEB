@@ -125,24 +125,11 @@ export const CalendarGenerator = () => {
             journées: poule.journées.map(journee => ({
               n: journee.n,
               matches: journee.matches.map(match => {
-                // Parse score string to get homeScore and awayScore
-                let homeScore: number | undefined;
-                let awayScore: number | undefined;
-                
-                if (match.score && match.score !== '') {
-                  const scoreParts = match.score.split('-');
-                  if (scoreParts.length === 2) {
-                    homeScore = parseInt(scoreParts[0]) || undefined;
-                    awayScore = parseInt(scoreParts[1]) || undefined;
-                  }
-                }
-                
                 return {
                   homeTeam: match.homeTeam || '',
                   awayTeam: match.awayTeam || '',
-                  score: match.score || '', // Keep for backward compatibility
-                  homeScore,
-                  awayScore
+                  homeScore: match.homeScore,
+                  awayScore: match.awayScore
                 };
               }),
               exempt: journee.exempt || ''
@@ -151,23 +138,11 @@ export const CalendarGenerator = () => {
           playoffs: calendar.playoffs?.map(playoff => ({
             name: playoff.name,
             matches: playoff.matches.map(match => {
-              // Parse score string to get homeScore and awayScore
-              let homeScore: number | undefined;
-              let awayScore: number | undefined;
-              
-              if (match.score && match.score !== '') {
-                const scoreParts = match.score.split('-');
-                if (scoreParts.length === 2) {
-                  homeScore = parseInt(scoreParts[0]) || undefined;
-                  awayScore = parseInt(scoreParts[1]) || undefined;
-                }
-              }
-              
               return {
                 homeTeam: match.homeTeam || '',
-                score: match.score || '', // Keep for backward compatibility
-                homeScore,
-                awayScore
+                awayTeam: match.awayTeam || '',
+                homeScore: match.homeScore,
+                awayScore: match.awayScore
               };
             })
           })) || []
@@ -221,7 +196,8 @@ export const CalendarGenerator = () => {
             matches: journee.matches.map(match => ({
               homeTeam: match.homeTeam,
               awayTeam: match.awayTeam,
-              score: match.score
+              homeScore: match.homeScore,
+              awayScore: match.awayScore
             })),
             exempt: journee.exempt
           }))
@@ -230,7 +206,9 @@ export const CalendarGenerator = () => {
           name: round.name,
           matches: round.matches.map(match => ({
             homeTeam: match.homeTeam,
-            score: match.score
+            awayTeam: match.awayTeam,
+            homeScore: match.homeScore,
+            awayScore: match.awayScore
           }))
         }))
       }
@@ -261,7 +239,8 @@ export const CalendarGenerator = () => {
             matches: journee.matches.map(match => ({
               homeTeam: match.homeTeam,
               awayTeam: match.awayTeam,
-              score: match.score
+              homeScore: match.homeScore,
+              awayScore: match.awayScore
             })),
             exempt: journee.exempt
           }))
@@ -270,7 +249,9 @@ export const CalendarGenerator = () => {
           name: round.name,
           matches: round.matches.map(match => ({
             homeTeam: match.homeTeam,
-            score: match.score
+            awayTeam: match.awayTeam,
+            homeScore: match.homeScore,
+            awayScore: match.awayScore
           }))
         }))
       }
@@ -297,7 +278,8 @@ export const CalendarGenerator = () => {
             matches: journee.matches.map(match => ({
               homeTeam: match.homeTeam,
               awayTeam: match.awayTeam,
-              score: match.score
+              homeScore: match.homeScore,
+              awayScore: match.awayScore
             })),
             exempt: journee.exempt
           }))
@@ -306,7 +288,9 @@ export const CalendarGenerator = () => {
           name: round.name,
           matches: round.matches.map(match => ({
             homeTeam: match.homeTeam,
-            score: match.score
+            awayTeam: match.awayTeam,
+            homeScore: match.homeScore,
+            awayScore: match.awayScore
           }))
         }))
       }
@@ -408,7 +392,8 @@ export const CalendarGenerator = () => {
           matches: journee.matches.map(match => ({
             homeTeam: match.homeTeam,
             awayTeam: match.awayTeam,
-            score: match.score
+            homeScore: match.homeScore,
+            awayScore: match.awayScore
           })),
           exempt: journee.exempt
         }))
@@ -417,8 +402,9 @@ export const CalendarGenerator = () => {
         name: round.name,
         matches: round.matches.map(match => ({
           homeTeam: match.homeTeam,
-          awayTeam: match.homeTeam, // Assuming same team for now - adjust as needed
-          score: match.score
+          awayTeam: match.awayTeam,
+          homeScore: match.homeScore,
+          awayScore: match.awayScore
         }))
       }))
     }
@@ -551,18 +537,20 @@ export const CalendarGenerator = () => {
     journeeIndex: number
     matchIndex: number
   }) => {
-    const { homeScore, awayScore, isForfeit } = parseScore(match.score || '')
-    const forfeitTeam = getForfeitTeam(match.score || '')
-    const showForfeit = getForfeitMode(match.score || '')
+    const homeScore = match.homeScore
+    const awayScore = match.awayScore
+    const isForfeit = false // Adjust forfeit logic as needed
+    const forfeitTeam = ''
+    const showForfeit = false
     
     // Local state to prevent re-rendering on every keystroke
-    const [localHomeScore, setLocalHomeScore] = useState(homeScore)
-    const [localAwayScore, setLocalAwayScore] = useState(awayScore)
+    const [localHomeScore, setLocalHomeScore] = useState(homeScore?.toString() || '')
+    const [localAwayScore, setLocalAwayScore] = useState(awayScore?.toString() || '')
     
     // Update local state when match score changes from parent
     useEffect(() => {
-      setLocalHomeScore(homeScore)
-      setLocalAwayScore(awayScore)
+      setLocalHomeScore(homeScore?.toString() || '')
+      setLocalAwayScore(awayScore?.toString() || '')
     }, [homeScore, awayScore])
     
     const handleScoreChange = (field: 'homeScore' | 'awayScore', value: string) => {
@@ -587,10 +575,8 @@ export const CalendarGenerator = () => {
     
     const handleScoreBlur = () => {
       // Update parent state with separate homeScore and awayScore fields
-      const formattedScore = formatScore(localHomeScore, localAwayScore, isForfeit)
-      onUpdate('score', formattedScore)
-      onUpdate('homeScore', localHomeScore ? parseInt(localHomeScore).toString() : '')
-      onUpdate('awayScore', localAwayScore ? parseInt(localAwayScore).toString() : '')
+      onUpdate('homeScore', localHomeScore ? localHomeScore.toString() : '')
+      onUpdate('awayScore', localAwayScore ? localAwayScore.toString() : '')
     }
     
     const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -601,149 +587,57 @@ export const CalendarGenerator = () => {
     
     const toggleForfeit = () => {
       if (!showForfeit) {
-        // Start forfeit mode - set a temporary indicator
-        onUpdate('score', 'FORFAIT_MODE')
+        // Start forfeit mode - set scores to 0-20
+        onUpdate('homeScore', '0')
+        onUpdate('awayScore', '20')
       } else {
         // Cancel forfeit mode
-        onUpdate('score', '')
+        onUpdate('homeScore', '')
+        onUpdate('awayScore', '')
       }
     }
     
     const handleForfeitTeamSelection = (team: 'home' | 'away') => {
       // Generate automatic forfeit score: 0-20 or 20-0
-      const formattedScore = formatScore(
-        team === 'home' ? '0' : '20',
-        team === 'home' ? '20' : '0',
-        true
-      )
-      onUpdate('score', formattedScore)
+      if (team === 'home') {
+        onUpdate('homeScore', '0')
+        onUpdate('awayScore', '20')
+      } else {
+        onUpdate('homeScore', '20')
+        onUpdate('awayScore', '0')
+      }
     }
     
     const cancelForfeit = () => {
-      onUpdate('score', '')
-    }
-    
-    // Handle special forfeit mode state
-    if (match.score === 'FORFAIT_MODE') {
-      return (
-        <div className="flex items-center gap-2">
-          <input
-            type="text"
-            value=""
-            className="w-12 bg-white/10 text-white px-2 py-1 rounded border border-white/20 focus:border-orange-500/50 focus:outline-none text-center text-sm"
-            placeholder="0"
-            disabled
-          />
-          <span className="text-gray-400 text-sm font-medium">-</span>
-          <input
-            type="text"
-            value=""
-            className="w-12 bg-white/10 text-white px-2 py-1 rounded border border-white/20 focus:border-orange-500/50 focus:outline-none text-center text-sm"
-            placeholder="0"
-            disabled
-          />
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => handleForfeitTeamSelection('home')}
-              className="px-2 py-1 rounded text-xs font-medium bg-orange-500/10 text-orange-300 border border-orange-500/20 hover:bg-orange-500/20 transition-colors"
-              title="Équipe domicile forfait"
-            >
-              D
-            </button>
-            <button
-              onClick={() => handleForfeitTeamSelection('away')}
-              className="px-2 py-1 rounded text-xs font-medium bg-orange-500/10 text-orange-300 border border-orange-500/20 hover:bg-orange-500/20 transition-colors"
-              title="Équipe extérieur forfait"
-            >
-              E
-            </button>
-            <button
-              onClick={cancelForfeit}
-              className="px-2 py-1 rounded text-xs font-medium bg-gray-500/10 text-gray-400 border border-gray-500/20 hover:bg-gray-500/20 transition-colors"
-              title="Annuler forfait"
-            >
-              X
-            </button>
-          </div>
-        </div>
-      )
+      onUpdate('homeScore', '')
+      onUpdate('awayScore', '')
     }
     
     return (
       <div className="flex items-center gap-2">
         <input
           type="number"
-          value={isForfeit && forfeitTeam === 'home' ? '0' : localHomeScore}
+          value={localHomeScore}
           onChange={(e) => handleScoreChange('homeScore', e.target.value)}
           onBlur={handleScoreBlur}
           onKeyPress={handleKeyPress}
           className="w-16 bg-white/10 text-white px-2 py-1 rounded border border-white/20 focus:border-orange-500/50 focus:outline-none text-center text-sm"
           placeholder="0"
-          disabled={isForfeit}
           min="0"
           max="200"
         />
         <span className="text-gray-400 text-sm font-medium">-</span>
         <input
           type="number"
-          value={isForfeit && forfeitTeam === 'away' ? '0' : localAwayScore}
+          value={localAwayScore}
           onChange={(e) => handleScoreChange('awayScore', e.target.value)}
           onBlur={handleScoreBlur}
           onKeyPress={handleKeyPress}
           className="w-16 bg-white/10 text-white px-2 py-1 rounded border border-white/20 focus:border-orange-500/50 focus:outline-none text-center text-sm"
           placeholder="0"
-          disabled={isForfeit}
           min="0"
           max="200"
         />
-        
-        {!isForfeit ? (
-          <button
-            onClick={toggleForfeit}
-            className="px-2 py-1 rounded text-xs font-medium bg-gray-500/10 text-gray-400 border border-gray-500/20 hover:bg-gray-500/20 transition-colors"
-            title="Marquer comme forfait"
-          >
-            F
-          </button>
-        ) : (
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => handleForfeitTeamSelection('home')}
-              className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
-                forfeitTeam === 'home'
-                  ? 'bg-red-500/20 text-red-300 border border-red-500/30'
-                  : 'bg-orange-500/10 text-orange-300 border border-orange-500/20 hover:bg-orange-500/20'
-              }`}
-              title="Équipe domicile forfait"
-            >
-              D
-            </button>
-            <button
-              onClick={() => handleForfeitTeamSelection('away')}
-              className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
-                forfeitTeam === 'away'
-                  ? 'bg-red-500/20 text-red-300 border border-red-500/30'
-                  : 'bg-orange-500/10 text-orange-300 border border-orange-500/20 hover:bg-orange-500/20'
-              }`}
-              title="Équipe extérieur forfait"
-            >
-              E
-            </button>
-            <button
-              onClick={cancelForfeit}
-              className="px-2 py-1 rounded text-xs font-medium bg-gray-500/10 text-gray-400 border border-gray-500/20 hover:bg-gray-500/20 transition-colors"
-              title="Annuler forfait"
-            >
-              X
-            </button>
-          </div>
-        )}
-        
-        {isForfeit && forfeitTeam && (
-          <span className="text-xs text-red-300 font-medium">
-            Forfait {forfeitTeam === 'home' ? 'Domicile' : 'Extérieur'}
-          </span>
-        )}
       </div>
     )
   }
@@ -930,7 +824,7 @@ export const CalendarGenerator = () => {
     setEditingCalendar(updatedCalendar)
   }
 
-  const updateMatchInCalendar = (pouleIndex: number, journeeIndex: number, matchIndex: number, field: 'homeTeam' | 'awayTeam' | 'score', value: string) => {
+  const updateMatchInCalendar = (pouleIndex: number, journeeIndex: number, matchIndex: number, field: 'homeTeam' | 'awayTeam' | 'homeScore' | 'awayScore', value: string) => {
     if (!editingCalendar) return
     
     const updatedCalendar = { ...editingCalendar }
@@ -967,12 +861,22 @@ export const CalendarGenerator = () => {
         }
       }
       
-      updatedCalendar.poules[pouleIndex].journées[journeeIndex].matches[matchIndex][field] = value
+      // Use type-safe field assignment
+      const match = updatedCalendar.poules[pouleIndex].journées[journeeIndex].matches[matchIndex]
+      if (field === 'homeTeam') {
+        match.homeTeam = value
+      } else if (field === 'awayTeam') {
+        match.awayTeam = value
+      } else if (field === 'homeScore') {
+        match.homeScore = value ? parseInt(value) : undefined
+      } else if (field === 'awayScore') {
+        match.awayScore = value ? parseInt(value) : undefined
+      }
     }
     setEditingCalendar(updatedCalendar)
   }
 
-  const updateMatchInGeneratedCalendar = (categoryName: string, pouleIndex: number, journeeIndex: number, matchIndex: number, field: 'homeTeam' | 'awayTeam' | 'score', value: string) => {
+  const updateMatchInGeneratedCalendar = (categoryName: string, pouleIndex: number, journeeIndex: number, matchIndex: number, field: 'homeTeam' | 'awayTeam' | 'homeScore' | 'awayScore', value: string) => {
     const calendar = calendars.find(cal => cal.category === categoryName)
     if (!calendar) return
     
@@ -1010,19 +914,39 @@ export const CalendarGenerator = () => {
         }
       }
       
-      updatedCalendar.poules[pouleIndex].journées[journeeIndex].matches[matchIndex][field] = value
+      // Use type-safe field assignment
+      const match = updatedCalendar.poules[pouleIndex].journées[journeeIndex].matches[matchIndex]
+      if (field === 'homeTeam') {
+        match.homeTeam = value
+      } else if (field === 'awayTeam') {
+        match.awayTeam = value
+      } else if (field === 'homeScore') {
+        match.homeScore = value ? parseInt(value) : undefined
+      } else if (field === 'awayScore') {
+        match.awayScore = value ? parseInt(value) : undefined
+      }
     }
     
     updateGeneratedCalendar(categoryName, updatedCalendar)
   }
 
-  const updatePlayoffMatch = (categoryName: string, roundIndex: number, matchIndex: number, field: 'homeTeam' | 'awayTeam' | 'score', value: string) => {
+  const updatePlayoffMatch = (categoryName: string, roundIndex: number, matchIndex: number, field: 'homeTeam' | 'awayTeam' | 'homeScore' | 'awayScore', value: string) => {
     const calendar = calendars.find(cal => cal.category === categoryName)
     if (!calendar) return
     
     const updatedCalendar = { ...calendar }
     if (updatedCalendar.playoffs && updatedCalendar.playoffs[roundIndex]) {
-      updatedCalendar.playoffs[roundIndex].matches[matchIndex][field] = value
+      // Use type-safe field assignment
+      const match = updatedCalendar.playoffs[roundIndex].matches[matchIndex]
+      if (field === 'homeTeam') {
+        match.homeTeam = value
+      } else if (field === 'awayTeam') {
+        match.awayTeam = value
+      } else if (field === 'homeScore') {
+        match.homeScore = value ? parseInt(value) : undefined
+      } else if (field === 'awayScore') {
+        match.awayScore = value ? parseInt(value) : undefined
+      }
     }
     
     updateGeneratedCalendar(categoryName, updatedCalendar)
@@ -1264,7 +1188,7 @@ export const CalendarGenerator = () => {
                                     </select>
                                     <ScoreInput
                                       match={match}
-                                      onUpdate={(field, value) => updateMatchInGeneratedCalendar(calendar.category, pouleIndex, journeeIndex, matchIndex, field as 'score', value)}
+                                      onUpdate={(field, value) => updateMatchInGeneratedCalendar(calendar.category, pouleIndex, journeeIndex, matchIndex, field as 'homeScore' | 'awayScore', value)}
                                       calendar={calendar}
                                       pouleIndex={pouleIndex}
                                       journeeIndex={journeeIndex}
@@ -1317,10 +1241,20 @@ export const CalendarGenerator = () => {
                                   </select>
                                   <input
                                     type="number"
-                                    value={match.score || ''}
-                                    onChange={(e) => updatePlayoffMatch(calendar.category, roundIndex, matchIndex, 'score', e.target.value)}
+                                    value={match.homeScore?.toString() || ''}
+                                    onChange={(e) => updatePlayoffMatch(calendar.category, roundIndex, matchIndex, 'homeScore', e.target.value)}
                                     className="w-16 bg-white/10 text-white px-2 py-1 rounded border border-white/20 focus:border-orange-500/50 focus:outline-none text-center text-sm"
-                                    placeholder="Score"
+                                    placeholder="H"
+                                    min="0"
+                                    max="200"
+                                  />
+                                  <span className="text-gray-400 text-sm">-</span>
+                                  <input
+                                    type="number"
+                                    value={match.awayScore?.toString() || ''}
+                                    onChange={(e) => updatePlayoffMatch(calendar.category, roundIndex, matchIndex, 'awayScore', e.target.value)}
+                                    className="w-16 bg-white/10 text-white px-2 py-1 rounded border border-white/20 focus:border-orange-500/50 focus:outline-none text-center text-sm"
+                                    placeholder="A"
                                     min="0"
                                     max="200"
                                   />
@@ -1501,7 +1435,7 @@ export const CalendarGenerator = () => {
                                   </select>
                                   <ScoreInput
                                       match={match}
-                                      onUpdate={(field, value) => updateMatchInCalendar(pouleIndex, journeeIndex, matchIndex, field as 'score', value)}
+                                      onUpdate={(field, value) => updateMatchInCalendar(pouleIndex, journeeIndex, matchIndex, field as 'homeScore' | 'awayScore', value)}
                                       calendar={editingCalendar}
                                       pouleIndex={pouleIndex}
                                       journeeIndex={journeeIndex}

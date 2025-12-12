@@ -4,7 +4,7 @@ import Classification from '@/components/sections/Classification'
 export default function ClassificationPage() {
   return (
     <>
-      <main className="min-h-screen pt-16">
+      <main className="min-h-screen">
         <Classification />
       </main>
     </>
