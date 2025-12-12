@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const app_1 = __importDefault(require("./app"));
 const db_1 = __importDefault(require("./config/db"));
+require("./models"); // Import all models to ensure they are registered
 const PORT = process.env.PORT || 5000;
 // Connect to database and start server
 (0, db_1.default)().then(() => {

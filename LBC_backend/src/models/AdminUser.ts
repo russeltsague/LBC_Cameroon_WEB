@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs';
 export interface IAdminUser extends Document {
   username: string;
   password: string;
+  roles: string[];
   comparePassword(candidate: string): Promise<boolean>;
   createdAt: Date;
   updatedAt: Date;
@@ -22,7 +23,12 @@ const AdminUserSchema: Schema = new Schema({
     type: String,
     required: true,
     minlength: 6
-  }
+  },
+  roles: [{
+    type: String,
+    enum: ['player', 'technical_official', 'coach', 'medical_staff', 'manager'],
+    default: ['player']
+  }]
 }, { timestamps: true });
 
 // Hash password before save

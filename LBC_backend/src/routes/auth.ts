@@ -48,9 +48,13 @@ router.post('/register', async (req: Request, res: Response): Promise<void> => {
     const adminUser = new AdminUser({ username, password });
     await adminUser.save();
 
-    // Generate JWT token
+    // Generate JWT token with roles
     const token = jwt.sign(
-      { userId: adminUser._id, username: adminUser.username },
+      { 
+        userId: adminUser._id, 
+        username: adminUser.username,
+        roles: adminUser.roles 
+      },
       process.env.JWT_SECRET || 'your-secret-key',
       { expiresIn: '24h' }
     );
@@ -61,7 +65,8 @@ router.post('/register', async (req: Request, res: Response): Promise<void> => {
       data: {
         user: {
           id: adminUser._id,
-          username: adminUser.username
+          username: adminUser.username,
+          roles: adminUser.roles
         },
         token
       }
@@ -100,9 +105,13 @@ router.post('/login', async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    // Generate JWT token
+    // Generate JWT token with roles
     const token = jwt.sign(
-      { userId: adminUser._id, username: adminUser.username },
+      { 
+        userId: adminUser._id, 
+        username: adminUser.username,
+        roles: adminUser.roles 
+      },
       process.env.JWT_SECRET || 'your-secret-key',
       { expiresIn: '24h' }
     );
@@ -113,7 +122,8 @@ router.post('/login', async (req: Request, res: Response): Promise<void> => {
       data: {
         user: {
           id: adminUser._id,
-          username: adminUser.username
+          username: adminUser.username,
+          roles: adminUser.roles
         },
         token
       }

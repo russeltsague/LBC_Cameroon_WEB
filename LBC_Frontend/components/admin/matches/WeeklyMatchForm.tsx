@@ -50,7 +50,7 @@ export const WeeklyMatchForm = () => {
 
   // Tab navigation
   const [activeTab, setActiveTab] = useState<'create' | 'manage'>('create')
-  
+
   // Create tab states
   const [tables, setTables] = useState<MatchTable[]>([])
   const [availableDates, setAvailableDates] = useState<string[]>([])
@@ -67,7 +67,7 @@ export const WeeklyMatchForm = () => {
   const [selectedSchedule, setSelectedSchedule] = useState<any | null>(null)
   const [editingSchedule, setEditingSchedule] = useState<any | null>(null)
   const [viewMode, setViewMode] = useState<'list' | 'detail'>('list')
-  
+
   // Match status management
   const [matchStatuses, setMatchStatuses] = useState<Record<string, string>>({})
   const [editingScore, setEditingScore] = useState<string | null>(null)
@@ -119,23 +119,23 @@ export const WeeklyMatchForm = () => {
   // Handle schedule save
   const handleScheduleSave = async () => {
     if (!editingSchedule) return
-    
+
     try {
       const updatedSchedule = await updateWeeklyScheduleDetails(editingSchedule._id, editingSchedule)
       setSelectedSchedule(updatedSchedule)
       setEditingSchedule(null)
-      
+
       // Update the schedules list
-      setWeeklySchedules(prev => 
-        prev.map(schedule => 
+      setWeeklySchedules(prev =>
+        prev.map(schedule =>
           schedule._id === updatedSchedule._id ? updatedSchedule : schedule
         )
       )
-      
+
       toast.success('Programme mis à jour avec succès')
     } catch (error: any) {
       console.error('Error updating schedule:', error)
-      
+
       // Handle specific duplicate match error
       if (error.message && error.message.includes('already scheduled in another date')) {
         let errorMessage = error.message;
@@ -158,15 +158,15 @@ export const WeeklyMatchForm = () => {
   // Handle schedule delete
   const handleScheduleDelete = async (scheduleId: string) => {
     if (!confirm('Êtes-vous sûr de vouloir supprimer ce programme ?')) return
-    
+
     try {
       await deleteWeeklyScheduleById(scheduleId)
       setWeeklySchedules(prev => prev.filter(schedule => schedule._id !== scheduleId))
-      
+
       if (selectedSchedule?._id === scheduleId) {
         handleBackToList()
       }
-      
+
       toast.success('Programme supprimé avec succès')
     } catch (error) {
       console.error('Error deleting schedule:', error)
@@ -177,10 +177,10 @@ export const WeeklyMatchForm = () => {
   // Handle match update in editing schedule
   const handleScheduleMatchUpdate = (matchIndex: number, field: string, value: any) => {
     if (!editingSchedule) return
-    
+
     setEditingSchedule((prev: any) => ({
       ...prev,
-      matches: prev.matches.map((match: any, index: number) => 
+      matches: prev.matches.map((match: any, index: number) =>
         index === matchIndex ? { ...match, [field]: value } : match
       )
     }))
@@ -189,7 +189,7 @@ export const WeeklyMatchForm = () => {
   // Handle add match to editing schedule
   const handleAddMatchToSchedule = () => {
     if (!editingSchedule) return
-    
+
     const newMatch = {
       _id: `temp-${Date.now()}`,
       category: '',
@@ -201,7 +201,7 @@ export const WeeklyMatchForm = () => {
       awayTeam: '',
       time: '10:00'
     }
-    
+
     setEditingSchedule((prev: any) => ({
       ...prev,
       matches: [...prev.matches, newMatch]
@@ -211,7 +211,7 @@ export const WeeklyMatchForm = () => {
   // Handle remove match from editing schedule
   const handleRemoveMatchFromSchedule = (matchIndex: number) => {
     if (!editingSchedule) return
-    
+
     setEditingSchedule((prev: any) => ({
       ...prev,
       matches: prev.matches.filter((_: any, index: number) => index !== matchIndex)
@@ -224,12 +224,12 @@ export const WeeklyMatchForm = () => {
       // Find the actual match ID if it exists
       const schedule = weeklySchedules.find(s => s._id === scheduleId)
       if (!schedule || !schedule.matches[matchIndex]) return
-      
+
       const match = schedule.matches[matchIndex]
       let matchId = match.matchId // If match was saved as actual match
-      
+
       let homeScore: number | undefined, awayScore: number | undefined
-      
+
       if (status === 'completed') {
         const scores = scoreInputs[`${scheduleId}-${matchIndex}`]
         if (!scores || scores.home === undefined || scores.away === undefined) {
@@ -239,13 +239,13 @@ export const WeeklyMatchForm = () => {
         homeScore = scores.home
         awayScore = scores.away
       }
-      
+
       // Update match status via API
       if (matchId) {
         const statusForUpdate = status === 'forfeit' ? 'completed' : status
         await updateMatchStatus(matchId, statusForUpdate, homeScore, awayScore)
       }
-      
+
       // Also update the weekly schedule in the database with scores
       if (status === 'completed' && homeScore !== undefined && awayScore !== undefined) {
         try {
@@ -257,18 +257,18 @@ export const WeeklyMatchForm = () => {
             homeScore,
             awayScore
           }
-          
+
           await updateWeeklyScheduleDetails(scheduleId, {
             matches: updatedMatches
           })
-          
+
           console.log('Weekly schedule updated in database with scores')
         } catch (scheduleError) {
           console.error('Error updating weekly schedule with scores:', scheduleError)
           // Continue with other updates even if this fails
         }
       }
-      
+
       // Also update calendar match score if completed
       if (status === 'completed' && homeScore !== undefined && awayScore !== undefined) {
         try {
@@ -291,15 +291,15 @@ export const WeeklyMatchForm = () => {
           // Don't show error to user as the main update succeeded
         }
       }
-      
+
       // Update local state
       setMatchStatuses(prev => ({
         ...prev,
         [`${scheduleId}-${matchIndex}`]: status
       }))
-      
+
       // Update schedule in local state
-      setWeeklySchedules((prev: any[]) => 
+      setWeeklySchedules((prev: any[]) =>
         prev.map((schedule: any) => {
           if (schedule._id === scheduleId) {
             const updatedMatches = [...schedule.matches]
@@ -313,7 +313,7 @@ export const WeeklyMatchForm = () => {
           return schedule
         })
       )
-      
+
       // Update selected schedule if it's the current one
       if (selectedSchedule?._id === scheduleId) {
         setSelectedSchedule((prev: any) => {
@@ -327,9 +327,9 @@ export const WeeklyMatchForm = () => {
           return { ...prev, matches: updatedMatches }
         })
       }
-      
+
       toast.success(`Match marqué comme ${status === 'upcoming' ? 'à venir' : status === 'live' ? 'en direct' : 'terminé'}`)
-      
+
       if (status === 'completed') {
         setEditingScore(null)
         // Clear score inputs for this match
@@ -360,7 +360,7 @@ export const WeeklyMatchForm = () => {
   // Toggle score editing mode
   const toggleScoreEdit = (scheduleId: string, matchIndex: number, currentHomeScore?: number, currentAwayScore?: number) => {
     const key = `${scheduleId}-${matchIndex}`
-    
+
     if (editingScore === key) {
       setEditingScore(null)
     } else {
@@ -408,16 +408,16 @@ export const WeeklyMatchForm = () => {
     try {
       const schedule = weeklySchedules.find(s => s._id === scheduleId)
       if (!schedule || !schedule.matches[matchIndex]) return
-      
+
       const match = schedule.matches[matchIndex]
       const teams = match.teams || `${match.homeTeam} vs ${match.awayTeam}`
       const teamParts = teams.split(' vs ')
-      
+
       if (teamParts.length !== 2) {
         toast.error('Impossible de déterminer les équipes')
         return
       }
-      
+
       // Set forfeit scores (20-0 for winner, 0-20 for loser)
       let homeScore = 0, awayScore = 0
       if (forfeitTeam === 'home') {
@@ -427,10 +427,10 @@ export const WeeklyMatchForm = () => {
         // Home team wins 20-0
         homeScore = 20
       }
-      
+
       // Update the match as forfeit
       await handleMatchStatusUpdate(scheduleId, matchIndex, 'forfeit')
-      
+
       // Update scores in the match
       const updatedMatches = [...schedule.matches]
       updatedMatches[matchIndex] = {
@@ -441,12 +441,12 @@ export const WeeklyMatchForm = () => {
         forfeitTeam,
         forfeitWinner: forfeitTeam === 'home' ? teamParts[1].trim() : teamParts[0].trim()
       }
-      
+
       // Update weekly schedule in database
       await updateWeeklyScheduleDetails(scheduleId, {
         matches: updatedMatches
       })
-      
+
       // Update calendar
       try {
         await updateCalendarMatchScore(
@@ -460,9 +460,9 @@ export const WeeklyMatchForm = () => {
       } catch (calendarError) {
         console.error('Error updating calendar:', calendarError)
       }
-      
+
       // Update local state
-      setWeeklySchedules((prev: any[]) => 
+      setWeeklySchedules((prev: any[]) =>
         prev.map((s: any) => {
           if (s._id === scheduleId) {
             return { ...s, matches: updatedMatches }
@@ -470,17 +470,17 @@ export const WeeklyMatchForm = () => {
           return s
         })
       )
-      
+
       if (selectedSchedule?._id === scheduleId) {
         setSelectedSchedule((prev: any) => {
           if (!prev) return prev
           return { ...prev, matches: updatedMatches }
         })
       }
-      
+
       const winner = forfeitTeam === 'home' ? teamParts[1].trim() : teamParts[0].trim()
       toast.success(`Match déclaré en forfait - ${winner} vainqueur par forfait (20-0)`)
-      
+
     } catch (error) {
       console.error('Error handling forfeit:', error)
       toast.error('Erreur lors de la déclaration du forfait')
@@ -496,73 +496,73 @@ export const WeeklyMatchForm = () => {
       matches: table.matches.map(m =>
         m.id === matchId
           ? {
-              ...m,
-              category: matchData.category,
-              teams: `${matchData.homeTeam} vs ${matchData.awayTeam}`,
-              groupNumber: matchData.poule?.replace('POULE ', '') || '',
-              journey: matchData.journee?.toString() || ''
-            }
+            ...m,
+            category: matchData.category,
+            teams: `${matchData.homeTeam} vs ${matchData.awayTeam}`,
+            groupNumber: matchData.poule?.replace('POULE ', '') || '',
+            journey: matchData.journee?.toString() || ''
+          }
           : m
       )
     })));
     // close modal after selection
     setShowCategoryModal(null);
   }
-/*
-
-      for (const table of tables) {
-        const emptyMatch = table.matches.find(m => !m.teams && !m.category)
-        if (emptyMatch) {
-          targetTable = table
-          targetMatch = emptyMatch
-          break
+  /*
+  
+        for (const table of tables) {
+          const emptyMatch = table.matches.find(m => !m.teams && !m.category)
+          if (emptyMatch) {
+            targetTable = table
+            targetMatch = emptyMatch
+            break
+          }
         }
-      }
-
-      // If no empty match found, create a new one in the first table
-      if (!targetMatch && tables.length > 0) {
-        targetTable = tables[0]
-        const newMatch: WeeklyMatch = {
-          id: `match-${Date.now()}`,
-          category: selectedMatchForSchedule.category,
-          time: '10:00',
-          teams: `${selectedMatchForSchedule.homeTeam} vs ${selectedMatchForSchedule.awayTeam}`,
-          groupNumber: selectedMatchForSchedule.poule?.replace('POULE ', '') || '',
-          terrain: 'T1',
-          journey: selectedMatchForSchedule.journee?.toString() || '',
-          date: targetTable.date,
-          venue: targetTable.venue
+  
+        // If no empty match found, create a new one in the first table
+        if (!targetMatch && tables.length > 0) {
+          targetTable = tables[0]
+          const newMatch: WeeklyMatch = {
+            id: `match-${Date.now()}`,
+            category: selectedMatchForSchedule.category,
+            time: '10:00',
+            teams: `${selectedMatchForSchedule.homeTeam} vs ${selectedMatchForSchedule.awayTeam}`,
+            groupNumber: selectedMatchForSchedule.poule?.replace('POULE ', '') || '',
+            terrain: 'T1',
+            journey: selectedMatchForSchedule.journee?.toString() || '',
+            date: targetTable.date,
+            venue: targetTable.venue
+          }
+          targetMatch = newMatch
+          setTables(prev => prev.map(table =>
+            table.id === targetTable!.id
+              ? { ...table, matches: [...table.matches, newMatch] }
+              : table
+          ))
+        } else if (targetMatch && targetTable) {
+          // Update the existing empty match
+          setTables(prev => prev.map(table =>
+            table.id === targetTable!.id
+              ? {
+                  ...table,
+                  matches: table.matches.map(m =>
+                    m.id === targetMatch!.id
+                      ? {
+                          ...m,
+                          category: selectedMatchForSchedule.category,
+                          teams: `${selectedMatchForSchedule.homeTeam} vs ${selectedMatchForSchedule.awayTeam}`,
+                          groupNumber: selectedMatchForSchedule.poule?.replace('POULE ', '') || '',
+                          journey: selectedMatchForSchedule.journee?.toString() || ''
+                        }
+                      : m
+                  )
+                }
+              : table
+          ))
         }
-        targetMatch = newMatch
-        setTables(prev => prev.map(table =>
-          table.id === targetTable!.id
-            ? { ...table, matches: [...table.matches, newMatch] }
-            : table
-        ))
-      } else if (targetMatch && targetTable) {
-        // Update the existing empty match
-        setTables(prev => prev.map(table =>
-          table.id === targetTable!.id
-            ? {
-                ...table,
-                matches: table.matches.map(m =>
-                  m.id === targetMatch!.id
-                    ? {
-                        ...m,
-                        category: selectedMatchForSchedule.category,
-                        teams: `${selectedMatchForSchedule.homeTeam} vs ${selectedMatchForSchedule.awayTeam}`,
-                        groupNumber: selectedMatchForSchedule.poule?.replace('POULE ', '') || '',
-                        journey: selectedMatchForSchedule.journee?.toString() || ''
-                      }
-                    : m
-                )
-              }
-            : table
-        ))
-      }
-
-      
-*/
+  
+        
+  */
   const fetchData = async () => {
     try {
       console.log('Fetching data...')
@@ -873,13 +873,13 @@ export const WeeklyMatchForm = () => {
 
         // Create weekly schedule
         const createdSchedule = await createWeeklySchedule(weeklyScheduleData)
-        
+
         // Convert weekly schedule to actual matches
         if (!createdSchedule._id) {
           throw new Error('Failed to create weekly schedule')
         }
         const result = await saveWeeklyScheduleAsMatches(createdSchedule._id)
-        
+
         if (result.errorCount > 0) {
           console.error('Some matches failed to save:', result.errors)
           toast.error(`${result.createdCount} matchs créés, ${result.errorCount} erreurs`)
@@ -891,7 +891,7 @@ export const WeeklyMatchForm = () => {
       setTables([])
     } catch (error: any) {
       console.error('Error saving schedule:', error)
-      
+
       // Handle specific duplicate match error
       if (error.message && error.message.includes('already scheduled in another date')) {
         // Try to extract duplicate matches from error
@@ -948,8 +948,10 @@ export const WeeklyMatchForm = () => {
     const dayOfWeek = date.getDay()
     const dateString = date.toISOString().split('T')[0]
 
-    // Only allow Wednesday (3), Saturday (6), Sunday (0)
-    return [0, 3, 6].includes(dayOfWeek) && availableDates.includes(dateString)
+    // Allow any day from today onwards
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    return date >= today
   }
 
   const selectDate = (tableId: string, day: number) => {
@@ -989,21 +991,19 @@ export const WeeklyMatchForm = () => {
           <div className="flex border-b border-white/10">
             <button
               onClick={() => setActiveTab('create')}
-              className={`px-6 py-3 font-medium text-sm transition-colors border-b-2 ${
-                activeTab === 'create'
+              className={`px-6 py-3 font-medium text-sm transition-colors border-b-2 ${activeTab === 'create'
                   ? 'text-blue-400 border-blue-400'
                   : 'text-gray-400 border-transparent hover:text-white hover:border-white/20'
-              }`}
+                }`}
             >
               Créer un programme
             </button>
             <button
               onClick={() => setActiveTab('manage')}
-              className={`px-6 py-3 font-medium text-sm transition-colors border-b-2 ${
-                activeTab === 'manage'
+              className={`px-6 py-3 font-medium text-sm transition-colors border-b-2 ${activeTab === 'manage'
                   ? 'text-blue-400 border-blue-400'
                   : 'text-gray-400 border-transparent hover:text-white hover:border-white/20'
-              }`}
+                }`}
             >
               Gérer les matchs
             </button>
@@ -1157,8 +1157,8 @@ export const WeeklyMatchForm = () => {
                                         onClick={() => selectDate(table.id, day)}
                                         disabled={!isDateSelectable(day)}
                                         className={`w-full h-full rounded text-xs transition-colors ${isDateSelectable(day)
-                                            ? 'text-white hover:bg-blue-500/20 cursor-pointer'
-                                            : 'text-gray-600 cursor-not-allowed'
+                                          ? 'text-white hover:bg-blue-500/20 cursor-pointer'
+                                          : 'text-gray-600 cursor-not-allowed'
                                           } ${table.date === new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day).toISOString().split('T')[0]
                                             ? 'bg-blue-500/30'
                                             : ''
@@ -1285,17 +1285,17 @@ export const WeeklyMatchForm = () => {
                                               setTables(prev => prev.map(t =>
                                                 t.id === table.id
                                                   ? {
-                                                      ...t,
-                                                      matches: t.matches.map(m =>
-                                                        m.id === match.id
-                                                          ? {
-                                                              ...m,
-                                                              teams: selectedValue,
-                                                              groupNumber: selectedMatch.poule?.replace('POULE ', '') || '',
-                                                              journey: selectedMatch.journee?.toString() || ''
-                                                            }
-                                                          : m
-                                                      )
+                                                    ...t,
+                                                    matches: t.matches.map(m =>
+                                                      m.id === match.id
+                                                        ? {
+                                                          ...m,
+                                                          teams: selectedValue,
+                                                          groupNumber: selectedMatch.poule?.replace('POULE ', '') || '',
+                                                          journey: selectedMatch.journee?.toString() || ''
+                                                        }
+                                                        : m
+                                                    )
                                                   }
                                                   : t
                                               ))

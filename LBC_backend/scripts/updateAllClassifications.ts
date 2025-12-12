@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import { Match } from '../src/models/Match';
-import { updateClassification } from '../src/services/classificationService';
+import classificationService from '../src/services/classificationService';
 
 dotenv.config();
 
@@ -12,7 +12,7 @@ async function updateAllClassifications() {
     const matches = await Match.find({ status: 'completed' });
     console.log(`Found ${matches.length} completed matches`);
     for (const match of matches) {
-      await updateClassification(String(match._id));
+      await classificationService.updateClassification(String(match._id));
       console.log(`Updated classification for match ${match._id}`);
     }
     console.log('All classifications updated.');

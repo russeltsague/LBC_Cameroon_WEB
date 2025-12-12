@@ -1,0 +1,457 @@
+[
+  {
+    "category": "L1 DAME",
+    "poule": null,
+    "name": "FAP"
+  },
+  {
+    "category": "L1 DAME",
+    "name": "OVERDOSE OF ACPBA",
+    "poule": null
+  },
+  {
+    "name": "ONYX",
+    "poule": null,
+    "category": "L1 DAME"
+  },
+  {
+    "category": "L1 DAME",
+    "poule": null,
+    "name": "AS KEEP"
+  },
+  {
+    "category": "L1 DAME",
+    "name": "MC NOAH",
+    "poule": null
+  },
+  {
+    "name": "MARIK YDE2",
+    "poule": null,
+    "category": "L1 DAME"
+  },
+  {
+    "name": "FAP 2",
+    "poule": null,
+    "category": "L1 DAME"
+  },
+  {
+    "category": "L1 DAME",
+    "name": "AS KEEP 2",
+    "poule": null
+  },
+  {
+    "name": "LENA",
+    "category": "L1 DAME",
+    "poule": null
+  },
+  {
+    "name": "FAP",
+    "category": "L1 MESSIEUR",
+    "poule": null
+  },
+  {
+    "category": "L1 MESSIEUR",
+    "name": "512 BA",
+    "poule": null
+  },
+  {
+    "name": "ACPBA",
+    "poule": null,
+    "category": "L1 MESSIEUR"
+  },
+  {
+    "name": "ONYX",
+    "poule": null,
+    "category": "L1 MESSIEUR"
+  },
+  {
+    "category": "L1 MESSIEUR",
+    "name": "BEAC",
+    "poule": null
+  },
+  {
+    "category": "L1 MESSIEUR",
+    "name": "NYBA",
+    "poule": null
+  },
+  {
+    "name": "ALPH",
+    "poule": null,
+    "category": "L1 MESSIEUR"
+  },
+  {
+    "category": "L1 MESSIEUR",
+    "poule": null,
+    "name": "FALCON"
+  },
+  {
+    "name": "ANGELS",
+    "poule": null,
+    "category": "L1 MESSIEUR"
+  },
+  {
+    "category": "L1 MESSIEUR",
+    "name": "ETOUDI",
+    "poule": null
+  },
+  {
+    "category": "L1 MESSIEUR",
+    "name": "WILDCATS",
+    "poule": null
+  },
+  {
+    "category": "L1 MESSIEUR",
+    "name": "LIGTH ACADEMY",
+    "poule": null
+  },
+  {
+    "category": "L1 MESSIEUR",
+    "poule": null,
+    "name": "FRIENDSHIP"
+  },
+  {
+    "category": "L1 MESSIEUR",
+    "poule": null,
+    "name": "MC NOAH"
+  },
+  {
+    "name": "OLYMPIQUE DE MEYO",
+    "poule": null,
+    "category": "U18 FILLES"
+  },
+  {
+    "name": "FX VOGT",
+    "poule": null,
+    "category": "U18 FILLES"
+  },
+  {
+    "name": "SANTA BABARA",
+    "poule": null,
+    "category": "U18 FILLES"
+  },
+  {
+    "name": "PLAY 2 LEADS",
+    "poule": null,
+    "category": "U18 FILLES"
+  },
+  {
+    "category": "U18 FILLES",
+    "name": "MARIK KLOES",
+    "poule": null
+  },
+  {
+    "category": "U18 FILLES",
+    "poule": null,
+    "name": "ONYX"
+  },
+  {
+    "category": "U18 FILLES",
+    "poule": null,
+    "name": "DESBA"
+  },
+  {
+    "category": "U18 FILLES",
+    "poule": null,
+    "name": "FAP"
+  },
+  {
+    "category": "U18 FILLES",
+    "poule": null,
+    "name": "FUSEE"
+  },
+  {
+    "category": "U18 FILLES",
+    "name": "COSBIE",
+    "poule": null
+  },
+  {
+    "name": "3ABASKETBALL",
+    "poule": null,
+    "category": "U18 FILLES"
+  },
+  {
+    "name": "LENA",
+    "poule": null,
+    "category": "U18 FILLES"
+  },
+  {
+    "category": "U18 FILLES",
+    "poule": null,
+    "name": "FRIENDSHIP"
+  },
+  {
+    "category": "U18 GARCONS",
+    "poule": "A",
+    "name": "MC NOAH"
+  },
+  {
+    "category": "U18 GARCONS",
+    "name": "512 BA",
+    "poule": "A"
+  },
+  {
+    "name": "ONYX",
+    "category": "U18 GARCONS",
+    "poule": "A"
+  },
+  {
+    "name": "WILDCATS",
+    "category": "U18 GARCONS",
+    "poule": "A"
+  },
+  {
+    "name": "PLAY 2 LEADS",
+    "poule": "A",
+    "category": "U18 GARCONS"
+  },
+  {
+    "name": "FUSEE",
+    "category": "U18 GARCONS",
+    "poule": "A"
+  },
+  {
+    "category": "U18 GARCONS",
+    "name": "JOAKIM BB",
+    "poule": "A"
+  },
+  {
+    "name": "EAST BASKET",
+    "category": "U18 GARCONS",
+    "poule": "A"
+  },
+  {
+    "name": "FALCONS",
+    "category": "U18 GARCONS",
+    "poule": "A"
+  },
+  {
+    "name": "ALPH1",
+    "category": "U18 GARCONS",
+    "poule": "B"
+  },
+  {
+    "category": "U18 GARCONS",
+    "name": "YD2 KLOES",
+    "poule": "B"
+  },
+  {
+    "category": "U18 GARCONS",
+    "name": "PHISLAMA JAMA",
+    "poule": "B"
+  },
+  {
+    "name": "ELITE CAPITAL",
+    "category": "U18 GARCONS",
+    "poule": "B"
+  },
+  {
+    "category": "U18 GARCONS",
+    "name": "MARY JO",
+    "poule": "B"
+  },
+  {
+    "category": "U18 GARCONS",
+    "name": "PEPINIÈRE",
+    "poule": "B"
+  },
+  {
+    "category": "U18 GARCONS",
+    "name": "FAP",
+    "poule": "B"
+  },
+  {
+    "name": "FRIENDSHIP",
+    "category": "U18 GARCONS",
+    "poule": "B"
+  },
+  {
+    "name": "MESSASSI ANGELS",
+    "poule": "B",
+    "category": "U18 GARCONS"
+  },
+  {
+    "name": "ACPBA",
+    "poule": "C",
+    "category": "U18 GARCONS"
+  },
+  {
+    "name": "MENDONG",
+    "poule": "C",
+    "category": "U18 GARCONS"
+  },
+  {
+    "name": "DREAM BASKETBALL",
+    "poule": "C",
+    "category": "U18 GARCONS"
+  },
+  {
+    "name": "COSBIE",
+    "category": "U18 GARCONS",
+    "poule": "C"
+  },
+  {
+    "category": "U18 GARCONS",
+    "name": "LENA",
+    "poule": "C"
+  },
+  {
+    "category": "U18 GARCONS",
+    "poule": "C",
+    "name": "GREEN CITY"
+  },
+  {
+    "name": "FX VOGT2",
+    "category": "U18 GARCONS",
+    "poule": "C"
+  },
+  {
+    "name": "SANTA BABARA",
+    "category": "U18 GARCONS",
+    "poule": "C"
+  },
+  {
+    "name": "3ABASKETBALL",
+    "category": "U18 GARCONS",
+    "poule": "C"
+  },
+  {
+    "category": "L2B MESSIEUR",
+    "poule": null,
+    "name": "MBOA BASKET"
+  },
+  {
+    "category": "L2B MESSIEUR",
+    "poule": null,
+    "name": "OVENG BASKET"
+  },
+  {
+    "category": "L2B MESSIEUR",
+    "poule": null,
+    "name": "APEJES 2"
+  },
+  {
+    "category": "L2B MESSIEUR",
+    "name": "SANTA BABARA",
+    "poule": null
+  },
+  {
+    "name": "MBALMAYO BBC",
+    "poule": null,
+    "category": "L2B MESSIEUR"
+  },
+  {
+    "name": "HAND OF GOD",
+    "poule": null,
+    "category": "L2B MESSIEUR"
+  },
+  {
+    "name": "PHISLAMA JAMA",
+    "poule": null,
+    "category": "L2B MESSIEUR"
+  },
+  {
+    "category": "L2B MESSIEUR",
+    "name": "TEAM K SPORT",
+    "poule": null
+  },
+  {
+    "name": "WILDCATS2",
+    "poule": null,
+    "category": "L2B MESSIEUR"
+  },
+  {
+    "category": "L2B MESSIEUR",
+    "name": "EAST BASKET",
+    "poule": null
+  },
+  {
+    "name": "MENDONG",
+    "poule": "A",
+    "category": "L2A MESSIEUR"
+  },
+  {
+    "category": "L2A MESSIEUR",
+    "poule": "A",
+    "name": "LENA"
+  },
+  {
+    "name": "JOAKIM",
+    "poule": "A",
+    "category": "L2A MESSIEUR"
+  },
+  {
+    "category": "L2A MESSIEUR",
+    "poule": "A",
+    "name": "WOLVES 2"
+  },
+  {
+    "category": "L2A MESSIEUR",
+    "poule": "A",
+    "name": "KLOES YDE2"
+  },
+  {
+    "name": "ALPH2",
+    "poule": "A",
+    "category": "L2A MESSIEUR"
+  },
+  {
+    "category": "L2A MESSIEUR",
+    "poule": "A",
+    "name": "ASKEEP"
+  },
+  {
+    "category": "L2A MESSIEUR",
+    "poule": "A",
+    "name": "EXPENDABLES"
+  },
+  {
+    "category": "L2A MESSIEUR",
+    "poule": "A",
+    "name": "MESSASSI"
+  },
+  {
+    "category": "L2A MESSIEUR",
+    "poule": "B",
+    "name": "SEED EXPENDABLES"
+  },
+  {
+    "name": "WOLVE1",
+    "poule": "B",
+    "category": "L2A MESSIEUR"
+  },
+  {
+    "name": "ALLSPORT",
+    "poule": "B",
+    "category": "L2A MESSIEUR"
+  },
+  {
+    "category": "L2A MESSIEUR",
+    "poule": "B",
+    "name": "MARYJO"
+  },
+  {
+    "name": "FUSEE",
+    "poule": "B",
+    "category": "L2A MESSIEUR"
+  },
+  {
+    "category": "L2A MESSIEUR",
+    "poule": "B",
+    "name": "MSA MENDONGO"
+  },
+  {
+    "category": "L2A MESSIEUR",
+    "name": "APEJES",
+    "poule": "B"
+  },
+  {
+    "name": "BOFIA",
+    "poule": "B",
+    "category": "L2A MESSIEUR"
+  },
+  {
+    "name": "LAMAFEE(MCNOAH)",
+    "category": "L2A MESSIEUR",
+    "poule": "B"
+  }
+]

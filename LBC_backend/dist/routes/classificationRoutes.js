@@ -8,6 +8,8 @@ const classificationController_1 = require("../controllers/classificationControl
 const router = express_1.default.Router();
 // Get all classifications or filter by category
 router.get('/', classificationController_1.getClassification);
+// Calculate classification from calendar data
+router.get('/calendar', classificationController_1.calculateClassificationFromCalendar);
 // Update classification after a match
 router.post('/update', classificationController_1.updateClassification);
 exports.default = router;

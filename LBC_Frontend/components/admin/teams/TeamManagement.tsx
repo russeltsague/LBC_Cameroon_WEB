@@ -2,31 +2,31 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
-  FiPlus, 
-  FiSearch, 
-  FiFilter, 
-  FiEdit2, 
-  FiTrash2, 
-  FiToggleLeft, 
-  FiToggleRight, 
-  FiGrid, 
+import {
+  FiPlus,
+  FiSearch,
+  FiFilter,
+  FiEdit2,
+  FiTrash2,
+  FiToggleLeft,
+  FiToggleRight,
+  FiGrid,
   FiList,
   FiChevronDown
 } from 'react-icons/fi'
-import { 
-  Team, 
-  Category, 
-  getTeams, 
-  createTeam, 
-  updateTeam, 
-  deleteTeam, 
-  getCategories, 
-  getAllCategories, 
-  createCategory, 
-  updateCategory, 
-  deleteCategory, 
-  toggleCategoryStatus 
+import {
+  Team,
+  Category,
+  getTeams,
+  createTeam,
+  updateTeam,
+  deleteTeam,
+  getCategories,
+  getAllCategories,
+  createCategory,
+  updateCategory,
+  deleteCategory,
+  toggleCategoryStatus
 } from '@/app/lib/api'
 import { TeamCard } from './TeamCard'
 import { TeamForm } from './TeamForm'
@@ -48,6 +48,7 @@ export const TeamManagement = () => {
   const [activeCategoryTab, setActiveCategoryTab] = useState('Toutes les catégories')
   const [showTeamForm, setShowTeamForm] = useState(false)
   const [showCategoryForm, setShowCategoryForm] = useState(false)
+  const [formHasPoules, setFormHasPoules] = useState(false)
 
   useEffect(() => {
     fetchData()
@@ -83,7 +84,7 @@ export const TeamManagement = () => {
       setSelectedTeam(null)
     } catch (error: any) {
       console.error('Error saving team:', error)
-      
+
       // Check for duplicate key error
       if (error.message && error.message.includes('E11000 duplicate key error')) {
         const errorMessage = error.message;
@@ -122,7 +123,7 @@ export const TeamManagement = () => {
 
   const handleDeleteTeam = async (teamId: string) => {
     if (!confirm('Êtes-vous sûr de vouloir supprimer cette équipe ?')) return
-    
+
     try {
       await deleteTeam(teamId)
       setTeams(teams.filter(t => t._id !== teamId))
@@ -153,7 +154,7 @@ export const TeamManagement = () => {
 
   const handleDeleteCategory = async (categoryId: string) => {
     if (!confirm('Êtes-vous sûr de vouloir supprimer cette catégorie ?')) return
-    
+
     try {
       await deleteCategory(categoryId)
       setCategories(categories.filter(c => c._id !== categoryId))
@@ -177,31 +178,31 @@ export const TeamManagement = () => {
 
   const filteredTeams = teams.filter(team => {
     if (!team) return false;
-    
+
     // Check search term match
     const searchLower = searchTerm.toLowerCase();
-    const matchesSearch = 
+    const matchesSearch =
       team.name.toLowerCase().includes(searchLower) ||
       (team.city && team.city.toLowerCase().includes(searchLower)) ||
       (team.coach && team.coach.toLowerCase().includes(searchLower));
-      
+
     // Check category match
-    const matchesCategory = 
-      activeCategoryTab === 'Toutes les catégories' || 
+    const matchesCategory =
+      activeCategoryTab === 'Toutes les catégories' ||
       (team.category && team.category.trim() === activeCategoryTab.trim());
-      
+
     // Check status match
-    const matchesStatus = 
-      selectedStatusFilter === 'all' || 
+    const matchesStatus =
+      selectedStatusFilter === 'all' ||
       (selectedStatusFilter === 'active' && team.isActive !== false) ||
       (selectedStatusFilter === 'inactive' && team.isActive === false);
-      
+
     // Check poule match
-    const matchesPoule = 
-      selectedPouleFilter === 'all' || 
-      !team.poule || 
+    const matchesPoule =
+      selectedPouleFilter === 'all' ||
+      !team.poule ||
       team.poule.toString().toUpperCase() === selectedPouleFilter.toUpperCase();
-      
+
     return matchesSearch && matchesCategory && matchesStatus && matchesPoule;
   })
 
@@ -219,7 +220,7 @@ export const TeamManagement = () => {
             Gestion des Compétitions
           </h1>
           <p className="text-gray-400 font-outfit mt-1">
-            {viewMode === 'categories' 
+            {viewMode === 'categories'
               ? `${categories.length} catégories enregistrées`
               : `${teams.length} équipes enregistrées`
             }
@@ -231,22 +232,20 @@ export const TeamManagement = () => {
           <div className="flex bg-white/5 rounded-xl p-1 border border-white/10">
             <button
               onClick={() => setViewMode('categories')}
-              className={`px-4 py-2 rounded-lg transition-all duration-200 flex items-center space-x-2 ${
-                viewMode === 'categories'
-                  ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white'
-                  : 'text-gray-400 hover:text-white'
-              }`}
+              className={`px-4 py-2 rounded-lg transition-all duration-200 flex items-center space-x-2 ${viewMode === 'categories'
+                ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white'
+                : 'text-gray-400 hover:text-white'
+                }`}
             >
               <FiGrid className="w-4 h-4" />
               <span className="font-outfit text-sm">Catégories</span>
             </button>
             <button
               onClick={() => setViewMode('teams')}
-              className={`px-4 py-2 rounded-lg transition-all duration-200 flex items-center space-x-2 ${
-                viewMode === 'teams'
-                  ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white'
-                  : 'text-gray-400 hover:text-white'
-              }`}
+              className={`px-4 py-2 rounded-lg transition-all duration-200 flex items-center space-x-2 ${viewMode === 'teams'
+                ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white'
+                : 'text-gray-400 hover:text-white'
+                }`}
             >
               <FiList className="w-4 h-4" />
               <span className="font-outfit text-sm">Équipes</span>
@@ -258,6 +257,7 @@ export const TeamManagement = () => {
             onClick={() => {
               if (viewMode === 'categories') {
                 setSelectedCategory(null)
+                setFormHasPoules(false)
                 setShowCategoryForm(true)
               } else {
                 setSelectedTeam(null)
@@ -320,11 +320,10 @@ export const TeamManagement = () => {
                     <div className="flex items-center space-x-2">
                       <button
                         onClick={() => handleToggleCategoryStatus(category._id)}
-                        className={`p-2 rounded-lg transition-colors ${
-                          category.isActive
-                            ? 'text-green-500 hover:bg-green-500/10'
-                            : 'text-gray-500 hover:bg-gray-500/10'
-                        }`}
+                        className={`p-2 rounded-lg transition-colors ${category.isActive
+                          ? 'text-green-500 hover:bg-green-500/10'
+                          : 'text-gray-500 hover:bg-gray-500/10'
+                          }`}
                       >
                         {category.isActive ? (
                           <FiToggleRight className="w-5 h-5" />
@@ -335,6 +334,7 @@ export const TeamManagement = () => {
                       <button
                         onClick={() => {
                           setSelectedCategory(category)
+                          setFormHasPoules(category.hasPoules)
                           setShowCategoryForm(true)
                         }}
                         className="p-2 rounded-lg text-blue-500 hover:bg-blue-500/10 transition-colors"
@@ -353,11 +353,10 @@ export const TeamManagement = () => {
                   <div className="space-y-4">
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-gray-400 font-outfit">Statut:</span>
-                      <span className={`px-2 py-1 rounded-lg text-xs font-outfit font-medium ${
-                        category.isActive
-                          ? 'bg-green-500/10 text-green-500'
-                          : 'bg-gray-500/10 text-gray-500'
-                      }`}>
+                      <span className={`px-2 py-1 rounded-lg text-xs font-outfit font-medium ${category.isActive
+                        ? 'bg-green-500/10 text-green-500'
+                        : 'bg-gray-500/10 text-gray-500'
+                        }`}>
                         {category.isActive ? 'Actif' : 'Inactif'}
                       </span>
                     </div>
@@ -402,26 +401,24 @@ export const TeamManagement = () => {
                     whileHover={{ y: -2 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => setActiveCategoryTab('Toutes les catégories')}
-                    className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${
-                      activeCategoryTab === 'Toutes les catégories'
-                        ? 'bg-[var(--color-primary)] text-white shadow-lg shadow-[var(--color-primary)]/25'
-                        : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 border border-white/5 hover:border-white/10'
-                    }`}
+                    className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${activeCategoryTab === 'Toutes les catégories'
+                      ? 'bg-[var(--color-primary)] text-white shadow-lg shadow-[var(--color-primary)]/25'
+                      : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 border border-white/5 hover:border-white/10'
+                      }`}
                   >
                     Toutes les catégories
                   </motion.button>
-                  
+
                   {categories.map(category => (
                     <motion.button
                       key={category._id}
                       whileHover={{ y: -2 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={() => setActiveCategoryTab(category.name)}
-                      className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${
-                        activeCategoryTab === category.name
-                          ? 'bg-[var(--color-primary)] text-white shadow-lg shadow-[var(--color-primary)]/25'
-                          : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 border border-white/5 hover:border-white/10'
-                      }`}
+                      className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${activeCategoryTab === category.name
+                        ? 'bg-[var(--color-primary)] text-white shadow-lg shadow-[var(--color-primary)]/25'
+                        : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 border border-white/5 hover:border-white/10'
+                        }`}
                     >
                       {category.name}
                     </motion.button>
@@ -440,11 +437,10 @@ export const TeamManagement = () => {
                       <div className="inline-flex bg-black/20 p-1.5 rounded-xl border border-white/5 backdrop-blur-sm">
                         <button
                           onClick={() => setSelectedPouleFilter('all')}
-                          className={`px-6 py-2 rounded-lg text-sm font-bold transition-all duration-300 ${
-                            selectedPouleFilter === 'all'
-                              ? 'bg-white/10 text-white shadow-sm border border-white/10'
-                              : 'text-gray-500 hover:text-gray-300'
-                          }`}
+                          className={`px-6 py-2 rounded-lg text-sm font-bold transition-all duration-300 ${selectedPouleFilter === 'all'
+                            ? 'bg-white/10 text-white shadow-sm border border-white/10'
+                            : 'text-gray-500 hover:text-gray-300'
+                            }`}
                         >
                           Toutes
                         </button>
@@ -454,11 +450,10 @@ export const TeamManagement = () => {
                             <button
                               key={poule}
                               onClick={() => setSelectedPouleFilter(poule)}
-                              className={`px-6 py-2 rounded-lg text-sm font-bold transition-all duration-300 ${
-                                selectedPouleFilter === poule
-                                  ? 'bg-white/10 text-white shadow-sm border border-white/10'
-                                  : 'text-gray-500 hover:text-gray-300'
-                              }`}
+                              className={`px-6 py-2 rounded-lg text-sm font-bold transition-all duration-300 ${selectedPouleFilter === poule
+                                ? 'bg-white/10 text-white shadow-sm border border-white/10'
+                                : 'text-gray-500 hover:text-gray-300'
+                                }`}
                             >
                               Poule {poule}
                             </button>
@@ -582,7 +577,7 @@ export const TeamManagement = () => {
               <h2 className="text-2xl font-bold text-white font-oswald mb-6">
                 {selectedCategory ? 'Modifier la Catégorie' : 'Nouvelle Catégorie'}
               </h2>
-              
+
               <form onSubmit={(e) => {
                 e.preventDefault()
                 const formData = new FormData(e.currentTarget)
@@ -591,7 +586,7 @@ export const TeamManagement = () => {
                   description: formData.get('description') as string,
                   isActive: formData.get('isActive') === 'on',
                   hasPoules: formData.get('hasPoules') === 'on',
-                  poules: (formData.get('poules') as string || '').split(',').map(p => p.trim()).filter(Boolean)
+                  poules: formData.get('hasPoules') === 'on' ? (formData.get('poules') as string || '').split(',').map(p => p.trim()).filter(Boolean) : []
                 }
                 handleSaveCategory(data)
               }} className="space-y-4">
@@ -635,25 +630,28 @@ export const TeamManagement = () => {
                     <input
                       type="checkbox"
                       name="hasPoules"
-                      defaultChecked={selectedCategory?.hasPoules || false}
+                      checked={formHasPoules}
+                      onChange={(e) => setFormHasPoules(e.target.checked)}
                       className="form-checkbox h-5 w-5 text-orange-500 rounded bg-white/5 border-white/10 focus:ring-orange-500 focus:ring-offset-0"
                     />
                     <span className="text-sm font-outfit text-gray-300">Utiliser des poules</span>
                   </label>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2 font-outfit">
-                    Poules (séparées par des virgules)
-                  </label>
-                  <input
-                    type="text"
-                    name="poules"
-                    defaultValue={selectedCategory?.poules?.join(', ') || ''}
-                    className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white font-outfit focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-transparent"
-                    placeholder="Ex: A, B, C, D"
-                  />
-                </div>
+                {formHasPoules && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2 font-outfit">
+                      Poules (séparées par des virgules)
+                    </label>
+                    <input
+                      type="text"
+                      name="poules"
+                      defaultValue={selectedCategory?.poules?.join(', ') || ''}
+                      className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white font-outfit focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-transparent"
+                      placeholder="Ex: A, B, C, D"
+                    />
+                  </div>
+                )}
 
                 <div className="flex justify-end space-x-3 pt-4">
                   <button

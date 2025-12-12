@@ -97,7 +97,7 @@ export default function Classification({ category: initialCategory }: Classifica
         throw error;
       }
     },
-    { 
+    {
       refreshInterval: 30000,
       revalidateOnFocus: true,
       revalidateOnReconnect: true
@@ -118,19 +118,19 @@ export default function Classification({ category: initialCategory }: Classifica
       // This is team statistics data
       return standingsData.map((standing: any, index: number) => ({
         _id: standing._id,
-        team: { 
-          _id: standing.team._id, 
-          name: standing.team.name, 
-          logo: standing.team.logo 
+        team: {
+          _id: standing.team._id,
+          name: standing.team.name,
+          logo: standing.team.logo
         },
         position: standing.position || index + 1,
-        played: standing.played || 0,
+        played: standing.gamesPlayed || standing.played || 0,
         wins: standing.wins || 0,
         draws: standing.draws || 0,
         losses: standing.losses || 0,
-        pointsFor: standing.pointsFor || 0,
-        pointsAgainst: standing.pointsAgainst || 0,
-        pointsDifference: standing.pointsDifference || 0,
+        pointsFor: standing.goalsFor || standing.pointsFor || 0,
+        pointsAgainst: standing.goalsAgainst || standing.pointsAgainst || 0,
+        pointsDifference: standing.goalDifference || standing.pointsDifference || 0,
         points: standing.points || 0,
         recentResults: standing.recentResults || [],
         category: selectedCategory
@@ -208,8 +208,8 @@ export default function Classification({ category: initialCategory }: Classifica
                         setIsCategoryOpen(false)
                       }}
                       className={`w-full px-6 py-3 text-left transition-colors ${selectedCategory === cat.name
-                          ? 'bg-[var(--color-primary)] text-white'
-                          : 'text-gray-300 hover:bg-white/10'
+                        ? 'bg-[var(--color-primary)] text-white'
+                        : 'text-gray-300 hover:bg-white/10'
                         }`}
                     >
                       {cat.name}
@@ -228,8 +228,8 @@ export default function Classification({ category: initialCategory }: Classifica
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setSelectedCategory(cat.name)}
                 className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${selectedCategory === cat.name
-                    ? 'bg-[var(--color-primary)] text-white shadow-lg shadow-[var(--color-primary)]/25'
-                    : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 border border-white/5 hover:border-white/10'
+                  ? 'bg-[var(--color-primary)] text-white shadow-lg shadow-[var(--color-primary)]/25'
+                  : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 border border-white/5 hover:border-white/10'
                   }`}
               >
                 {cat.name}
@@ -253,8 +253,8 @@ export default function Classification({ category: initialCategory }: Classifica
                     key={poule}
                     onClick={() => setSelectedPoule(poule)}
                     className={`px-6 py-2 rounded-lg text-sm font-bold transition-all duration-300 ${selectedPoule === poule
-                        ? 'bg-white/10 text-white shadow-sm border border-white/10'
-                        : 'text-gray-500 hover:text-gray-300'
+                      ? 'bg-white/10 text-white shadow-sm border border-white/10'
+                      : 'text-gray-500 hover:text-gray-300'
                       }`}
                   >
                     Poule {poule}
@@ -349,7 +349,7 @@ export default function Classification({ category: initialCategory }: Classifica
                             </motion.div>
                           )}
                           <span className={`font-bold text-lg ${team.position === 1 ? 'text-yellow-400' :
-                              team.position <= 4 ? 'text-[var(--color-primary)]' : 'text-gray-500'
+                            team.position <= 4 ? 'text-[var(--color-primary)]' : 'text-gray-500'
                             }`}>
                             {team.position}
                           </span>
@@ -384,7 +384,7 @@ export default function Classification({ category: initialCategory }: Classifica
                         {team.pointsAgainst}
                       </td>
                       <td className={`px-6 py-4 whitespace-nowrap text-center text-sm font-bold ${team.pointsDifference > 0 ? 'text-green-400' :
-                          team.pointsDifference < 0 ? 'text-red-400' : 'text-gray-500'
+                        team.pointsDifference < 0 ? 'text-red-400' : 'text-gray-500'
                         }`}>
                         {team.pointsDifference > 0 ? '+' : ''}{team.pointsDifference}
                       </td>

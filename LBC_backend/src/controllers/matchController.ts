@@ -3,8 +3,9 @@ import Match, { IMatch } from '../models/Match';
 import Team, { ITeam } from '../models/Team';
 import { catchAsync } from '../utils/catchAsync';
 import { AppError } from '../utils/appError';
-import { generateSchedule } from '../services/schedulerService';
-import { updateClassification } from '../services/classificationService'; // Make sure this file exists
+import schedulerService from '../services/schedulerService';
+import classificationService from '../services/classificationService';
+import validationService from '../services/validationService';
 import mongoose from 'mongoose';
 
 // Get all matches with optional category filter
@@ -78,11 +79,13 @@ export const createMatch = catchAsync(async (req: Request, res: Response) => {
     homeTeam,
     awayTeam,
     category,
+    poule,
     venue,
     status,
     homeScore,
     awayScore,
     journee,
+    forfeit
   } = req.body;
 
   if (journee === undefined || journee === null) {
@@ -90,40 +93,29 @@ export const createMatch = catchAsync(async (req: Request, res: Response) => {
   }
 
   try {
-    // Validate teams exist
-    const [homeTeamExists, awayTeamExists] = await Promise.all([
-      Team.findById(homeTeam),
-      Team.findById(awayTeam),
-    ]);
-
-    console.log('Team validation:', {
-      homeTeamExists: !!homeTeamExists,
-      awayTeamExists: !!awayTeamExists,
-      homeTeam,
-      awayTeam
-    });
-
-    if (!homeTeamExists || !awayTeamExists) {
-      throw new AppError('One or both teams not found', 400);
-    }
-
-    // Validate teams are from the same category
-    if (homeTeamExists.category !== category || awayTeamExists.category !== category) {
-      throw new AppError('Teams must be from the same category as the match', 400);
-    }
-
+    // Validate match data using ValidationService
     const matchData = {
       date: new Date(date),
       time,
       homeTeam,
       awayTeam,
       category,
+      poule,
       venue,
       status,
       homeScore,
       awayScore,
       journee,
+      forfeit
     };
+
+    const validation = await validationService.validateMatchCreation(matchData);
+    if (!validation.valid) {
+      throw new AppError(
+        `Match validation failed: ${validation.errors.map(e => e.message).join(', ')}`,
+        400
+      );
+    }
 
     console.log('Creating match with processed data:', matchData);
 
@@ -134,11 +126,11 @@ export const createMatch = catchAsync(async (req: Request, res: Response) => {
     const populatedMatch = await Match.findById((match as IMatch)._id)
       .populate({
         path: 'homeTeam',
-        select: 'name category',
+        select: 'name category poule',
       })
       .populate({
         path: 'awayTeam',
-        select: 'name category',
+        select: 'name category poule',
       });
 
     console.log('Populated match:', populatedMatch);
@@ -163,59 +155,47 @@ export const updateMatch = catchAsync(async (req: Request, res: Response) => {
     homeTeam,
     awayTeam,
     category,
+    poule,
     venue,
     status,
     homeScore,
     awayScore,
     journee,
+    forfeit
   } = req.body;
 
-  if (journee === undefined || journee === null) {
-    throw new AppError('Journee (matchday) is required', 400);
-  }
-
   try {
-    // Validate teams exist if they're being updated
-    if (homeTeam || awayTeam) {
-      const [homeTeamExists, awayTeamExists] = await Promise.all([
-        homeTeam ? Team.findById(homeTeam) : null,
-        awayTeam ? Team.findById(awayTeam) : null,
-      ]);
-
-      console.log('Team validation:', {
-        homeTeamExists: !!homeTeamExists,
-        awayTeamExists: !!awayTeamExists,
-        homeTeam,
-        awayTeam
-      });
-
-      if ((homeTeam && !homeTeamExists) || (awayTeam && !awayTeamExists)) {
-        throw new AppError('One or both teams not found', 400);
-      }
-
-      // Validate teams are from the same category
-      if (homeTeam && homeTeamExists && homeTeamExists.category !== category) {
-        throw new AppError('Home team must be from the same category as the match', 400);
-      }
-      if (awayTeam && awayTeamExists && awayTeamExists.category !== category) {
-        throw new AppError('Away team must be from the same category as the match', 400);
-      }
+    // Get existing match
+    const existingMatch = await Match.findById(req.params.id);
+    if (!existingMatch) {
+      throw new AppError('Match not found', 404);
     }
 
-    const updateData = Object.fromEntries(
-      Object.entries({
-        date: date ? new Date(date) : undefined,
-        time,
-        homeTeam,
-        awayTeam,
-        category,
-        venue,
-        status,
-        homeScore,
-        awayScore,
-        journee,
-      }).filter(([_, value]) => value !== undefined)
-    );
+    // Build update data
+    const updateData: any = {
+      _id: req.params.id,
+      date: date ? new Date(date) : existingMatch.date,
+      time: time !== undefined ? time : existingMatch.time,
+      homeTeam: homeTeam || existingMatch.homeTeam,
+      awayTeam: awayTeam || existingMatch.awayTeam,
+      category: category || existingMatch.category,
+      poule: poule !== undefined ? poule : existingMatch.poule,
+      venue: venue !== undefined ? venue : existingMatch.venue,
+      status: status !== undefined ? status : existingMatch.status,
+      homeScore: homeScore !== undefined ? homeScore : existingMatch.homeScore,
+      awayScore: awayScore !== undefined ? awayScore : existingMatch.awayScore,
+      journee: journee !== undefined ? journee : existingMatch.journee,
+      forfeit: forfeit !== undefined ? forfeit : existingMatch.forfeit
+    };
+
+    // Validate updated match data
+    const validation = await validationService.validateMatchCreation(updateData);
+    if (!validation.valid) {
+      throw new AppError(
+        `Match validation failed: ${validation.errors.map(e => e.message).join(', ')}`,
+        400
+      );
+    }
 
     console.log('Updating match with processed data:', updateData);
 
@@ -229,11 +209,11 @@ export const updateMatch = catchAsync(async (req: Request, res: Response) => {
     )
       .populate({
         path: 'homeTeam',
-        select: 'name category',
+        select: 'name category poule',
       })
       .populate({
         path: 'awayTeam',
-        select: 'name category',
+        select: 'name category poule',
       });
 
     console.log('Updated match:', match);
@@ -242,8 +222,9 @@ export const updateMatch = catchAsync(async (req: Request, res: Response) => {
       throw new AppError('Match not found', 404);
     }
 
-    if (status === 'completed') {
-      await updateClassification(req.params.id);
+    // Trigger classification update if match is completed
+    if (status === 'completed' && homeScore !== undefined && awayScore !== undefined) {
+      await classificationService.updateClassification(req.params.id);
     }
 
     res.status(200).json({

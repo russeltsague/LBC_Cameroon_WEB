@@ -51,7 +51,12 @@ const AdminUserSchema = new mongoose_1.Schema({
         type: String,
         required: true,
         minlength: 6
-    }
+    },
+    roles: [{
+            type: String,
+            enum: ['player', 'technical_official', 'coach', 'medical_staff', 'manager'],
+            default: ['player']
+        }]
 }, { timestamps: true });
 // Hash password before save
 AdminUserSchema.pre('save', async function (next) {

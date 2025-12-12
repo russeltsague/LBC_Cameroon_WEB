@@ -150,9 +150,9 @@ async function insertAndUpdate() {
       }
       const match = await Match.findOneAndUpdate(
         {
-          homeTeam: home._id,
-          awayTeam: away._id,
-          category: m.category,
+        homeTeam: home._id,
+        awayTeam: away._id,
+        category: m.category,
           poule: m.poule,
         },
         { $set: { journee: m.journee } },

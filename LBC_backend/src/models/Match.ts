@@ -10,6 +10,7 @@ export interface IMatch extends Document {
   category: string;
   poule?: string;
   venue: string;
+  terrain?: string;
   status: 'completed' | 'upcoming' | 'live';
   forfeit?: 'home' | 'away' | null;
   journee: number;
@@ -82,6 +83,10 @@ const matchSchema = new Schema<IMatch>({
   venue: {
     type: String,
     required: [true, 'Venue is required'],
+  },
+  terrain: {
+    type: String,
+    required: false,
   },
   status: {
     type: String,

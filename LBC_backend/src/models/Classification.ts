@@ -5,67 +5,89 @@ export interface IClassification extends Document {
   category: string;
   poule?: string;
   position: number;
-  played: number;
+  gamesPlayed: number;
   wins: number;
+  draws: number;
   losses: number;
-  pointsFor: number;
-  pointsAgainst: number;
-  pointsDifference: number;
-  points: number; // FIBA points: 2 for win, 1 for loss, 0 for forfeit
-  recentResults: ('W' | 'L')[];
+  goalsFor: number;
+  goalsAgainst: number;
+  goalDifference: number;
+  points: number; // Custom points: 2 for win, 1 for loss, 0 for draw or forfeit (20-00 or 00-20)
+  form: string[]; // Last 5 match results (W/D/L)
+  cleanSheets: number;
+  failedToScore: number;
+  last5: Array<{
+    opponent: string;
+    isHome: boolean;
+    goalsFor: number;
+    goalsAgainst: number;
+    result: 'W' | 'D' | 'L';
+    date: Date;
+  }>;
   createdAt: Date;
   updatedAt: Date;
+
+  // Methods
+  updateStats(match: {
+    isHome: boolean;
+    opponent: string;
+    goalsFor: number;
+    goalsAgainst: number;
+    date: Date;
+  }): Promise<void>;
+
+  getFormattedStats(): {
+    position: number;
+    played: number;
+    won: number;
+    drawn: number;
+    lost: number;
+    goalsFor: number;
+    goalsAgainst: number;
+    goalDifference: number;
+    points: number;
+    form: string;
+    cleanSheets: number;
+    failedToScore: number;
+    pointsPerGame: number;
+  };
 }
 
 const ClassificationSchema: Schema = new Schema({
-  team: { 
-    type: Schema.Types.ObjectId, 
-    ref: 'Team', 
-    required: true 
+  team: {
+    type: Schema.Types.ObjectId,
+    ref: 'Team',
+    required: true
   },
-  category: { 
-    type: String, 
+  category: {
+    type: String,
     required: true,
-    enum: {
-      values: [
-        'L1 MESSIEUR',
-        'L1 DAME',
-        'L2A MESSIEUR',
-        'L2B MESSIEUR',
-        'U18 GARCONS',
-        'U18 FILLES',
-        'VETERANT',
-        'CORPO'
-      ],
-      message: '{VALUE} is not a valid category'
-    }
+    index: true
   },
   poule: {
     type: String,
-    enum: {
-      values: ['A', 'B', 'C'],
-      message: '{VALUE} is not a valid poule',
-    },
-    validate: {
-      validator: function(this: IClassification, poule: string) {
-        // Only require poule for U18 GARCONS and L2A MESSIEUR
-        if (this.category === 'U18 GARCONS' || this.category === 'L2A MESSIEUR') {
-          return poule != null;
-        }
-        return true;
-      },
-      message: 'Poule is required for U18 GARCONS and L2A MESSIEUR categories'
-    }
+    index: true
   },
-  played: { type: Number, default: 0 },
+  position: { type: Number, default: 0 },
+  gamesPlayed: { type: Number, default: 0 },
   wins: { type: Number, default: 0 },
+  draws: { type: Number, default: 0 },
   losses: { type: Number, default: 0 },
-  pointsFor: { type: Number, default: 0 },
-  pointsAgainst: { type: Number, default: 0 },
-  pointsDifference: { type: Number, default: 0 },
+  goalsFor: { type: Number, default: 0 },
+  goalsAgainst: { type: Number, default: 0 },
+  goalDifference: { type: Number, default: 0 },
   points: { type: Number, default: 0 },
-  position: { type: Number, required: true },
-  recentResults: [{ type: String, enum: ['W', 'L'] }],
+  form: { type: [String], default: [], maxlength: 5 },
+  cleanSheets: { type: Number, default: 0 },
+  failedToScore: { type: Number, default: 0 },
+  last5: [{
+    opponent: { type: String, required: true },
+    isHome: { type: Boolean, required: true },
+    goalsFor: { type: Number, required: true },
+    goalsAgainst: { type: Number, required: true },
+    result: { type: String, enum: ['W', 'D', 'L'], required: true },
+    date: { type: Date, required: true }
+  }]
 }, { timestamps: true });
 
 // Add indexes for better query performance
@@ -73,15 +95,105 @@ ClassificationSchema.index({ category: 1, points: -1 });
 ClassificationSchema.index({ team: 1, category: 1 }, { unique: true });
 ClassificationSchema.index({ category: 1, poule: 1, points: -1, pointsDifference: -1 });
 
-// Method to update recent results
-ClassificationSchema.methods.updateRecentResults = function(result: 'W' | 'L') {
-  this.recentResults = [result, ...this.recentResults].slice(0, 5);
-  return this.save();
+// Update team statistics based on match result
+ClassificationSchema.methods.updateStats = async function (match: {
+  isHome: boolean;
+  opponent: string;
+  goalsFor: number;
+  goalsAgainst: number;
+  date: Date;
+}): Promise<void> {
+  const { isHome, opponent, goalsFor, goalsAgainst, date } = match;
+
+  // Update basic stats
+  this.gamesPlayed += 1;
+  this.goalsFor += goalsFor;
+  this.goalsAgainst += goalsAgainst;
+  this.goalDifference = this.goalsFor - this.goalsAgainst;
+
+  // Determine match result
+  let result: 'W' | 'D' | 'L' = 'D';
+  const isForfeit = (goalsFor === 20 && goalsAgainst === 0) || (goalsFor === 0 && goalsAgainst === 20);
+  if (isForfeit) {
+    // Forfeit counts as a loss with 0 points
+    result = 'L';
+    this.losses += 1;
+    // No points added
+  } else if (goalsFor > goalsAgainst) {
+    result = 'W';
+    this.wins += 1;
+    this.points += 2; // 2 points for a win
+  } else if (goalsFor < goalsAgainst) {
+    result = 'L';
+    this.losses += 1;
+    this.points += 1; // 1 point for a loss
+  } else {
+    // Draw
+    result = 'D';
+    this.draws += 1;
+    // No points for a draw
+  }
+
+  // Update clean sheets and failed to score
+  if (goalsAgainst === 0) this.cleanSheets += 1;
+  if (goalsFor === 0) this.failedToScore += 1;
+
+  // Update form (last 5 matches)
+  this.form.unshift(result);
+  if (this.form.length > 5) this.form.pop();
+
+  // Update last 5 matches
+  this.last5.unshift({
+    opponent,
+    isHome,
+    goalsFor,
+    goalsAgainst,
+    result,
+    date
+  });
+  if (this.last5.length > 5) this.last5.pop();
+
+  await this.save();
 };
 
-// Method to get current streak
-ClassificationSchema.methods.getCurrentStreak = function(): ('W' | 'L')[] {
-  return this.recentResults.slice(0, 5);
+// Get formatted statistics
+ClassificationSchema.methods.getFormattedStats = function () {
+  return {
+    position: this.position,
+    played: this.gamesPlayed,
+    won: this.wins,
+    drawn: this.draws,
+    lost: this.losses,
+    goalsFor: this.goalsFor,
+    goalsAgainst: this.goalsAgainst,
+    goalDifference: this.goalDifference,
+    points: this.points,
+    form: this.form.join(''),
+    cleanSheets: this.cleanSheets,
+    failedToScore: this.failedToScore,
+    pointsPerGame: this.gamesPlayed > 0 ? (this.points / this.gamesPlayed).toFixed(2) : 0
+  };
+};
+
+// Update positions for all teams in a category/poule
+ClassificationSchema.statics.updatePositions = async function (category: string, poule?: string) {
+  const query: any = { category };
+  if (poule) query.poule = poule;
+
+  const teams = await this.find(query)
+    .sort({ points: -1, goalDifference: -1, goalsFor: -1, goalsAgainst: 1 });
+
+  // Update positions
+  const bulkOps = teams.map((team: any, index: number) => ({
+    updateOne: {
+      filter: { _id: team._id },
+      update: { $set: { position: index + 1 } }
+    }
+  }));
+
+  if (bulkOps.length > 0) {
+    await this.bulkWrite(bulkOps);
+  }
 };
 
 export default mongoose.model<IClassification>('Classification', ClassificationSchema);

@@ -5,6 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.toggleCategoryStatus = exports.deleteCategory = exports.updateCategory = exports.createCategory = exports.getCategoryById = exports.getActiveCategories = exports.getAllCategories = void 0;
 const Category_1 = __importDefault(require("../models/Category"));
+const Team_1 = __importDefault(require("../models/Team"));
+const Match_1 = __importDefault(require("../models/Match"));
 // Get all categories
 const getAllCategories = async (req, res) => {
     try {
@@ -191,7 +193,9 @@ const updateCategory = async (req, res) => {
             updateData.poules = hasPoules ? poules : [];
         if (isActive !== undefined)
             updateData.isActive = isActive;
-        const updatedCategory = await Category_1.default.findByIdAndUpdate(req.params.id, updateData, { new: true, runValidators: true });
+        console.log('Updating category with data:', updateData);
+        const updatedCategory = await Category_1.default.findByIdAndUpdate(req.params.id, updateData, { new: true, runValidators: false } // Disable validators temporarily
+        );
         res.json({
             success: true,
             data: updatedCategory
@@ -217,9 +221,28 @@ const deleteCategory = async (req, res) => {
             });
             return;
         }
-        // Check if category is being used by teams or matches
-        // This would require additional queries to Team and Match models
-        // For now, we'll just delete the category
+        // Check if category is being used by teams
+        const teamsCount = await Team_1.default.countDocuments({ category: category.name });
+        if (teamsCount > 0) {
+            res.status(400).json({
+                success: false,
+                error: 'Cannot delete category with existing teams',
+                code: 'CATEGORY_IN_USE',
+                details: { teamsCount }
+            });
+            return;
+        }
+        // Check if category is being used by matches
+        const matchesCount = await Match_1.default.countDocuments({ category: category.name });
+        if (matchesCount > 0) {
+            res.status(400).json({
+                success: false,
+                error: 'Cannot delete category with scheduled matches',
+                code: 'CATEGORY_IN_USE',
+                details: { matchesCount }
+            });
+            return;
+        }
         await Category_1.default.findByIdAndDelete(req.params.id);
         res.json({
             success: true,

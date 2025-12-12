@@ -3,105 +3,79 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateClassification = exports.getClassification = void 0;
-const Classification_1 = __importDefault(require("../models/Classification"));
+exports.updateClassification = exports.calculateClassificationFromCalendar = exports.getClassification = void 0;
+const calendarClassificationService_1 = __importDefault(require("../services/calendarClassificationService"));
+// Get classification from database
 const getClassification = async (req, res) => {
     try {
         const { category, poule } = req.query;
-        let query = {};
-        if (category) {
-            query.category = category;
+        if (!category) {
+            res.status(400).json({
+                success: false,
+                error: 'Category is required'
+            });
+            return;
         }
-        // Add poule filter if provided
-        if (poule) {
-            query.poule = poule;
-        }
-        console.log('Classification query:', query);
-        const classifications = await Classification_1.default.find(query)
-            .populate('team', 'name logo')
-            .sort({ points: -1, pointsDifference: -1, pointsFor: -1 });
-        console.log('Found classifications:', classifications.length);
-        // Transform the data to match frontend requirements
-        const transformedData = classifications.map((classification, index) => {
-            const teamData = classification.team; // Handle populated team data
-            return {
-                _id: classification._id,
-                team: {
-                    _id: teamData._id,
-                    name: teamData.name,
-                    logo: teamData.logo
-                },
-                category: classification.category,
-                played: classification.played,
-                wins: classification.wins,
-                losses: classification.losses,
-                pointsFor: classification.pointsFor,
-                pointsAgainst: classification.pointsAgainst,
-                pointsDifference: classification.pointsDifference,
-                points: classification.points,
-                recentResults: classification.recentResults,
-                position: index + 1
-            };
-        });
-        console.log('Transformed data:', transformedData.length, 'items');
+        const classification = await calendarClassificationService_1.default.getClassification(category, poule);
         res.json({
             success: true,
-            data: transformedData
+            data: classification,
+            category,
+            poule: poule || null
         });
     }
     catch (error) {
-        console.error('Error fetching classification:', error);
+        console.error('Error getting classification:', error);
         res.status(500).json({
             success: false,
-            error: error.message
+            error: error.message || 'Failed to get classification'
         });
     }
 };
 exports.getClassification = getClassification;
-const updateClassification = async (req, res) => {
+// Calculate classification from calendar data
+const calculateClassificationFromCalendar = async (req, res) => {
     try {
-        const { teamId, category, poule, result, pointsFor, pointsAgainst } = req.body;
-        if (!teamId || !category || !result) {
+        const { category, poule } = req.query;
+        if (!category) {
             res.status(400).json({
                 success: false,
-                error: 'Missing required fields'
+                error: 'Category is required'
             });
             return;
         }
-        let query = { team: teamId, category };
-        // Add poule to query if provided
-        if (poule) {
-            query.poule = poule;
-        }
-        const classification = await Classification_1.default.findOne(query);
-        if (!classification) {
-            res.status(404).json({
-                success: false,
-                error: 'Classification not found'
-            });
-            return;
-        }
-        // Update based on match result
-        classification.played += 1;
-        if (result === 'win') {
-            classification.wins += 1;
-            classification.points += 2;
-            classification.recentResults = ['W', ...classification.recentResults].slice(0, 5);
-        }
-        else if (result === 'loss') {
-            classification.losses += 1;
-            classification.points += 1;
-            classification.recentResults = ['L', ...classification.recentResults].slice(0, 5);
-        }
-        // Update points if provided
-        if (pointsFor !== undefined && pointsAgainst !== undefined) {
-            classification.pointsFor += pointsFor;
-            classification.pointsAgainst += pointsAgainst;
-            classification.pointsDifference = classification.pointsFor - classification.pointsAgainst;
-        }
-        await classification.save();
+        const classification = await calendarClassificationService_1.default.recalculateClassificationFromCalendar(category, poule);
         res.json({
             success: true,
+            data: classification,
+            category,
+            poule: poule || null
+        });
+    }
+    catch (error) {
+        console.error('Error calculating classification from calendar:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message || 'Failed to calculate classification from calendar'
+        });
+    }
+};
+exports.calculateClassificationFromCalendar = calculateClassificationFromCalendar;
+// Update classification (recalculate from calendar)
+const updateClassification = async (req, res) => {
+    try {
+        const { category, poule } = req.body;
+        if (!category) {
+            res.status(400).json({
+                success: false,
+                error: 'Category is required'
+            });
+            return;
+        }
+        const classification = await calendarClassificationService_1.default.recalculateClassificationFromCalendar(category, poule);
+        res.json({
+            success: true,
+            message: 'Classification recalculated from calendar data',
             data: classification
         });
     }

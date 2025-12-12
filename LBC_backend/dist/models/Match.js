@@ -73,7 +73,8 @@ const matchSchema = new mongoose_1.Schema({
                 'U18 GARCONS',
                 'U18 FILLES',
                 'VETERANT',
-                'CORPO'
+                'CORPO',
+                'DAMES'
             ],
             message: '{VALUE} is not a valid category',
         },
@@ -99,6 +100,10 @@ const matchSchema = new mongoose_1.Schema({
         type: String,
         required: [true, 'Venue is required'],
     },
+    terrain: {
+        type: String,
+        required: false,
+    },
     status: {
         type: String,
         required: [true, 'Status is required'],
@@ -115,6 +120,11 @@ const matchSchema = new mongoose_1.Schema({
             message: '{VALUE} is not a valid forfeit value',
         },
         default: null,
+    },
+    journee: {
+        type: Number,
+        required: [true, 'Journée (matchday) is required'],
+        min: [1, 'Journée must be at least 1']
     },
 }, {
     timestamps: true,

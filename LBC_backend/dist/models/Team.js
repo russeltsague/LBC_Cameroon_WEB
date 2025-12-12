@@ -56,7 +56,8 @@ const TeamSchema = new mongoose_1.Schema({
                 'U18 GARCONS',
                 'U18 FILLES',
                 'VETERANS',
-                'CORPORATES'
+                'CORPORATES',
+                'DAMES'
             ],
             message: '{VALUE} is not a valid category',
         },
@@ -80,6 +81,52 @@ const TeamSchema = new mongoose_1.Schema({
             message: 'Poule is required for U18 GARCONS and L2A MESSIEUR categories'
         }
     },
+    isActive: { type: Boolean, default: true },
+    contactEmail: { type: String },
+    contactPhone: { type: String },
+    website: { type: String },
+    socialMedia: {
+        facebook: { type: String },
+        twitter: { type: String },
+        instagram: { type: String }
+    },
+    // Classification statistics
+    classificationStats: {
+        played: { type: Number, default: 0 },
+        wins: { type: Number, default: 0 },
+        draws: { type: Number, default: 0 },
+        losses: { type: Number, default: 0 },
+        forfeits: { type: Number, default: 0 },
+        points: { type: Number, default: 0 },
+        pointsFor: { type: Number, default: 0 },
+        pointsAgainst: { type: Number, default: 0 },
+        goalDifference: { type: Number, default: 0 },
+        last5: [{
+                opponent: { type: String, required: true },
+                isHome: { type: Boolean, required: true },
+                pointsFor: { type: Number, required: true },
+                pointsAgainst: { type: Number, required: true },
+                result: { type: String, enum: ['W', 'D', 'L', 'F'], required: true },
+                date: { type: Date, required: true }
+            }]
+    },
+    players: [{
+            name: { type: String, required: true },
+            number: { type: Number },
+            position: { type: String },
+            role: { type: String },
+            birthDate: { type: String },
+            height: { type: Number },
+            weight: { type: Number },
+            nationality: { type: String },
+            image: { type: String },
+            type: { type: String, default: 'player' }
+        }],
+    staff: [{
+            name: { type: String, required: true },
+            role: { type: String },
+            type: { type: String, default: 'staff' }
+        }]
 }, { timestamps: true });
 // Add compound unique index
 TeamSchema.index({ name: 1, category: 1, poule: 1 }, { unique: true });

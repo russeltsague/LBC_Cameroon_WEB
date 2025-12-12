@@ -24,6 +24,17 @@ interface ExtendedTeam extends Team {
     pointsFor: number;
     pointsAgainst: number;
   };
+  classificationStats?: {
+    played: number;
+    wins: number;
+    draws: number;
+    losses: number;
+    forfeits: number;
+    points: number;
+    pointsFor: number;
+    pointsAgainst: number;
+    goalDifference: number;
+  };
 }
 
 interface TeamDetailsProps {
@@ -49,80 +60,7 @@ const TeamDetails = ({ team }: TeamDetailsProps) => {
   const [teamData, setTeamData] = useState<ExtendedTeam>(team);
 
   useEffect(() => {
-    // In a real app, you would fetch the team details here
-    // For now, we'll use the passed props
-    setTeamData({
-      ...team,
-      players: team.players || [
-        { _id: '1', name: 'Jean Dupont', number: 4, position: 'Meneur', type: 'player' },
-        { _id: '2', name: 'Pierre Martin', number: 7, position: 'Ailier', type: 'player' },
-        { _id: '3', name: 'Thomas Bernard', number: 10, position: 'Pivot', type: 'player' },
-        { _id: '4', name: 'Lucas Dubois', number: 5, position: 'Arrière', type: 'player' },
-        { _id: '5', name: 'Maxime Petit', number: 12, position: 'Ailier fort', type: 'player' },
-      ],
-      staff: team.staff || [
-        { _id: 's1', name: 'Marc Dubois', role: 'Entraîneur principal', type: 'staff' },
-        { _id: 's2', name: 'Lucie Petit', role: 'Préparateur physique', type: 'staff' },
-        { _id: 's3', name: 'Sophie Laurent', role: 'Kinésithérapeute', type: 'staff' },
-      ],
-      upcomingMatches: team.upcomingMatches || [
-        {
-          _id: 'm1',
-          homeTeam: team.name,
-          awayTeam: 'AS Villeurbanne',
-          date: '2023-12-15T20:00:00Z',
-          venue: team.arena || 'Salle principale',
-          time: '20:00',
-          category: team.category,
-          status: 'upcoming'
-        },
-        {
-          _id: 'm2',
-          homeTeam: 'Dijon Basket',
-          awayTeam: team.name,
-          date: '2023-12-22T19:00:00Z',
-          venue: 'Palais des Sports',
-          time: '19:00',
-          category: team.category,
-          status: 'upcoming'
-        },
-      ],
-      pastMatches: team.pastMatches || [
-        {
-          _id: 'pm1',
-          homeTeam: 'Paris Basket',
-          awayTeam: team.name,
-          date: '2023-11-10T18:30:00Z',
-          homeScore: 85,
-          awayScore: 92,
-          status: 'completed',
-          venue: 'Paris',
-          time: '18:30',
-          category: team.category
-        },
-        {
-          _id: 'pm2',
-          homeTeam: team.name,
-          awayTeam: 'Monaco',
-          date: '2023-11-03T20:00:00Z',
-          homeScore: 78,
-          awayScore: 82,
-          status: 'completed',
-          venue: team.arena || 'Salle principale',
-          time: '20:00',
-          category: team.category
-        },
-      ],
-      ranking: team.ranking || {
-        position: 3,
-        totalTeams: 12,
-        points: 24,
-        wins: 8,
-        losses: 2,
-        pointsFor: 920,
-        pointsAgainst: 810
-      }
-    });
+    setTeamData(team);
   }, [team]);
 
   return (
@@ -181,14 +119,6 @@ const TeamDetails = ({ team }: TeamDetailsProps) => {
                     <h1 className="text-4xl md:text-6xl font-display font-bold uppercase tracking-tight text-white drop-shadow-lg">
                       {teamData.name}
                     </h1>
-                    {teamData.ranking && (
-                      <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-[var(--color-primary)]/20 border border-[var(--color-primary)]/30 backdrop-blur-md mb-2">
-                        <Trophy className="w-4 h-4 text-[var(--color-primary)]" />
-                        <span className="text-[var(--color-primary)] font-bold text-sm tracking-wider">
-                          #{teamData.ranking.position} CLASSEMENT
-                        </span>
-                      </div>
-                    )}
                   </div>
                   <p className="text-xl text-gray-400 font-light flex items-center justify-center md:justify-start gap-2">
                     <MapPin className="w-5 h-5 text-gray-500" />
@@ -221,8 +151,8 @@ const TeamDetails = ({ team }: TeamDetailsProps) => {
           <StatCard
             icon={<Activity className="w-8 h-8" />}
             title="Victoires"
-            value={teamData.ranking?.wins.toString() || '0'}
-            subtitle={`${teamData.ranking?.losses || 0} Défaites`}
+            value={teamData.classificationStats?.wins.toString() || '0'}
+            subtitle={`${teamData.classificationStats?.losses || 0} Défaites`}
             delay={0.2}
             highlight
           />
@@ -236,7 +166,9 @@ const TeamDetails = ({ team }: TeamDetailsProps) => {
           <StatCard
             icon={<BarChart2 className="w-8 h-8" />}
             title="Points Moy."
-            value={teamData.ranking ? (teamData.ranking.pointsFor / (teamData.ranking.wins + teamData.ranking.losses)).toFixed(1) : '0'}
+            value={teamData.classificationStats && teamData.classificationStats.played > 0
+              ? (teamData.classificationStats.pointsFor / teamData.classificationStats.played).toFixed(1)
+              : '0'}
             subtitle="Par match"
             delay={0.4}
           />
@@ -302,19 +234,19 @@ const TeamDetails = ({ team }: TeamDetailsProps) => {
                 <BarChart2 className="w-5 h-5 text-[var(--color-primary)]" />
                 Statistiques Saison
               </h3>
-              {teamData.ranking ? (
+              {teamData.classificationStats ? (
                 <div className="space-y-4">
-                  <StatRow label="Points Marqués" value={teamData.ranking.pointsFor} />
-                  <StatRow label="Points Encaissés" value={teamData.ranking.pointsAgainst} />
+                  <StatRow label="Points Marqués" value={teamData.classificationStats.pointsFor} />
+                  <StatRow label="Points Encaissés" value={teamData.classificationStats.pointsAgainst} />
                   <StatRow
                     label="Différence"
-                    value={teamData.ranking.pointsFor - teamData.ranking.pointsAgainst}
-                    isPositive={(teamData.ranking.pointsFor - teamData.ranking.pointsAgainst) > 0}
+                    value={teamData.classificationStats.goalDifference}
+                    isPositive={teamData.classificationStats.goalDifference > 0}
                   />
                   <div className="pt-4 mt-4 border-t border-white/10">
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400">Points Total</span>
-                      <span className="text-2xl font-bold text-[var(--color-primary)]">{teamData.ranking.points}</span>
+                      <span className="text-2xl font-bold text-[var(--color-primary)]">{teamData.classificationStats.points}</span>
                     </div>
                   </div>
                 </div>
@@ -341,8 +273,8 @@ const InfoItem = ({ label, value }: { label: string; value?: string }) => (
 const StatCard = ({ icon, title, value, subtitle, delay, highlight }: any) => (
   <motion.div
     className={`relative overflow - hidden rounded - 2xl p - 6 border transition - all duration - 300 ${highlight
-        ? 'bg-gradient-to-br from-[var(--color-primary)]/20 to-[var(--color-primary)]/5 border-[var(--color-primary)]/30'
-        : 'glass border-white/5 hover:border-white/10'
+      ? 'bg-gradient-to-br from-[var(--color-primary)]/20 to-[var(--color-primary)]/5 border-[var(--color-primary)]/30'
+      : 'glass border-white/5 hover:border-white/10'
       } `}
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
@@ -485,8 +417,8 @@ const StatRow = ({ label, value, isPositive }: { label: string; value: number; i
   <div className="flex justify-between items-center">
     <span className="text-gray-400 text-sm">{label}</span>
     <span className={`font - mono font - bold ${isPositive === true ? 'text-green-400' :
-        isPositive === false ? 'text-red-400' :
-          'text-white'
+      isPositive === false ? 'text-red-400' :
+        'text-white'
       } `}>
       {isPositive && '+'}{value}
     </span>

@@ -27,28 +27,28 @@ const CategorySchema: Schema = new Schema({
   },
   poules: [{
     type: String,
-    enum: ['A', 'B', 'C', 'D'],
-    validate: {
-      validator: function(this: ICategory, poules: string[]) {
-        // If hasPoules is true, poules array must not be empty
-        if (this.hasPoules && (!poules || poules.length === 0)) {
-          return false;
-        }
-        // If hasPoules is false, poules array should be empty
-        if (!this.hasPoules && poules && poules.length > 0) {
-          return false;
-        }
-        return true;
-      },
-      message: 'Poules configuration is invalid'
-    }
+    enum: ['A', 'B', 'C', 'D']
   }],
   isActive: {
     type: Boolean,
     default: true
   }
 }, { 
-  timestamps: true 
+  timestamps: true,
+  validate: {
+    validator: function(this: ICategory) {
+      // If hasPoules is true, poules array must not be empty
+      if (this.hasPoules && (!this.poules || this.poules.length === 0)) {
+        return false;
+      }
+      // If hasPoules is false, poules array should be empty
+      if (!this.hasPoules && this.poules && this.poules.length > 0) {
+        return false;
+      }
+      return true;
+    },
+    message: 'Poules configuration is invalid'
+  }
 });
 
 // Add indexes for better query performance
