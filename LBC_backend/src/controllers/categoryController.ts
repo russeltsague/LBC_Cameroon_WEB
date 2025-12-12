@@ -29,23 +29,37 @@ export const getAllCategories = async (req: Request, res: Response): Promise<voi
 // Get active categories only
 export const getActiveCategories = async (req: Request, res: Response): Promise<void> => {
   try {
-    const categories = await Category.find({ isActive: true }).sort({ name: 1 });
-    // Move 'CORPORATES' to the end
-    const sortedCategories = categories.sort((a, b) => {
-      if (a.name === 'CORPORATES') return 1;
-      if (b.name === 'CORPORATES') return -1;
-      return 0;
-    });
-    res.json({
-      success: true,
-      data: sortedCategories
-    });
+    // Set a timeout to prevent hanging
+    const timeout = setTimeout(() => {
+      if (!res.headersSent) {
+        res.status(504).json({ error: 'Request timeout' });
+      }
+    }, 15000); // 15 second timeout for categories
+
+    const categories = await Category.find({ isActive: true }).sort({ name: 1 }).lean();
+    
+    clearTimeout(timeout);
+    
+    if (!res.headersSent) {
+      // Move 'CORPORATES' to the end
+      const sortedCategories = categories.sort((a, b) => {
+        if (a.name === 'CORPORATES') return 1;
+        if (b.name === 'CORPORATES') return -1;
+        return 0;
+      });
+      res.json({
+        success: true,
+        data: sortedCategories
+      });
+    }
   } catch (error: any) {
     console.error('Error fetching active categories:', error);
-    res.status(500).json({
-      success: false,
-      error: error.message
-    });
+    if (!res.headersSent) {
+      res.status(500).json({
+        success: false,
+        error: error.message || 'Failed to fetch active categories'
+      });
+    }
   }
 };
 
