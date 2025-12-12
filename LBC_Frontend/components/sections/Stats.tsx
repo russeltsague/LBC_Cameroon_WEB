@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { FiAward, FiUsers, FiActivity, FiPercent } from 'react-icons/fi'
 import { useState, useEffect } from 'react'
 import { ChevronDownIcon } from '@heroicons/react/24/outline'
-import { getCategories, Category } from '@/app/lib/api'
+import { getCategories, Category, getCalendars, getCalendar } from '@/app/lib/api'
 
 type Match = {
   _id: string
@@ -93,40 +93,89 @@ export const StatsSection = () => {
         setLoading(true)
         setError(null)
 
-        let matchesUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/matches?category=${encodeURIComponent(activeCategory)}`
-        let teamsUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/teams?category=${encodeURIComponent(activeCategory)}`
-
-        if (hasPoules) {
-          matchesUrl += `&poule=${selectedPoule}`
-          teamsUrl += `&poule=${selectedPoule}`
+        // Get calendar data for the selected category
+        const calendar = await getCalendar(activeCategory)
+        
+        if (!calendar) {
+          // If no calendar exists, set default stats
+          setStats({
+            totalTeams: 0,
+            matchesPlayed: 0,
+            matchesToPlay: 0,
+            completionPercentage: 0
+          })
+          setLoading(false)
+          return
         }
 
-        const matchesRes = await fetch(matchesUrl)
-        if (!matchesRes.ok) throw new Error('Failed to fetch matches')
-        const matchesData = await matchesRes.json()
-        const matches: Match[] = matchesData.data || []
+        // Calculate matches from calendar data
+        let totalMatches = 0
+        let completedMatches = 0
+        const teamsInMatches = new Set<string>()
 
-        const teamsRes = await fetch(teamsUrl)
-        if (!teamsRes.ok) throw new Error('Failed to fetch teams')
-        const teamsData = await teamsRes.json()
+        // Process poules (group stages)
+        if (calendar.poules && calendar.poules.length > 0) {
+          for (const poule of calendar.poules) {
+            // Skip if we're filtering by poule and this isn't the selected one
+            if (hasPoules && poule.name !== selectedPoule) {
+              continue
+            }
 
-        const matchesPlayed = matches.filter(match => match.status === 'completed').length
-        const matchesToPlay = matches.filter(match => match.status === 'upcoming').length
-        const totalMatches = matchesPlayed + matchesToPlay
-        const completionPercentage = totalMatches > 0 ? Math.round((matchesPlayed / totalMatches) * 100) : 0
+            if (poule.journées && poule.journées.length > 0) {
+              for (const journee of poule.journées) {
+                if (journee.matches && journee.matches.length > 0) {
+                  for (const match of journee.matches) {
+                    totalMatches++
+                    
+                    // Add teams to the set
+                    if (match.homeTeam) {
+                      teamsInMatches.add(match.homeTeam)
+                    }
+                    if (match.awayTeam) {
+                      teamsInMatches.add(match.awayTeam)
+                    }
 
-        const teamsInMatches = new Set([
-          ...matches.map(match =>
-            typeof match.homeTeam === 'string' ? match.homeTeam : match.homeTeam._id
-          ),
-          ...matches.map(match =>
-            typeof match.awayTeam === 'string' ? match.awayTeam : match.awayTeam._id
-          )
-        ])
+                    // Check if match is completed (has scores)
+                    if (match.score && match.score !== '-') {
+                      completedMatches++
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        // Process playoffs (if any)
+        if (!hasPoules && calendar.playoffs && calendar.playoffs.length > 0) {
+          for (const playoff of calendar.playoffs) {
+            if (playoff.matches && playoff.matches.length > 0) {
+              for (const match of playoff.matches) {
+                totalMatches++
+                
+                // Add teams to the set
+                if (match.homeTeam) {
+                  teamsInMatches.add(match.homeTeam)
+                }
+                if (match.awayTeam) {
+                  teamsInMatches.add(match.awayTeam)
+                }
+
+                // Check if match is completed (has scores)
+                if (match.score && match.score !== '-') {
+                  completedMatches++
+                }
+              }
+            }
+          }
+        }
+
+        const matchesToPlay = totalMatches - completedMatches
+        const completionPercentage = totalMatches > 0 ? Math.round((completedMatches / totalMatches) * 100) : 0
 
         setStats({
           totalTeams: teamsInMatches.size,
-          matchesPlayed,
+          matchesPlayed: completedMatches,
           matchesToPlay,
           completionPercentage
         })
