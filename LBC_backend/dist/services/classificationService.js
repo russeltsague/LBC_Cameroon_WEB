@@ -43,40 +43,40 @@ class ClassificationService {
             awayClassification.goalsFor += match.awayScore;
             awayClassification.goalsAgainst += match.homeScore;
             awayClassification.goalDifference = awayClassification.goalsFor - awayClassification.goalsAgainst;
-            // FIBA point allocation
+            // Point allocation: 2 points for victory, 1 point for loss, 0 points for forfeit (20-00 or 00-20)
             if (match.forfeit === 'home') {
                 // Home team forfeits: away team gets 2 points, home team gets 0
                 homeClassification.losses += 1;
                 homeClassification.points += 0;
                 awayClassification.wins += 1;
-                awayClassification.points += 3;
+                awayClassification.points += 2;
             }
             else if (match.forfeit === 'away') {
                 // Away team forfeits: home team gets 2 points, away team gets 0
                 homeClassification.wins += 1;
-                homeClassification.points += 3;
+                homeClassification.points += 2;
                 awayClassification.losses += 1;
                 awayClassification.points += 0;
             }
             else {
-                // Normal match: winner gets 3 points, loser gets 0 points, draw gets 1 point each
+                // Normal match: winner gets 2 points, loser gets 1 point, draw gets 0 points each
                 if (match.homeScore > match.awayScore) {
                     homeClassification.wins += 1;
-                    homeClassification.points += 3;
+                    homeClassification.points += 2;
                     awayClassification.losses += 1;
-                    awayClassification.points += 0;
+                    awayClassification.points += 1;
                 }
                 else if (match.homeScore === match.awayScore) {
                     homeClassification.draws += 1;
-                    homeClassification.points += 1;
+                    homeClassification.points += 0;
                     awayClassification.draws += 1;
-                    awayClassification.points += 1;
+                    awayClassification.points += 0;
                 }
                 else {
                     homeClassification.losses += 1;
-                    homeClassification.points += 0;
+                    homeClassification.points += 1;
                     awayClassification.wins += 1;
-                    awayClassification.points += 3;
+                    awayClassification.points += 2;
                 }
             }
             // Save updated classifications

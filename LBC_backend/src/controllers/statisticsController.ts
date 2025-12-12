@@ -3,32 +3,6 @@ import statisticsService from '../services/statisticsService';
 import Classification from '../models/Classification';
 import Match from '../models/Match';
 import { statsEmitter } from '../services/statisticsService';
-import { Server, Socket } from 'socket.io';
-
-// Keep track of connected dashboard clients
-const dashboardClients = new Set<string>();
-
-// Initialize WebSocket for real-time updates
-export const initStatsWebSocket = (io: Server) => {
-  io.on('connection', (socket: Socket) => {
-    const clientId = socket.id;
-    dashboardClients.add(clientId);
-    
-    // Handle client disconnection
-    socket.on('disconnect', () => {
-      dashboardClients.delete(clientId);
-    });
-  });
-
-  // Listen for stats updates
-  statsEmitter.on('statsUpdated', async (data) => {
-    const { category, poule } = data;
-    const stats = await getFormattedStatistics(category, poule);
-    
-    // Broadcast to all connected dashboard clients
-    io.emit('statsUpdate', stats);
-  });
-};
 
 // Helper function to get formatted statistics
 const getFormattedStatistics = async (category: string, poule?: string) => {

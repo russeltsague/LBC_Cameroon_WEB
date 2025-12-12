@@ -105,21 +105,8 @@ const createCategory = async (req, res) => {
             });
             return;
         }
-        // Validate poules configuration
-        if (hasPoules && (!poules || poules.length === 0)) {
-            res.status(400).json({
-                success: false,
-                error: 'Poules are required when hasPoules is true'
-            });
-            return;
-        }
-        if (!hasPoules && poules && poules.length > 0) {
-            res.status(400).json({
-                success: false,
-                error: 'Poules should not be provided when hasPoules is false'
-            });
-            return;
-        }
+        // Validation removed: Allow creating category with hasPoules=true but no poules yet
+        // Validation removed: We will automatically set poules to [] if hasPoules is false
         const categoryData = {
             name: name.trim(),
             description: description?.trim(),
@@ -167,21 +154,7 @@ const updateCategory = async (req, res) => {
                 return;
             }
         }
-        // Validate poules configuration
-        if (hasPoules && (!poules || poules.length === 0)) {
-            res.status(400).json({
-                success: false,
-                error: 'Poules are required when hasPoules is true'
-            });
-            return;
-        }
-        if (!hasPoules && poules && poules.length > 0) {
-            res.status(400).json({
-                success: false,
-                error: 'Poules should not be provided when hasPoules is false'
-            });
-            return;
-        }
+        // Validation removed: Allow updating category with hasPoules=true but no poules yet
         const updateData = {};
         if (name !== undefined)
             updateData.name = name.trim();

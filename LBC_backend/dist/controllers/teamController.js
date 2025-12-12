@@ -5,6 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteTeam = exports.updateTeam = exports.getTeam = exports.getTeams = exports.getBulkImportTemplate = exports.bulkImportTeams = exports.createTeam = void 0;
 const Team_1 = __importDefault(require("../models/Team"));
+const Calendar_1 = require("../models/Calendar");
+const Classification_1 = __importDefault(require("../models/Classification"));
 const bulkImportService_1 = __importDefault(require("../services/bulkImportService"));
 const createTeam = async (req, res) => {
     try {
@@ -107,9 +109,98 @@ const getTeam = async (req, res) => {
             });
             return;
         }
+        // Fetch calendar for the team's category to get matches
+        const calendar = await Calendar_1.Calendar.findOne({ category: team.category });
+        let upcomingMatches = [];
+        let pastMatches = [];
+        if (calendar) {
+            const teamName = team.name;
+            const allMatches = [];
+            // Helper to process matches
+            const processMatch = (match, pouleName, isPlayoff = false) => {
+                // Check if team is involved
+                const homeName = match.homeTeam.trim();
+                const awayName = match.awayTeam.trim();
+                if (homeName === teamName || awayName === teamName) {
+                    const matchData = {
+                        ...match.toObject ? match.toObject() : match,
+                        category: team.category,
+                        poule: pouleName,
+                        isPlayoff
+                    };
+                    // Determine status if not explicitly set
+                    if (!matchData.status) {
+                        if (matchData.homeScore !== undefined && matchData.awayScore !== undefined) {
+                            matchData.status = 'completed';
+                        }
+                        else {
+                            matchData.status = 'upcoming';
+                        }
+                    }
+                    allMatches.push(matchData);
+                }
+            };
+            // Search in poules
+            if (calendar.poules) {
+                calendar.poules.forEach((poule) => {
+                    if (poule.journées) {
+                        poule.journées.forEach((journee) => {
+                            if (journee.matches) {
+                                journee.matches.forEach((match) => {
+                                    processMatch(match, poule.name);
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+            // Search in playoffs
+            if (calendar.playoffs) {
+                calendar.playoffs.forEach((playoff) => {
+                    if (playoff.matches) {
+                        playoff.matches.forEach((match) => {
+                            processMatch(match, 'Playoff', true);
+                        });
+                    }
+                });
+            }
+            // Sort matches by date (if available) or just separate by status
+            // Since date might be a string in Calendar, we try to parse it
+            allMatches.sort((a, b) => {
+                const dateA = a.date ? new Date(a.date).getTime() : 0;
+                const dateB = b.date ? new Date(b.date).getTime() : 0;
+                return dateB - dateA; // Descending order (newest first)
+            });
+            upcomingMatches = allMatches.filter(m => m.status === 'upcoming' || m.status === 'live');
+            pastMatches = allMatches.filter(m => m.status === 'completed');
+        }
+        // Fetch classification stats
+        const classification = await Classification_1.default.findOne({ team: team._id });
+        let classificationStats = null;
+        if (classification) {
+            const stats = classification.getFormattedStats();
+            classificationStats = {
+                played: stats.played,
+                wins: stats.won,
+                draws: stats.drawn,
+                losses: stats.lost,
+                forfeits: 0, // Classification model doesn't track forfeits explicitly in formatted stats
+                points: stats.points,
+                pointsFor: stats.goalsFor,
+                pointsAgainst: stats.goalsAgainst,
+                goalDifference: stats.goalDifference
+            };
+        }
+        // Convert team to object to add extra fields
+        const teamObj = team.toObject();
         res.json({
             success: true,
-            data: team
+            data: {
+                ...teamObj,
+                upcomingMatches,
+                pastMatches,
+                classificationStats
+            }
         });
     }
     catch (error) {

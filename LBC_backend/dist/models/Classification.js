@@ -43,21 +43,10 @@ const ClassificationSchema = new mongoose_1.Schema({
     category: {
         type: String,
         required: true,
-        index: true,
-        enum: [
-            'L1 MESSIEUR',
-            'L1 DAME',
-            'L2A MESSIEUR',
-            'L2B MESSIEUR',
-            'U18 GARCONS',
-            'U18 FILLES',
-            'VETERANT',
-            'CORPO'
-        ]
+        index: true
     },
     poule: {
         type: String,
-        enum: ['A', 'B', 'C'],
         index: true
     },
     position: { type: Number, default: 0 },
@@ -95,18 +84,28 @@ ClassificationSchema.methods.updateStats = async function (match) {
     this.goalDifference = this.goalsFor - this.goalsAgainst;
     // Determine match result
     let result = 'D';
-    if (goalsFor > goalsAgainst) {
+    const isForfeit = (goalsFor === 20 && goalsAgainst === 0) || (goalsFor === 0 && goalsAgainst === 20);
+    if (isForfeit) {
+        // Forfeit counts as a loss with 0 points
+        result = 'L';
+        this.losses += 1;
+        // No points added
+    }
+    else if (goalsFor > goalsAgainst) {
         result = 'W';
         this.wins += 1;
-        this.points += 3;
+        this.points += 2; // 2 points for a win
     }
     else if (goalsFor < goalsAgainst) {
         result = 'L';
         this.losses += 1;
+        this.points += 1; // 1 point for a loss
     }
     else {
+        // Draw
+        result = 'D';
         this.draws += 1;
-        this.points += 1;
+        // No points for a draw
     }
     // Update clean sheets and failed to score
     if (goalsAgainst === 0)
