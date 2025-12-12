@@ -108,6 +108,12 @@ export const StatsSection = () => {
           return
         }
 
+        // Debug: Log calendar structure
+        console.log('Calendar data for', activeCategory, ':', calendar)
+        console.log('Has poules:', calendar.hasPoules)
+        console.log('Selected poule:', selectedPoule)
+        console.log('Poules:', calendar.poules)
+
         // Calculate matches from calendar data
         let totalMatches = 0
         let completedMatches = 0
@@ -116,8 +122,11 @@ export const StatsSection = () => {
         // Process poules (group stages)
         if (calendar.poules && calendar.poules.length > 0) {
           for (const poule of calendar.poules) {
+            console.log('Processing poule:', poule.name)
+            
             // Skip if we're filtering by poule and this isn't the selected one
             if (hasPoules && poule.name !== selectedPoule) {
+              console.log('Skipping poule', poule.name, 'not selected')
               continue
             }
 
@@ -127,6 +136,8 @@ export const StatsSection = () => {
                   for (const match of journee.matches) {
                     totalMatches++
                     
+                    console.log('Match:', match.homeTeam, 'vs', match.awayTeam, 'scores:', match.homeScore, '-', match.awayScore)
+                    
                     // Add teams to the set
                     if (match.homeTeam) {
                       teamsInMatches.add(match.homeTeam)
@@ -135,9 +146,11 @@ export const StatsSection = () => {
                       teamsInMatches.add(match.awayTeam)
                     }
 
-                    // Check if match is completed (has scores)
-                    if (match.score && match.score !== '-') {
+                    // Check if match is completed (has both scores)
+                    if (match.homeScore !== undefined && match.homeScore !== null && 
+                        match.awayScore !== undefined && match.awayScore !== null) {
                       completedMatches++
+                      console.log('Match completed:', completedMatches)
                     }
                   }
                 }
@@ -161,14 +174,21 @@ export const StatsSection = () => {
                   teamsInMatches.add(match.awayTeam)
                 }
 
-                // Check if match is completed (has scores)
-                if (match.score && match.score !== '-') {
+                // Check if match is completed (has both scores)
+                if (match.homeScore !== undefined && match.homeScore !== null && 
+                    match.awayScore !== undefined && match.awayScore !== null) {
                   completedMatches++
                 }
               }
             }
           }
         }
+
+        console.log('Final stats:', {
+          totalMatches,
+          completedMatches,
+          teamsInMatches: teamsInMatches.size
+        })
 
         const matchesToPlay = totalMatches - completedMatches
         const completionPercentage = totalMatches > 0 ? Math.round((completedMatches / totalMatches) * 100) : 0
