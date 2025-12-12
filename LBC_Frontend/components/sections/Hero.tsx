@@ -80,15 +80,15 @@ const HeroSection = () => {
           animate="visible"
           style={{ opacity }}
         >
-          <motion.div variants={itemVariants} className="mb-8">
-            <span className="inline-block px-6 py-2 bg-white/5 backdrop-blur-md border border-white/10 text-[var(--color-primary)] rounded-full text-sm md:text-base font-bold tracking-widest shadow-lg uppercase">
+          <motion.div variants={itemVariants} className="mb-6 sm:mb-8">
+            <span className="inline-block px-4 py-1.5 sm:px-6 sm:py-2 bg-white/5 backdrop-blur-md border border-white/10 text-[var(--color-primary)] rounded-full text-xs sm:text-sm md:text-base font-bold tracking-widest shadow-lg uppercase">
               Saison 2025-2026
             </span>
           </motion.div>
 
           <motion.h1
             variants={itemVariants}
-            className="text-5xl sm:text-6xl md:text-8xl font-display font-extrabold text-white mb-8 leading-tight tracking-tight"
+            className="text-3xl sm:text-4xl md:text-6xl lg:text-8xl font-display font-extrabold text-white mb-6 sm:mb-8 leading-tight tracking-tight"
           >
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-200 to-gray-400">
               LIGUE DE BASKETBALL
@@ -100,31 +100,31 @@ const HeroSection = () => {
 
           <motion.p
             variants={itemVariants}
-            className="text-lg sm:text-xl md:text-2xl text-gray-300 max-w-2xl md:max-w-4xl mx-auto mb-12 leading-relaxed font-light"
+            className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-300 max-w-xl sm:max-w-2xl md:max-w-4xl mx-auto mb-8 sm:mb-12 leading-relaxed font-light"
           >
             Le sommet de la compétition avec les meilleures équipes du Cameroun.
             <span className="text-white font-medium"> Passion, Talent, Gloire.</span>
           </motion.p>
 
-          <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+          <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center">
             <Link href="/teams" className="group w-full sm:w-auto">
               <button
-                className="w-full sm:w-auto relative px-8 py-4 bg-[var(--color-primary)] text-white font-bold rounded-xl shadow-lg shadow-[var(--color-primary)]/25 hover:shadow-[var(--color-primary)]/40 transform hover:-translate-y-1 transition-all duration-300 overflow-hidden"
+                className="w-full sm:w-auto relative px-6 py-3 sm:px-8 sm:py-4 bg-[var(--color-primary)] text-white font-bold rounded-lg sm:rounded-xl shadow-lg shadow-[var(--color-primary)]/25 hover:shadow-[var(--color-primary)]/40 transform hover:-translate-y-1 transition-all duration-300 overflow-hidden text-sm sm:text-base"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
                 <span className="relative z-10 flex items-center justify-center">
-                  EXPLORER LES ÉQUIPES
-                  <ArrowRightIcon className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  EXPLORER
+                  <ArrowRightIcon className="ml-2 w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
                 </span>
               </button>
             </Link>
             <Link href="/schedule" className="group w-full sm:w-auto">
               <button
-                className="w-full sm:w-auto relative px-8 py-4 bg-white/5 backdrop-blur-sm border border-white/10 text-white font-bold rounded-xl hover:bg-white/10 transition-all duration-300 transform hover:-translate-y-1"
+                className="w-full sm:w-auto relative px-6 py-3 sm:px-8 sm:py-4 bg-white/5 backdrop-blur-sm border border-white/10 text-white font-bold rounded-lg sm:rounded-xl hover:bg-white/10 transition-all duration-300 transform hover:-translate-y-1 text-sm sm:text-base"
               >
                 <span className="relative z-10 flex items-center justify-center">
                   CALENDRIER
-                  <svg className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform text-[var(--color-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="ml-2 w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform text-[var(--color-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                 </span>

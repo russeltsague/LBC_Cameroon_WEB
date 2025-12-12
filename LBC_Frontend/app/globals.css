@@ -61,12 +61,29 @@ body {
   color: var(--color-text-main);
   font-family: var(--font-sans);
   overflow-x: hidden;
+  font-size: 14px; /* Base font size for mobile */
+}
+
+@media (min-width: 640px) {
+  body {
+    font-size: 16px; /* Larger font size for tablets and up */
+  }
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
   letter-spacing: 0.05em;
   text-transform: uppercase;
+}
+
+/* Mobile-specific text size adjustments */
+@media (max-width: 639px) {
+  h1 { font-size: 1.5rem; }
+  h2 { font-size: 1.25rem; }
+  h3 { font-size: 1.125rem; }
+  h4 { font-size: 1rem; }
+  h5 { font-size: 0.875rem; }
+  h6 { font-size: 0.75rem; }
 }
 
 /* Animations */

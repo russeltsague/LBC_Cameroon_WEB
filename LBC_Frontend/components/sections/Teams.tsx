@@ -48,26 +48,26 @@ export const TeamsSection = () => {
   )
 
   return (
-    <section id="teams" className="py-24 bg-gray-950">
-      <div className="container px-6 mx-auto">
-        <motion.div className="text-center mb-16" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}>
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+    <section id="teams" className="py-16 sm:py-20 md:py-24 bg-gray-950">
+      <div className="container px-4 sm:px-6 mx-auto">
+        <motion.div className="text-center mb-8 sm:mb-12 md:mb-16" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2 sm:mb-4">
             Équipes de la <span className="text-orange-400">Ligue</span>
           </h2>
-          <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+          <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-300 max-w-2xl mx-auto">
             Découvrez toutes les équipes participantes cette saison
           </p>
         </motion.div>
 
-        <motion.div className="max-w-2xl mx-auto mb-12 relative" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}>
+        <motion.div className="max-w-xl sm:max-w-2xl mx-auto mb-8 sm:mb-12 relative" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <FiSearch className="h-5 w-5 text-gray-400" />
+              <FiSearch className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
             </div>
             <input
               type="text"
               placeholder="Rechercher des équipes..."
-              className="block w-full pl-10 pr-3 py-3 border border-gray-700 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+              className="block w-full pl-9 sm:pl-10 pr-3 py-2 sm:py-3 text-sm sm:text-base border border-gray-700 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -75,11 +75,11 @@ export const TeamsSection = () => {
         </motion.div>
 
         {loading ? (
-          <div className="text-center text-white">Loading teams...</div>
+          <div className="text-center text-white text-sm sm:text-base">Loading teams...</div>
         ) : error ? (
-          <div className="text-center text-red-400">{error}</div>
+          <div className="text-center text-red-400 text-sm sm:text-base">{error}</div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
             {filteredTeams.length > 0 ? (
               filteredTeams.map((team, index) => (
                 <motion.div
@@ -92,7 +92,7 @@ export const TeamsSection = () => {
                 </motion.div>
               ))
             ) : (
-              <div className="col-span-full text-center py-12 text-gray-400">
+              <div className="col-span-full text-center py-8 sm:py-12 text-gray-400 text-sm sm:text-base">
                 Aucune équipe trouvée pour votre recherche
               </div>
             )}
