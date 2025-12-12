@@ -14,10 +14,10 @@ import {
 const router = express.Router();
 
 // Get all calendars
-router.get('/', requireAdminAuth, getCalendars);
+router.get('/', getCalendars);
 
 // Get calendar by category
-router.get('/:category', requireAdminAuth, getCalendar);
+router.get('/:category', getCalendar);
 
 // Create new calendar
 router.post('/', requireAdminAuth, createCalendar);
