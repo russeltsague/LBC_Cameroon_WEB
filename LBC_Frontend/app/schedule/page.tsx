@@ -144,12 +144,12 @@ export default function SchedulePage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Page Header */}
-      <div className="bg-gradient-to-r from-primary-dark to-primary py-12 px-4">
+      <div className="bg-gradient-to-r from-primary-dark to-primary py-8 sm:py-12 px-4">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-4xl md:text-5xl font-display font-bold text-white text-center uppercase tracking-wider">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-display font-bold text-white text-center uppercase tracking-wider">
             Programmes Hebdomadaires
           </h1>
-          <p className="text-center text-white/90 mt-2 text-lg">
+          <p className="text-center text-white/90 mt-2 text-sm sm:text-base md:text-lg">
             Calendrier officiel de la Ligue de Basketball du Centre
           </p>
         </div>
