@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Trophy, Filter, Download } from 'lucide-react'
-import { Category, Team, getCategories, getTeams } from '@/app/lib/api'
+import { Category, Team, getCategories, getTeams, getCalendar, Calendar } from '@/app/lib/api'
 import { toast } from 'react-hot-toast'
 
 interface Standing {
@@ -22,7 +22,7 @@ interface Standing {
 export const StatsManagement = () => {
     const [categories, setCategories] = useState<Category[]>([])
     const [teams, setTeams] = useState<Team[]>([])
-    const [matches, setMatches] = useState<any[]>([])
+    const [calendar, setCalendar] = useState<Calendar | null>(null)
     const [loading, setLoading] = useState(true)
 
     const [selectedCategory, setSelectedCategory] = useState('')
@@ -34,7 +34,7 @@ export const StatsManagement = () => {
 
     useEffect(() => {
         if (selectedCategory) {
-            fetchMatches()
+            fetchCalendarData()
         }
     }, [selectedCategory, selectedPoule])
 
@@ -56,22 +56,15 @@ export const StatsManagement = () => {
         }
     }
 
-    const fetchMatches = async () => {
+    const fetchCalendarData = async () => {
         setLoading(true)
         try {
-            let url = `${process.env.NEXT_PUBLIC_API_URL}/api/matches?category=${encodeURIComponent(selectedCategory)}`
-
-            const category = categories.find(c => c.name === selectedCategory)
-            if (category?.hasPoules) {
-                url += `&poule=${selectedPoule}`
-            }
-
-            const res = await fetch(url)
-            const data = await res.json()
-            setMatches(data.data || [])
+            const data = await getCalendar(selectedCategory)
+            setCalendar(data)
         } catch (error) {
-            console.error('Error fetching matches:', error)
-            toast.error('Erreur lors du chargement des matchs')
+            console.error('Error fetching calendar:', error)
+            // Don't show error toast here as it might just mean no calendar exists yet
+            setCalendar(null)
         } finally {
             setLoading(false)
         }
@@ -79,14 +72,10 @@ export const StatsManagement = () => {
 
     const calculateStandings = (): Standing[] => {
         const standings: Record<string, Standing> = {}
+        const teamMap = new Map<string, string>() // Name -> ID
 
-        // Initialize standings for all teams in the selected category/poule
-        teams.filter(t => {
-            const categoryMatch = t.category === selectedCategory
-            // Note: Team model might not have poule, but if it did we would filter here.
-            // For now, we assume teams are just filtered by category, and we'll only count matches in the selected poule.
-            return categoryMatch
-        }).forEach(team => {
+        // Initialize standings for all teams in the selected category
+        teams.filter(t => t.category === selectedCategory).forEach(team => {
             standings[team._id] = {
                 teamId: team._id,
                 teamName: team.name,
@@ -99,18 +88,20 @@ export const StatsManagement = () => {
                 pointsAgainst: 0,
                 pointDiff: 0
             }
+            teamMap.set(team.name, team._id)
         })
 
-        // Process matches
-        matches.forEach(match => {
-            if (match.status !== 'completed') return
+        if (!calendar) return Object.values(standings)
 
-            const homeId = typeof match.homeTeam === 'object' ? match.homeTeam._id : match.homeTeam
-            const awayId = typeof match.awayTeam === 'object' ? match.awayTeam._id : match.awayTeam
+        // Helper to process a match
+        const processMatch = (homeTeam: string, awayTeam: string, homeScore?: number, awayScore?: number) => {
+            if (homeScore === undefined || homeScore === null || awayScore === undefined || awayScore === null) return
 
-            // Ensure teams exist in our standings (might be missing if filtering logic is slightly off or data inconsistency)
-            if (!standings[homeId]) return
-            if (!standings[awayId]) return
+            const homeId = teamMap.get(homeTeam)
+            const awayId = teamMap.get(awayTeam)
+
+            if (!homeId || !awayId) return
+            if (!standings[homeId] || !standings[awayId]) return
 
             const home = standings[homeId]
             const away = standings[awayId]
@@ -118,12 +109,12 @@ export const StatsManagement = () => {
             home.played += 1
             away.played += 1
 
-            home.pointsFor += match.homeScore
-            home.pointsAgainst += match.awayScore
-            away.pointsFor += match.awayScore
-            away.pointsAgainst += match.homeScore
+            home.pointsFor += homeScore
+            home.pointsAgainst += awayScore
+            away.pointsFor += awayScore
+            away.pointsAgainst += homeScore
 
-            if (match.homeScore > match.awayScore) {
+            if (homeScore > awayScore) {
                 home.won += 1
                 home.points += 2
                 away.lost += 1
@@ -134,16 +125,43 @@ export const StatsManagement = () => {
                 home.lost += 1
                 home.points += 1
             }
+        }
 
-            // Handle forfeits if necessary (logic can be added here)
-        })
+        // Process poules
+        if (calendar.poules && calendar.poules.length > 0) {
+            calendar.poules.forEach(poule => {
+                // Only process matches for the selected poule if poules exist
+                const currentCategory = categories.find(c => c.name === selectedCategory)
+                if (currentCategory?.hasPoules && poule.name !== selectedPoule) return
+
+                poule.journées.forEach(journee => {
+                    journee.matches.forEach(match => {
+                        processMatch(match.homeTeam, match.awayTeam, match.homeScore, match.awayScore)
+                    })
+                })
+            })
+        }
+
+        // Process playoffs (if any) - usually playoffs don't count towards regular season standings, 
+        // but if requested, we could include them. For now, let's stick to poules/regular season 
+        // as that's what "standings" usually implies.
+        // If the user wants playoff stats included, we can uncomment this.
+        /*
+        if (calendar.playoffs) {
+            calendar.playoffs.forEach(stage => {
+                stage.matches.forEach(match => {
+                    processMatch(match.homeTeam, match.awayTeam, match.homeScore, match.awayScore)
+                })
+            })
+        }
+        */
 
         return Object.values(standings).map(s => ({
             ...s,
             pointDiff: s.pointsFor - s.pointsAgainst
         })).sort((a, b) => {
             if (b.points !== a.points) return b.points - a.points
-            return b.pointDiff - a.pointDiff // Tie breaker: point difference
+            return b.pointDiff - a.pointDiff
         })
     }
 
@@ -160,7 +178,7 @@ export const StatsManagement = () => {
                         Statistiques & Classements
                     </h1>
                     <p className="text-gray-400 font-outfit mt-1">
-                        Visualisez les performances des équipes
+                        Visualisez les performances des équipes (basé sur le calendrier)
                     </p>
                 </div>
             </div>
@@ -237,9 +255,9 @@ export const StatsManagement = () => {
                                         >
                                             <td className="p-4 font-bold text-white">
                                                 <div className={`w-8 h-8 rounded-full flex items-center justify-center ${index === 0 ? 'bg-yellow-500/20 text-yellow-500' :
-                                                        index === 1 ? 'bg-gray-400/20 text-gray-400' :
-                                                            index === 2 ? 'bg-orange-600/20 text-orange-500' :
-                                                                'bg-white/5 text-gray-500'
+                                                    index === 1 ? 'bg-gray-400/20 text-gray-400' :
+                                                        index === 2 ? 'bg-orange-600/20 text-orange-500' :
+                                                            'bg-white/5 text-gray-500'
                                                     }`}>
                                                     {index + 1}
                                                 </div>

@@ -107,7 +107,7 @@ const HeroSection = () => {
           </motion.p>
 
           <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center">
-            <Link href="/teams" className="group w-full sm:w-auto">
+            <Link href="/featured" className="group w-full sm:w-auto">
               <button
                 className="w-full sm:w-auto relative px-6 py-3 sm:px-8 sm:py-4 bg-[var(--color-primary)] text-white font-bold rounded-lg sm:rounded-xl shadow-lg shadow-[var(--color-primary)]/25 hover:shadow-[var(--color-primary)]/40 transform hover:-translate-y-1 transition-all duration-300 overflow-hidden text-sm sm:text-base"
               >
