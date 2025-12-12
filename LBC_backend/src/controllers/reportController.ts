@@ -156,23 +156,36 @@ export const deleteReport = async (req: Request, res: Response): Promise<void> =
 // Get latest active reports for home page
 export const getLatestReports = async (req: Request, res: Response): Promise<void> => {
   try {
+    // Set a timeout to prevent hanging
+    const timeout = setTimeout(() => {
+      if (!res.headersSent) {
+        res.status(504).json({ error: 'Request timeout' });
+      }
+    }, 20000); // 20 second timeout for reports
+
     const { limit = 3 } = req.query;
 
     const reports = await Report.find({ isActive: true })
       .sort({ createdAt: -1 })
-      .limit(Number(limit));
+      .limit(Number(limit))
+      .lean();
 
-    res.json({
-      success: true,
-      data: reports
-    });
+    clearTimeout(timeout);
+    
+    if (!res.headersSent) {
+      res.json({
+        success: true,
+        data: reports
+      });
+    }
   } catch (error) {
     console.error('Error fetching latest reports:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error fetching latest reports',
-      error: error instanceof Error ? error.message : 'Unknown error'
-    });
+    if (!res.headersSent) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch latest reports'
+      });
+    }
   }
 };
 

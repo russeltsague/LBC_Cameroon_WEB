@@ -73,6 +73,13 @@ export const getBulkImportTemplate = async (req: Request, res: Response): Promis
 
 export const getTeams = async (req: Request, res: Response): Promise<void> => {
   try {
+    // Set a timeout to prevent hanging
+    const timeout = setTimeout(() => {
+      if (!res.headersSent) {
+        res.status(504).json({ error: 'Request timeout' });
+      }
+    }, 20000); // 20 second timeout for teams
+
     const { category, poule } = req.query;
 
     let query: any = {};
@@ -85,16 +92,24 @@ export const getTeams = async (req: Request, res: Response): Promise<void> => {
       query.poule = poule;
     }
 
-    const teams = await Team.find(query);
-    res.json({
-      success: true,
-      data: teams
-    });
+    const teams = await Team.find(query).lean();
+    
+    clearTimeout(timeout);
+    
+    if (!res.headersSent) {
+      res.json({
+        success: true,
+        data: teams
+      });
+    }
   } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      error: error.message
-    });
+    console.error('Error fetching teams:', error);
+    if (!res.headersSent) {
+      res.status(500).json({
+        success: false,
+        error: error.message || 'Failed to fetch teams'
+      });
+    }
   }
 };
 

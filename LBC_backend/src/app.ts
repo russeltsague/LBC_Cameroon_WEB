@@ -15,6 +15,7 @@ import weeklyScheduleRoutes from './routes/weeklyScheduleRoutes';
 import testRoutes from './routes/testRoutes';
 import migrationRoutes from './routes/migrationRoutes';
 import reportRoutes from './routes/reportRoutes';
+import healthRoutes from './routes/healthRoutes';
 import { errorHandler } from './middleware/errorHandler';
 
 const app = express();
@@ -28,6 +29,7 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
+app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/teams', teamRoutes);
 app.use('/api/players', playerRoutes);
