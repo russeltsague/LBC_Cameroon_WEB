@@ -149,11 +149,25 @@ export const migrateCalendarScores = async (req: Request, res: Response): Promis
 // Get all calendars
 export const getCalendars = async (req: Request, res: Response): Promise<void> => {
   try {
-    const calendars = await Calendar.find().sort({ category: 1 });
-    res.json({ data: calendars });
+    // Set a timeout to prevent hanging
+    const timeout = setTimeout(() => {
+      if (!res.headersSent) {
+        res.status(504).json({ error: 'Request timeout' });
+      }
+    }, 25000); // 25 second timeout
+
+    const calendars = await Calendar.find().sort({ category: 1 }).lean();
+    
+    clearTimeout(timeout);
+    
+    if (!res.headersSent) {
+      res.json({ data: calendars });
+    }
   } catch (error) {
     console.error('Error fetching calendars:', error);
-    res.status(500).json({ error: 'Failed to fetch calendars' });
+    if (!res.headersSent) {
+      res.status(500).json({ error: 'Failed to fetch calendars' });
+    }
   }
 };
 

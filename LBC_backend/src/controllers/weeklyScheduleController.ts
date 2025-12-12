@@ -35,19 +35,31 @@ const checkMatchExists = async (homeTeam: string, awayTeam: string, excludeSched
  */
 export const getAllWeeklySchedules = async (req: Request, res: Response): Promise<void> => {
   try {
-    const schedules = await WeeklySchedule.find()
-      .sort({ date: 1, venue: 1 });
+    // Set a timeout to prevent hanging
+    const timeout = setTimeout(() => {
+      if (!res.headersSent) {
+        res.status(504).json({ error: 'Request timeout' });
+      }
+    }, 25000); // 25 second timeout
 
-    res.json({
-      success: true,
-      data: schedules
-    });
+    const schedules = await WeeklySchedule.find().lean().sort({ date: 1, venue: 1 });
+    
+    clearTimeout(timeout);
+    
+    if (!res.headersSent) {
+      res.json({
+        success: true,
+        data: schedules
+      });
+    }
   } catch (error: any) {
     console.error('Error fetching weekly schedules:', error);
-    res.status(500).json({
-      success: false,
-      error: error.message || 'Failed to fetch weekly schedules'
-    });
+    if (!res.headersSent) {
+      res.status(500).json({
+        success: false,
+        error: error.message || 'Failed to fetch weekly schedules'
+      });
+    }
   }
 };
 
